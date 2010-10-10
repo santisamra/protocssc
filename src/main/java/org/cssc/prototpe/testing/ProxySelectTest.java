@@ -44,13 +44,15 @@ public class ProxySelectTest {
 	    		} else if (key.isReadable()){
 	    			SocketChannel client = (SocketChannel) key.channel();
 	    			client.configureBlocking(false);
-	    			ByteBuffer buffer = ByteBuffer.allocate(10);
+	    			ByteBuffer buffer = ByteBuffer.allocate(100);
 	    			client.read(buffer);
-	    			if( buffer.remaining() < 10 ){
+	    			if( buffer.remaining() < 100 ){
 	    				System.out.println("Hay available");
 	    				client.register(selector, SelectionKey.OP_WRITE, buffer);
 	    			} else {
-	    				client.register(selector, SelectionKey.OP_READ);
+	    				System.out.println("No hay available");
+//	    				client.register(selector, SelectionKey.OP_READ);
+	    				client.keyFor(selector).cancel();
 	    			}
 	    		} else if (key.isWritable()) {
 	    			SocketChannel client = (SocketChannel) key.channel();
