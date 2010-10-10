@@ -7,7 +7,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Deque;
 import java.util.LinkedList;
-import java.util.Queue;
 
 public class HttpProxyServer {
 
@@ -44,33 +43,51 @@ public class HttpProxyServer {
 			byte[] buffer = new byte[INPUT_BUFFER_SIZE];
 			while(!finished) {
 				// FIXME: Major performance defect
+				Socket s;
 				synchronized(clientConnections) {
-					Socket s = clientConnections.poll();
-					if(s != null) {
-						try {
-							if(!s.isClosed()) {
-								InputStream inputStream = s.getInputStream();
-								int availableBytes = inputStream.available(); 
-								if(availableBytes > 0) {
-									OutputStream outputStream = s.getOutputStream();
-									inputStream.read(buffer, 0, availableBytes);
-									System.out.println("SocketProcessor - Received from " + s.getRemoteSocketAddress() + ": " + buffer.toString());
-									outputStream.write(buffer, 0, availableBytes);
-									outputStream.flush();
-								}
+					s = clientConnections.poll();
+				}
+				if(s != null) {
+					try {
+						if(!s.isClosed()) {
+							InputStream inputStream = s.getInputStream();
+							int availableBytes = inputStream.available(); 
+							if(availableBytes > 0) {
+								OutputStream outputStream = s.getOutputStream();
+								inputStream.read(buffer, 0, availableBytes);
+								System.out.println("SocketProcessor - Received from " + s.getRemoteSocketAddress() + ": " + buffer.toString());
+								print(buffer);
+								outputStream.write(buffer, 0, availableBytes);
+								outputStream.flush();
+							}
+							synchronized(clientConnections){
 								clientConnections.addLast(s);
 							}
-						} catch(IOException e) {
-							try {
-								s.close();
-								System.out.println("Closing a socket");
-							} catch (IOException e1) {
-								throw new FatalException(e1);
-							}
+						}
+					} catch(IOException e) {
+						try {
+							s.close();
+							System.out.println("Closing a socket");
+						} catch (IOException e1) {
+							throw new FatalException(e1);
 						}
 					}
 				}
+	
 			}
+		}
+	}
+	
+	private void print(byte[] buffer){
+		byte last = 0;
+		
+		for( int i = 0; i < buffer.length && buffer[i] != 0; i++){
+			if( last == 13 && buffer[i] == 10){
+				System.out.println("");
+				break;
+			}
+			last = buffer[i];
+			System.out.print((char)buffer[i]);
 		}
 	}
 
@@ -88,7 +105,8 @@ public class HttpProxyServer {
 	}
 
 	public static void main(String[] args) {
-		HttpProxyServer server = new HttpProxyServer(8080);
+		new HttpProxyServer(8080);
+		System.out.println("Started echoing server...");
 	}
 
 }
