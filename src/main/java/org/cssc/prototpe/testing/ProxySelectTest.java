@@ -1,7 +1,6 @@
 package org.cssc.prototpe.testing;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
@@ -30,46 +29,52 @@ public class ProxySelectTest {
 	    server.register(selector, SelectionKey.OP_ACCEPT);
 
 	    while (true) {
-	      selector.select();
-	      Set<SelectionKey> readyKeys = selector.selectedKeys();
-	      Iterator<SelectionKey> iterator = readyKeys.iterator();
-	      while (iterator.hasNext()) {
-	        SelectionKey key = (SelectionKey) iterator.next();
-	        iterator.remove();
-	        if (key.isAcceptable()) {
-	          SocketChannel client = server.accept();
-	          System.out.println("Accepted connection from " + client);
-	          client.configureBlocking(false);
-	          client.register(selector, SelectionKey.OP_READ);
+	    	selector.select();
+	    	Set<SelectionKey> readyKeys = selector.selectedKeys();
+	    	Iterator<SelectionKey> iterator = readyKeys.iterator();
+	    	while (iterator.hasNext()) {
+	    		SelectionKey key = (SelectionKey) iterator.next();
+	    		iterator.remove();
+	    		if (key.isAcceptable()) {
+	    			SocketChannel client = server.accept();
+	    			System.out.println("Accepted connection from " + client);
+	    			client.configureBlocking(false);
+	    			client.register(selector, SelectionKey.OP_READ);
 	          
-	        } else if (key.isReadable()){
-	        	SocketChannel client = (SocketChannel) key.channel();
-	        	client.configureBlocking(false);
-	        	
-	        	InputStream stream = client.socket().getInputStream();
-	        	if( stream.available() > 0){
-	        		byte[] buf = new byte[stream.available() + 1];
-	        		stream.read(buf, 0, stream.available());
-	        		ByteBuffer source = ByteBuffer.wrap(buf);
-	        		SelectionKey key2 = client.register(selector, SelectionKey.OP_WRITE);
-	        		key2.attach(source);
-	        	} else {
-	        		client.register(selector, SelectionKey.OP_READ);
-	        	}
-	        	
-	        	
-	        } else if (key.isWritable()) {
-	          SocketChannel client = (SocketChannel) key.channel();
-	          ByteBuffer output = (ByteBuffer) key.attachment();
-	          if (!output.hasRemaining()) {
-	            output.rewind();
-	          }
-	          client.write(output);
-	          client.register(selector, SelectionKey.OP_READ);
-	        }
-//	        key.channel().close();
-	      }
+	    		} else if (key.isReadable()){
+	    			SocketChannel client = (SocketChannel) key.channel();
+	    			client.configureBlocking(false);
+	    			ByteBuffer buffer = ByteBuffer.allocate(10);
+	    			client.read(buffer);
+	    			if( buffer.remaining() < 10 ){
+	    				System.out.println("Hay available");
+	    				client.register(selector, SelectionKey.OP_WRITE, buffer);
+	    			} else {
+	    				client.register(selector, SelectionKey.OP_READ);
+	    			}
+	    		} else if (key.isWritable()) {
+	    			SocketChannel client = (SocketChannel) key.channel();
+	    			ByteBuffer output = (ByteBuffer) key.attachment();
+	    			output.rewind();
+	    			print(output.array());
+	    			client.write(output);
+	    			client.register(selector, SelectionKey.OP_READ);
+	    		}
+	    	}
 	    }
+	}
+	
+	private void print(byte[] buffer){
+		byte last = 0;
+		
+		for( int i = 0; i < buffer.length && buffer[i] != 0; i++){
+			if( last == 13 && buffer[i] == 10){
+				System.out.println("");
+				break;
+			}
+			last = buffer[i];
+			System.out.print((char)buffer[i]);
+		}
 	}
 	
 	
