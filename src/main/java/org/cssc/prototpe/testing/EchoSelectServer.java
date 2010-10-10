@@ -10,17 +10,17 @@ import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 import java.util.Set;
 
-public class ProxySelectTest {
+public class EchoSelectServer {
 	
 	public static void main(String[] args) {
 		try {
-			new ProxySelectTest(8080);
+			new EchoSelectServer(8080);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public ProxySelectTest(int port) throws IOException{
+	public EchoSelectServer(int port) throws IOException{
 		ServerSocketChannel server = ServerSocketChannel.open();
 	    server.configureBlocking(false);
 
