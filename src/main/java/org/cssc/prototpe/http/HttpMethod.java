@@ -27,4 +27,8 @@ public enum HttpMethod {
 		
 		throw new InvalidMethodStringException();
 	}
+	
+	public String toString() {
+		return methodString;
+	}
 }
