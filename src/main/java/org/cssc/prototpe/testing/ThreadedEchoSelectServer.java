@@ -20,6 +20,8 @@ public class ThreadedEchoSelectServer {
 	private SocketChannel temporaryChannel;
 	private Selector acceptingSelector;
 	private Selector readingSelector;
+	private Thread acceptingThread;
+	private Thread readingThread;
 	
 	public ThreadedEchoSelectServer(int port) throws IOException{
 		server = ServerSocketChannel.open();
@@ -28,8 +30,10 @@ public class ThreadedEchoSelectServer {
 		acceptingSelector = Selector.open();
 		readingSelector = Selector.open();
 		server.register(acceptingSelector, SelectionKey.OP_ACCEPT);
-		new Thread(new ClientConnectionAccepter()).start();
-		new Thread(new ClientConnectionReader()).start();
+		acceptingThread = new Thread(new ClientConnectionAccepter());
+		readingThread = new Thread(new ClientConnectionReader());
+		acceptingThread.start();
+		readingThread.start();
 //		new Thread(new ClientConnectionWriter()).start();
 	}
 	
