@@ -82,7 +82,6 @@ public class ThreadedEchoSelectServer {
 					synchronized(ThreadedEchoSelectServer.this) {
 						if(temporaryChannel != null) {
 							temporaryChannel.register(readingSelector, SelectionKey.OP_READ);
-							SocketChannel channel = temporaryChannel;
 							temporaryChannel = null;
 							ThreadedEchoSelectServer.this.notifyAll();
 						}
