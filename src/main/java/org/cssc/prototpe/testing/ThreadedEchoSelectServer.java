@@ -2,6 +2,7 @@ package org.cssc.prototpe.testing;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -19,9 +20,15 @@ public class ThreadedEchoSelectServer {
 	}
 
 	private ServerSocketChannel server;
-	private Deque<SocketChannel> temporaryChannels;
+	private Deque<SocketChannel> channelsToRead;
+	private Deque<SocketChannel> channelsToWrite;
+
+	// Ver si se puede mejorar esto.
+	private Deque<ByteBuffer> writingBuffers;
+
 	private Selector acceptingSelector;
 	private Selector readingSelector;
+	private Selector writingSelector;
 	private Thread acceptingThread;
 	private Thread readingThread;
 
@@ -31,7 +38,10 @@ public class ThreadedEchoSelectServer {
 		server.socket().bind(new InetSocketAddress(port));
 		acceptingSelector = Selector.open();
 		readingSelector = Selector.open();
-		temporaryChannels = new LinkedList<SocketChannel>();
+		writingSelector = Selector.open();
+		channelsToRead = new LinkedList<SocketChannel>();
+		channelsToWrite = new LinkedList<SocketChannel>();
+		writingBuffers = new LinkedList<ByteBuffer>();
 		server.register(acceptingSelector, SelectionKey.OP_ACCEPT);
 		acceptingThread = new Thread(new ClientConnectionAccepter());
 		readingThread = new Thread(new ClientConnectionReader());
@@ -60,7 +70,7 @@ public class ThreadedEchoSelectServer {
 							//							}
 							SocketChannel client = server.accept();
 							client.configureBlocking(false);
-							temporaryChannels.offer(client);
+							channelsToRead.offer(client);
 							System.out.println("Waking up.");
 							readingSelector.wakeup();
 						}
@@ -81,12 +91,12 @@ public class ThreadedEchoSelectServer {
 			while(!done){
 				try{
 					Set<SelectionKey> selectedKeys;
-					System.out.println("Starting select...");
+					System.out.println("Starting reading select...");
 					readingSelector.select();
-					System.out.println("Ending select!");
+					System.out.println("Ending reading select!");
 					synchronized(ThreadedEchoSelectServer.this) {
-						if(!temporaryChannels.isEmpty()) {
-							temporaryChannels.poll().register(readingSelector, SelectionKey.OP_READ);
+						if(!channelsToRead.isEmpty()) {
+							channelsToRead.poll().register(readingSelector, SelectionKey.OP_READ);
 							//							ThreadedEchoSelectServer.this.notifyAll();
 						}
 					}
@@ -103,7 +113,9 @@ public class ThreadedEchoSelectServer {
 							print(buffer.array());
 							if( buffer.remaining() < 100 ){
 								System.out.println("Hay available");
-								//									client.register(selector, SelectionKey.OP_WRITE, buffer);
+								channelsToWrite.offer(client);
+								writingBuffers.offer(buffer);
+								writingSelector.wakeup();
 							} else {
 								System.out.println("No hay available");
 								client.keyFor(readingSelector).cancel();
@@ -122,28 +134,37 @@ public class ThreadedEchoSelectServer {
 	private class ClientConnectionWriter implements Runnable{
 		@Override
 		public void run() {
-			try{
-				Set<SelectionKey> selectedKeys;
-				synchronized(acceptingSelector){
-					selectedKeys = acceptingSelector.selectedKeys();
-				}
-				Iterator<SelectionKey> it = selectedKeys.iterator();
-				while(it.hasNext()){
-					SelectionKey key = it.next();
-					if(key.isWritable()){
-						it.remove();
-						SocketChannel client = (SocketChannel) key.channel();
-						ByteBuffer output = (ByteBuffer) key.attachment();
-						output.rewind();
-						print(output.array());
-						client.write(output);
-						synchronized(acceptingSelector){
-							client.register(acceptingSelector, SelectionKey.OP_READ);
+			boolean done = false;
+			while(!done) {
+				try{
+					Set<SelectionKey> selectedKeys;
+					System.out.println("Starting writing select...");
+					writingSelector.select();
+					System.out.println("Ending writing select!");
+
+					synchronized(ThreadedEchoSelectServer.this) {
+						if(!channelsToWrite.isEmpty()) {
+							channelsToWrite.poll().register(writingSelector, SelectionKey.OP_WRITE, writingBuffers.poll());
 						}
 					}
+
+					selectedKeys = writingSelector.selectedKeys();
+					Iterator<SelectionKey> it = selectedKeys.iterator();
+					while(it.hasNext()){
+						SelectionKey key = it.next();
+						if(key.isWritable()){
+							it.remove();
+							SocketChannel client = (SocketChannel) key.channel();
+							ByteBuffer output = (ByteBuffer) key.attachment();
+							output.rewind();
+							client.write(output);
+							key.cancel();
+						}
+					}
+				} catch (IOException e){
+					e.printStackTrace();
+					done = true;
 				}
-			} catch (IOException e){
-				e.printStackTrace();
 			}
 		}
 	}
