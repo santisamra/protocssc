@@ -17,14 +17,17 @@ public class ThreadedEchoSelectServer {
 	}
 
 	private ServerSocketChannel server;
-	private Selector selector;
+	private SocketChannel temporaryChannel;
+	private Selector acceptingSelector;
+	private Selector readingSelector;
 	
 	public ThreadedEchoSelectServer(int port) throws IOException{
 		server = ServerSocketChannel.open();
 		server.configureBlocking(false);
 		server.socket().bind(new InetSocketAddress(port));
-		selector = Selector.open();
-		server.register(selector, SelectionKey.OP_ACCEPT);
+		acceptingSelector = Selector.open();
+		readingSelector = Selector.open();
+		server.register(acceptingSelector, SelectionKey.OP_ACCEPT);
 		new Thread(new ClientConnectionAccepter()).start();
 		new Thread(new ClientConnectionReader()).start();
 //		new Thread(new ClientConnectionWriter()).start();
@@ -37,27 +40,30 @@ public class ThreadedEchoSelectServer {
 			while(!done){
 				try {
 					Set<SelectionKey> selectedKeys;
-					synchronized(selector){
-						selector.select();
-						selectedKeys = selector.selectedKeys();
-					}
+					acceptingSelector.select();
+					selectedKeys = acceptingSelector.selectedKeys();
 					Iterator<SelectionKey> it = selectedKeys.iterator();
 					while(it.hasNext()){
 						SelectionKey key = it.next();
 						if(key.isAcceptable()){
-							it.remove();
-							SocketChannel client = server.accept();
-							System.out.println("Accepted connection from " + client);
-							client.configureBlocking(false);
-							synchronized(selector){
-								client.register(selector, SelectionKey.OP_READ);
+							synchronized(ThreadedEchoSelectServer.this) {
+								if(temporaryChannel != null) {
+									ThreadedEchoSelectServer.this.wait();
+								}
 							}
+							SocketChannel client = server.accept();
+							client.configureBlocking(false);
+							temporaryChannel = client;
+							readingSelector.wakeup();
 						}
 					}
 					
 				} catch (IOException e) {
 					e.printStackTrace();
 					done = true;
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 			}
 		}
@@ -70,9 +76,18 @@ public class ThreadedEchoSelectServer {
 			while(!done){
 				try{
 					Set<SelectionKey> selectedKeys;
-					synchronized(selector){
-						selectedKeys = selector.selectedKeys();
+					System.out.println("Starting select...");
+					readingSelector.select();
+					System.out.println("Ending select!");
+					synchronized(ThreadedEchoSelectServer.this) {
+						if(temporaryChannel != null) {
+							temporaryChannel.register(readingSelector, SelectionKey.OP_READ);
+							SocketChannel channel = temporaryChannel;
+							temporaryChannel = null;
+							ThreadedEchoSelectServer.this.notifyAll();
+						}
 					}
+					selectedKeys = readingSelector.selectedKeys();
 					Iterator<SelectionKey> it = selectedKeys.iterator();
 					while(it.hasNext()){
 						SelectionKey key = it.next();
@@ -83,15 +98,14 @@ public class ThreadedEchoSelectServer {
 							ByteBuffer buffer = ByteBuffer.allocate(100);
 							client.read(buffer);
 							print(buffer.array());
-							synchronized(selector){
 								if( buffer.remaining() < 100 ){
 									System.out.println("Hay available");
-									client.register(selector, SelectionKey.OP_WRITE, buffer);
+//									client.register(selector, SelectionKey.OP_WRITE, buffer);
 								} else {
 									System.out.println("No hay available");
-									client.keyFor(selector).cancel();
+									client.keyFor(readingSelector).cancel();
+									client.close();
 								}
-							}
 						}
 					}
 				} catch (IOException e){
@@ -107,8 +121,8 @@ public class ThreadedEchoSelectServer {
 		public void run() {
 			try{
 				Set<SelectionKey> selectedKeys;
-				synchronized(selector){
-					selectedKeys = selector.selectedKeys();
+				synchronized(acceptingSelector){
+					selectedKeys = acceptingSelector.selectedKeys();
 				}
 				Iterator<SelectionKey> it = selectedKeys.iterator();
 				while(it.hasNext()){
@@ -120,8 +134,8 @@ public class ThreadedEchoSelectServer {
 		    			output.rewind();
 		    			print(output.array());
 		    			client.write(output);
-		    			synchronized(selector){
-		    				client.register(selector, SelectionKey.OP_READ);
+		    			synchronized(acceptingSelector){
+		    				client.register(acceptingSelector, SelectionKey.OP_READ);
 		    			}
 					}
 				}
