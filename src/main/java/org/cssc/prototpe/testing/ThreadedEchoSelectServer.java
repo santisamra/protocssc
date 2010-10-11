@@ -2,7 +2,6 @@ package org.cssc.prototpe.testing;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -95,7 +94,7 @@ public class ThreadedEchoSelectServer {
 					readingSelector.select();
 					System.out.println("Ending reading select!");
 					synchronized(ThreadedEchoSelectServer.this) {
-						if(!channelsToRead.isEmpty()) {
+						while(!channelsToRead.isEmpty()) {
 							channelsToRead.poll().register(readingSelector, SelectionKey.OP_READ);
 							//							ThreadedEchoSelectServer.this.notifyAll();
 						}
@@ -143,7 +142,7 @@ public class ThreadedEchoSelectServer {
 					System.out.println("Ending writing select!");
 
 					synchronized(ThreadedEchoSelectServer.this) {
-						if(!channelsToWrite.isEmpty()) {
+						while(!channelsToWrite.isEmpty()) {
 							channelsToWrite.poll().register(writingSelector, SelectionKey.OP_WRITE, writingBuffers.poll());
 						}
 					}
