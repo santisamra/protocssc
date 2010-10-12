@@ -47,7 +47,7 @@ import java.io.StringReader;
 METHOD =	[A-Za-z]+
 PATH =		[A-Za-z0-9\-_\.\/\?=&]+
 VERSION =	HTTP\/
-NEWLINE =	(\n|\r|\r\n|\n\r)
+NEWLINE =	\r\n
 
 %state PARSING_METHOD
 %state PARSING_PATH

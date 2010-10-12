@@ -55,6 +55,8 @@ public class HttpTestServer {
 				for(String key: contentMap.keySet()) {
 					System.out.println("Field: \"" + key + "\"" + " - Value: \"" + contentMap.get(key) + "\"");
 				}
+				
+				socket.close();
 			}
 		} catch(IOException e) {
 			e.printStackTrace();
