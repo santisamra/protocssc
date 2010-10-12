@@ -12,7 +12,7 @@ public class Test {
 		HttpRequestParser parser = null;
 		try {
 			parser = new HttpRequestParser(new FileReader("src/main/resources/samples/request00.txt"));
-			parser.parse();
+			parser.parse(); 
 			
 			HttpRequest req = parser.getParsedRequest();
 			
