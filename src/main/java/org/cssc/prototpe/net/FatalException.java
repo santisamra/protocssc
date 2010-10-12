@@ -2,7 +2,7 @@ package org.cssc.prototpe.net;
 
 public class FatalException extends RuntimeException {
 
-	private static final long serialVersionUID = 116770301864426388L;
+	private static final long serialVersionUID = 116770308264426388L;
 
 	public FatalException() {
 		super();
