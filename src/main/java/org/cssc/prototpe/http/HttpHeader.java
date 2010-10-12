@@ -26,4 +26,9 @@ public class HttpHeader {
 	public String getField(String field) {
 		return contentMap.get(field);
 	}
+	
+	//TODO: Funcion de testing.
+	public Map<String, String> getContentMap() {
+		return contentMap;
+	}
 }
