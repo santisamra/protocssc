@@ -29,8 +29,8 @@ import java.util.Map;
 
 
 
-FIELD_NAME =	[A-Za-z]+
-FIELD_VALUE =	[A-Za-z0-9\-_\.]+
+FIELD_NAME =	[A-Za-z\-]+
+FIELD_VALUE =	.+
 
 %state PARSING_VALUE
 
@@ -38,12 +38,13 @@ FIELD_VALUE =	[A-Za-z0-9\-_\.]+
 
 <YYINITIAL> {
 	[ ]?{FIELD_NAME}/:	{
+		//System.out.println("Searching name.");
 		currentName = yytext().trim();
-		System.out.println("Found name " + yytext().trim());
+		//System.out.println("Found name " + yytext().trim());
 	}
 	
 	: {
-		System.out.println("Going to parsing value.");
+		//System.out.println("Going to parsing value.");
 		yybegin(PARSING_VALUE);
 	}
 }
@@ -52,15 +53,16 @@ FIELD_VALUE =	[A-Za-z0-9\-_\.]+
 	[ ]?{FIELD_VALUE}[ ]?	{
 		currentValue = yytext().trim();
 		map.put(currentName, currentValue);
-		System.out.println("Found value " + yytext().trim());
+		//System.out.println("Found value " + yytext().trim());
 	}
 	
 	\n {
+		//System.out.println("Going to YYINITIAL.");
 		yybegin(YYINITIAL);
 	}
 }
 
 . {
-	System.out.println("Found: \"" + yytext() + "\"");
+	//System.out.println("Found error: \"" + yytext() + "\"");
 	throw new InvalidPackageParsingException("Invalid package.");
 }

@@ -19,7 +19,6 @@ import java.io.StringReader;
 	private String remainingText;
 	
 	public HttpRequest getParsedRequest() throws IOException {
-		parse();
 		HttpRequest ret = new HttpRequest(version, path, method);
 		
 		if(remainingText != null && remainingText.length() > 0) {
@@ -56,6 +55,7 @@ VERSION =	HTTP\/
 
 <YYINITIAL> {
 	[ ]?{METHOD}[ ] {
+		//System.out.println("Found method.");
 		method = HttpMethod.fromString(yytext().trim());
 		yybegin(PARSING_PATH);
 	}

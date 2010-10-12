@@ -2,6 +2,7 @@ package org.cssc.prototpe.testing;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -25,12 +26,11 @@ public class HttpTestServer {
 			
 			while(true) {
 				SocketChannel socket = serverSocket.accept();
-				InputStream is = socket.socket().getInputStream();
-				ByteBuffer buffer = ByteBuffer.allocate(200);
-				is.read(buffer.array());
-				print(buffer.array());
+//				ByteBuffer buffer = ByteBuffer.allocate(1000);
+//				socket.read(buffer);
+//				print(buffer.array());
 				
-				HttpRequestParser parser = new HttpRequestParser(is);
+				HttpRequestParser parser = new HttpRequestParser(socket.socket().getInputStream());
 				parser.parse();
 				
 				HttpRequest req = parser.getParsedRequest();
@@ -42,7 +42,7 @@ public class HttpTestServer {
 				
 				Map<String, String> contentMap = req.getHeader().getContentMap();
 				for(String key: contentMap.keySet()) {
-					System.out.println(key + ": " + contentMap.get(key));
+					System.out.println("Field: \"" + key + "\"" + " - Value: \"" + contentMap.get(key) + "\"");
 				}
 			}
 		} catch(IOException e) {
@@ -55,11 +55,6 @@ public class HttpTestServer {
 		
 		System.out.print("\"");
 		for( int i = 0; i < buffer.length && buffer[i] != 0; i++){
-			if( last == 13 && buffer[i] == 10){
-				System.out.println("");
-				break;
-			}
-			last = buffer[i];
 			System.out.print((char)buffer[i]);
 		}
 		System.out.print("\"");

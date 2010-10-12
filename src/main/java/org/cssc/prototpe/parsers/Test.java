@@ -23,7 +23,7 @@ public class Test {
 			
 			Map<String, String> contentMap = req.getHeader().getContentMap();
 			for(String key: contentMap.keySet()) {
-				System.out.println(key + ": " + contentMap.get(key));
+				System.out.println("Field: \"" + key + "\"" + " - Value: \"" + contentMap.get(key) + "\"");
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
