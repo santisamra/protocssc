@@ -2,7 +2,7 @@ package org.cssc.prototpe.parsers;
 
 import org.cssc.prototpe.http.HttpMethod;
 import org.cssc.prototpe.http.HttpRequest;
-import org.cssc.prototpe.parsers.exceptions.InvalidPackageParsingException;
+import org.cssc.prototpe.parsers.exceptions.InvalidPacketParsingException;
 import java.io.IOException;
 import java.io.StringReader;
 
@@ -20,6 +20,8 @@ import java.io.StringReader;
 	
 	public HttpRequest getParsedRequest() throws IOException {
 		HttpRequest ret = new HttpRequest(version, path, method);
+		
+		System.out.println(remainingText);
 		
 		if(remainingText != null && remainingText.length() > 0) {
 			HttpHeaderParser headerParser = new HttpHeaderParser(new StringReader(remainingText));
@@ -45,6 +47,7 @@ import java.io.StringReader;
 METHOD =	[A-Za-z]+
 PATH =		[A-Za-z0-9\-_\.\/\?=&]+
 VERSION =	HTTP\/
+NEWLINE =	(\n|\r|\r\n|\n\r)
 
 %state PARSING_METHOD
 %state PARSING_PATH
@@ -72,18 +75,23 @@ VERSION =	HTTP\/
 }
 
 <PARSING_VERSION> {
-	1\.[01][ ]?/\n {
+	1\.[01][ ]?{NEWLINE} {
 		version = yytext().trim();
+		System.out.println("I got here");
+		remainingText = "";
 		yybegin(ADDING_REMAINING_TEXT);
 	}
 }
 
 <ADDING_REMAINING_TEXT> {
-	(.|\n)*\n\n	{
+	
+	([^\r\n]+{NEWLINE})*{NEWLINE}	{
+		System.out.println("here, finishing parsing");
 		remainingText = yytext().trim();
+		return YYEOF; //PARCHEEE
 	}
 }
 
-.|\n {
-	throw new InvalidPackageParsingException("Invalid package.");
+.|{NEWLINE} {
+	throw new InvalidPacketParsingException("Invalid package.");
 }

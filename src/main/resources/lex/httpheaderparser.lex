@@ -1,7 +1,7 @@
 package org.cssc.prototpe.parsers;
 
 import org.cssc.prototpe.http.HttpPacket;
-import org.cssc.prototpe.parsers.exceptions.InvalidPackageParsingException;
+import org.cssc.prototpe.parsers.exceptions.InvalidPacketParsingException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,6 +31,7 @@ import java.util.Map;
 
 FIELD_NAME =	[A-Za-z\-]+
 FIELD_VALUE =	.+
+NEWLINE = (\n|\r|\r\n|\n\r)
 
 %state PARSING_VALUE
 
@@ -56,7 +57,7 @@ FIELD_VALUE =	.+
 		//System.out.println("Found value " + yytext().trim());
 	}
 	
-	\n {
+	{NEWLINE} {
 		//System.out.println("Going to YYINITIAL.");
 		yybegin(YYINITIAL);
 	}
@@ -64,5 +65,5 @@ FIELD_VALUE =	.+
 
 . {
 	//System.out.println("Found error: \"" + yytext() + "\"");
-	throw new InvalidPackageParsingException("Invalid package.");
+	throw new InvalidPacketParsingException("Invalid package.");
 }

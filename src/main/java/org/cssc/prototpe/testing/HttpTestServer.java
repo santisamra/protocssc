@@ -1,13 +1,12 @@
 package org.cssc.prototpe.testing;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.io.StringReader;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
-import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.Map;
 
 import org.cssc.prototpe.http.HttpRequest;
@@ -15,23 +14,35 @@ import org.cssc.prototpe.parsers.HttpRequestParser;
 
 public class HttpTestServer {
 
-	private ServerSocketChannel serverSocket;
+	private ServerSocket serverSocket;
 
 	public HttpTestServer(int port) {
 		try {
-			serverSocket = ServerSocketChannel.open();
-			serverSocket.socket().bind(new InetSocketAddress(port));
+			serverSocket = new ServerSocket(port);
 			
 			System.out.println("Listening on " + InetAddress.getLocalHost() + ":" + port);
 			
 			while(true) {
-				SocketChannel socket = serverSocket.accept();
+				System.out.println("Starting to accept connection");
+				Socket socket = serverSocket.accept();
+				System.out.println("Accepted connection");
 //				ByteBuffer buffer = ByteBuffer.allocate(1000);
 //				socket.read(buffer);
 //				print(buffer.array());
 				
-				HttpRequestParser parser = new HttpRequestParser(socket.socket().getInputStream());
+				char[] buf = new char[999];
+				
+//				Reader reader = new InputStreamReader(socket.getInputStream());
+//				reader.read(buf);
+//				System.out.print("\"");
+//				System.out.print(buf);
+//				System.out.println("\"");
+//				String str = new String(buf);
+				
+				HttpRequestParser parser = new HttpRequestParser(socket.getInputStream());
+				System.out.println("Created parser, parsing");
 				parser.parse();
+				System.out.println("Finished parsing");
 				
 				HttpRequest req = parser.getParsedRequest();
 				
