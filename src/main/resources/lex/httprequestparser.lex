@@ -22,9 +22,11 @@ import java.io.StringReader;
 		parse();
 		HttpRequest ret = new HttpRequest(version, path, method);
 		
-		HttpHeaderParser headerParser = new HttpHeaderParser(new StringReader(remainingText));
-		headerParser.parse();
-		headerParser.fillHeader(ret);
+		if(remainingText != null && remainingText.length() > 0) {
+			HttpHeaderParser headerParser = new HttpHeaderParser(new StringReader(remainingText));
+			headerParser.parse();
+			headerParser.fillHeader(ret);
+		}
 		
 		return ret;
 	}
@@ -70,7 +72,7 @@ VERSION =	HTTP\/
 }
 
 <PARSING_VERSION> {
-	1\.[01][ ]?\n {
+	1\.[01][ ]?/\n {
 		version = yytext().trim();
 		yybegin(ADDING_REMAINING_TEXT);
 	}
@@ -82,6 +84,6 @@ VERSION =	HTTP\/
 	}
 }
 
-(.|\n) {
+.|\n {
 	throw new InvalidPackageParsingException("Invalid package.");
 }

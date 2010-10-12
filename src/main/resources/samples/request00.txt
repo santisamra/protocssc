@@ -1,4 +1,4 @@
-POST 56/tool/s.html HTTP/1.1 
-field: value
-Host: host
+GET 56/tool/s.html HTTP/1.1
+Host: www.google.com
+Param: hola
 

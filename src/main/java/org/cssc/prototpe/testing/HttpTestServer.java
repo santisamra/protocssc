@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.Map;
@@ -18,13 +19,16 @@ public class HttpTestServer {
 	public HttpTestServer(int port) {
 		try {
 			serverSocket = ServerSocketChannel.open();
-			serverSocket.socket().bind(new InetSocketAddress(InetAddress.getLocalHost(), port));
+			serverSocket.socket().bind(new InetSocketAddress(port));
 			
 			System.out.println("Listening on " + InetAddress.getLocalHost() + ":" + port);
 			
 			while(true) {
 				SocketChannel socket = serverSocket.accept();
 				InputStream is = socket.socket().getInputStream();
+				ByteBuffer buffer = ByteBuffer.allocate(200);
+				is.read(buffer.array());
+				print(buffer.array());
 				
 				HttpRequestParser parser = new HttpRequestParser(is);
 				parser.parse();
@@ -43,6 +47,19 @@ public class HttpTestServer {
 			}
 		} catch(IOException e) {
 			e.printStackTrace();
+		}
+	}
+	
+	private void print(byte[] buffer){
+		byte last = 0;
+		
+		for( int i = 0; i < buffer.length && buffer[i] != 0; i++){
+			if( last == 13 && buffer[i] == 10){
+				System.out.println("");
+				break;
+			}
+			last = buffer[i];
+			System.out.print((char)buffer[i]);
 		}
 	}
 
