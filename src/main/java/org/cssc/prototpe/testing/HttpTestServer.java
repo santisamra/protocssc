@@ -53,6 +53,7 @@ public class HttpTestServer {
 	private void print(byte[] buffer){
 		byte last = 0;
 		
+		System.out.print("\"");
 		for( int i = 0; i < buffer.length && buffer[i] != 0; i++){
 			if( last == 13 && buffer[i] == 10){
 				System.out.println("");
@@ -61,6 +62,7 @@ public class HttpTestServer {
 			last = buffer[i];
 			System.out.print((char)buffer[i]);
 		}
+		System.out.print("\"");
 	}
 
 	public static void main(String[] args) {
