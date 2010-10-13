@@ -45,7 +45,7 @@ import java.io.StringReader;
 %eof}
 
 METHOD =	[A-Za-z]+
-PATH =		[A-Za-z0-9\-_\.\/\?=&]+
+PATH =		[A-Za-z0-9\-_\.\/\?=&:]+
 VERSION =	HTTP\/
 NEWLINE =	\r\n
 
@@ -58,7 +58,7 @@ NEWLINE =	\r\n
 
 <YYINITIAL> {
 	[ ]?{METHOD}[ ] {
-		//System.out.println("Found method.");
+		System.out.println("Found method: " + yytext().trim());
 		method = HttpMethod.fromString(yytext().trim());
 		yybegin(PARSING_PATH);
 	}
@@ -67,6 +67,7 @@ NEWLINE =	\r\n
 <PARSING_PATH> {
 	{PATH}[ ]/{VERSION} {
 		path = yytext().trim();
+		System.out.println("Found path: " + yytext().trim());
 	}
 	
 	{VERSION} {
@@ -93,5 +94,9 @@ NEWLINE =	\r\n
 }
 
 .|{NEWLINE} {
-	throw new InvalidPacketParsingException("Invalid package.");
+	System.out.println("ERROR");
+	System.out.println("Method: " + method);
+	System.out.println("Path: " + path);
+	System.out.println("Version: " + version);
+	throw new InvalidPacketParsingException("Invalid packet.");
 }
