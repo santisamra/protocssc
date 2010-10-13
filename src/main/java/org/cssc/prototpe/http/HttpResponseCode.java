@@ -13,7 +13,7 @@ public enum HttpResponseCode {
 		this.code = code;
 	}
 	
-	public static HttpResponseCode fromString(int code) {
+	public static HttpResponseCode fromInt(int code) {
 		for(HttpResponseCode r: HttpResponseCode.class.getEnumConstants()) {
 			if(r.code == code) {
 				return r;

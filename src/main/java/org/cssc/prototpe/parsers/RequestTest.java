@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.cssc.prototpe.http.HttpRequest;
 
-public class Test {
+public class RequestTest {
 
 	public static void main(String[] args) {
 		HttpRequestParser parser = null;
