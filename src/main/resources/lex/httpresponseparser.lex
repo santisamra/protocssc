@@ -11,7 +11,7 @@ import java.io.Reader;
 import java.io.InputStream;
 
 %%
-%class HttpResponseParser
+%class HttpResponseLexParser
 %public
 %function parse
 %standalone
@@ -36,8 +36,6 @@ import java.io.InputStream;
 			header = new HttpHeader();
 		}
 		
-		parseContent(header);
-		
 		return new HttpResponse(version, header, statusCode, reasonPhrase, content);
 	}
 	
@@ -61,8 +59,8 @@ import java.io.InputStream;
 	System.out.println("Version: " + version);
 	System.out.println("Status code: " + statusCode);
 	System.out.println("Reason phrase: " + reasonPhrase);
-	System.out.println("Remaining text:");
-	System.out.println(remainingText);
+	//System.out.println("Remaining text: \"");
+	//System.out.println(remainingText + "\"");
 
 %eof}
 
@@ -82,14 +80,14 @@ NEWLINE =		\r|\n
 
 <YYINITIAL> {
 	[ ]?{VERSION} {
-		System.out.println("Encontre version.");
+		//System.out.println("Encontre version.");
 		yybegin(PARSING_VERSION);
 	}
 }
 
 <PARSING_VERSION> {
 	1\.[01][ ] {
-		System.out.println("Encontre numero de version.");
+		//System.out.println("Encontre numero de version.");
 		version = yytext().trim();
 		yybegin(PARSING_STATUS_CODE);
 	}
@@ -97,7 +95,7 @@ NEWLINE =		\r|\n
 
 <PARSING_STATUS_CODE> {
 	{STATUS_CODE}[ ] {
-		System.out.println("Encontre status code.");
+		//System.out.println("Encontre status code.");
 		statusCode = HttpResponseCode.fromInt(Integer.valueOf(yytext().trim()));
 		yybegin(PARSING_REASON_PHRASE);
 	}
@@ -105,7 +103,7 @@ NEWLINE =		\r|\n
 
 <PARSING_REASON_PHRASE> {
 	{REASON_PHRASE}[ ]?{NEWLINE} {
-		System.out.println("Encontre reason phrase.");
+		//System.out.println("Encontre reason phrase.");
 		reasonPhrase = yytext().trim();
 		yybegin(ADDING_REMAINING_TEXT);
 	}
@@ -113,14 +111,8 @@ NEWLINE =		\r|\n
 
 <ADDING_REMAINING_TEXT> {
 	([^\r\n]+{NEWLINE})*{NEWLINE} {
+		//System.out.println("Encontre remaining text.");
 		remainingText = yytext().trim();
-		
-		System.out.println("Version: " + version);
-		System.out.println("Status code: " + statusCode);
-		System.out.println("Reason phrase: " + reasonPhrase);
-		System.out.println("Remaining text: \"");
-		System.out.println(remainingText + "\"");
-		return YYEOF;
 	}
 }
 

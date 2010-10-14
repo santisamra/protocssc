@@ -39,7 +39,7 @@ NEWLINE = (\n|\r|\r\n|\n\r)
 	[ ]?{FIELD_NAME}/:	{
 		//System.out.println("Searching name.");
 		currentName = yytext().toLowerCase().trim();
-		System.out.println("Found name " + currentName);
+		//System.out.println("Found name " + currentName);
 	}
 	
 	: {

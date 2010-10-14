@@ -6,14 +6,15 @@ import java.net.Socket;
 import org.cssc.prototpe.http.HttpRequest;
 import org.cssc.prototpe.http.HttpResponse;
 import org.cssc.prototpe.net.interfaces.ClientHandler;
-import org.cssc.prototpe.parsers.HttpRequestParser;
+import org.cssc.prototpe.parsers.HttpRequestLexParser;
 import org.cssc.prototpe.parsers.HttpResponseParser;
 
 public class HttpProxyClientHandler implements ClientHandler{
 	
 	private Socket clientSocket;
 	private Socket serverSocket;
-	private HttpRequestParser requestParser;
+	//TODO: Cambiar este parser a HttpRequestParser.
+	private HttpRequestLexParser requestParser;
 	private HttpResponseParser responseParser;
 	private HttpRequest request;
 	private HttpResponse response;
@@ -23,7 +24,7 @@ public class HttpProxyClientHandler implements ClientHandler{
 	public void handle(Socket socket) {
 		this.clientSocket = socket;
 		try{
-			requestParser = new HttpRequestParser(socket.getInputStream());
+			requestParser = new HttpRequestLexParser(socket.getInputStream());
 			request = requestParser.getParsedRequest();
 			
 			//TODO: Ask for the socket to someone

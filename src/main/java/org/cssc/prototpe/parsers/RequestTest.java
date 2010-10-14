@@ -9,9 +9,9 @@ import org.cssc.prototpe.http.HttpRequest;
 public class RequestTest {
 
 	public static void main(String[] args) {
-		HttpRequestParser parser = null;
+		HttpRequestLexParser parser = null;
 		try {
-			parser = new HttpRequestParser(new FileReader("src/main/resources/samples/request00.txt"));
+			parser = new HttpRequestLexParser(new FileReader("src/main/resources/samples/request00.txt"));
 			parser.parse(); 
 			
 			HttpRequest req = parser.getParsedRequest();

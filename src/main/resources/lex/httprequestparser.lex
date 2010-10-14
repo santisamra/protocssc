@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.io.StringReader;
 
 %%
-%class HttpRequestParser
+%class HttpRequestLexParser
 %public
 %function parse
 %standalone

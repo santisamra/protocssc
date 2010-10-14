@@ -1,16 +1,13 @@
 package org.cssc.prototpe.testing;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringReader;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Map;
 
 import org.cssc.prototpe.http.HttpRequest;
-import org.cssc.prototpe.parsers.HttpRequestParser;
+import org.cssc.prototpe.parsers.HttpRequestLexParser;
 
 public class HttpTestServer {
 
@@ -39,7 +36,7 @@ public class HttpTestServer {
 //				System.out.println("\"");
 //				String str = new String(buf);
 				
-				HttpRequestParser parser = new HttpRequestParser(socket.getInputStream());
+				HttpRequestLexParser parser = new HttpRequestLexParser(socket.getInputStream());
 				System.out.println("Created parser, parsing");
 				parser.parse();
 				System.out.println("Finished parsing");
