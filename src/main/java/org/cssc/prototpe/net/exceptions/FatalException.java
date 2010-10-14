@@ -1,4 +1,4 @@
-package org.cssc.prototpe.net;
+package org.cssc.prototpe.net.exceptions;
 
 public class FatalException extends RuntimeException {
 

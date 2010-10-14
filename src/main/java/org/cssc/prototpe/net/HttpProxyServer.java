@@ -9,6 +9,8 @@ import java.nio.channels.SocketChannel;
 import java.util.Deque;
 import java.util.LinkedList;
 
+import org.cssc.prototpe.net.exceptions.FatalException;
+
 public class HttpProxyServer {
 
 	private ServerSocketChannel serverSocket;
@@ -96,18 +98,7 @@ public class HttpProxyServer {
 		}
 	}
 	
-	private void print(byte[] buffer){
-		byte last = 0;
-		
-		for( int i = 0; i < buffer.length && buffer[i] != 0; i++){
-			if( last == 13 && buffer[i] == 10){
-				System.out.println("");
-				break;
-			}
-			last = buffer[i];
-			System.out.print((char)buffer[i]);
-		}
-	}
+
 
 	public HttpProxyServer(int port) {
 		try {
