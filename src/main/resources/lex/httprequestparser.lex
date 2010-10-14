@@ -1,6 +1,7 @@
 package org.cssc.prototpe.parsers;
 
 import org.cssc.prototpe.http.HttpMethod;
+import org.cssc.prototpe.http.HttpHeader;
 import org.cssc.prototpe.http.HttpRequest;
 import org.cssc.prototpe.parsers.exceptions.InvalidPacketParsingException;
 import java.io.IOException;
@@ -19,17 +20,18 @@ import java.io.StringReader;
 	private String remainingText;
 	
 	public HttpRequest getParsedRequest() throws IOException {
-		HttpRequest ret = new HttpRequest(version, path, method);
-		
-		System.out.println(remainingText);
+		HttpRequest ret;
+		HttpHeader header;
 		
 		if(remainingText != null && remainingText.length() > 0) {
 			HttpHeaderParser headerParser = new HttpHeaderParser(new StringReader(remainingText));
 			headerParser.parse();
-			headerParser.fillHeader(ret);
+			header = headerParser.getParsedHeader();
+		} else {
+			header = new HttpHeader();
 		}
 		
-		return ret;
+		return new HttpRequest(version, header, path, method);
 	}
 %}
 

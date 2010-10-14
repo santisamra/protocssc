@@ -4,10 +4,10 @@ public class HttpResponse extends HttpPacket {
 
 	private HttpResponseCode statusCode;
 	private String reasonPhrase;
-	private String content;
+	private byte[] content;
 	
-	public HttpResponse(String version, HttpResponseCode statusCode, String reasonPhrase, String content) {
-		super(version);
+	public HttpResponse(String version, HttpHeader header, HttpResponseCode statusCode, String reasonPhrase, byte[] content) {
+		super(version, header);
 		this.statusCode = statusCode;
 		this.reasonPhrase = reasonPhrase;
 		this.content = content;
@@ -21,7 +21,7 @@ public class HttpResponse extends HttpPacket {
 		return reasonPhrase;
 	}
 	
-	public String getContent() {
+	public byte[] getContent() {
 		return content;
 	}
 }

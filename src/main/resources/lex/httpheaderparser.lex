@@ -1,6 +1,6 @@
 package org.cssc.prototpe.parsers;
 
-import org.cssc.prototpe.http.HttpPacket;
+import org.cssc.prototpe.http.HttpHeader;
 import org.cssc.prototpe.parsers.exceptions.InvalidPacketParsingException;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,19 +12,17 @@ import java.util.Map;
 %standalone
 
 %{
-	private Map<String, String> map;
+	private HttpHeader header;
 	private String currentName;
 	private String currentValue;
 	
-	public void fillHeader(HttpPacket packet) {
-		for(String key: map.keySet()) {
-			packet.getHeader().setField(key, map.get(key));
-		}
+	public HttpHeader getParsedHeader() {
+		return header;
 	}
 %}
 
 %init{
-	map = new HashMap<String, String>();
+	header = new HttpHeader();
 %init}
 
 
@@ -40,8 +38,8 @@ NEWLINE = (\n|\r|\r\n|\n\r)
 <YYINITIAL> {
 	[ ]?{FIELD_NAME}/:	{
 		//System.out.println("Searching name.");
-		currentName = yytext().trim();
-		//System.out.println("Found name " + yytext().trim());
+		currentName = yytext().toLowerCase().trim();
+		System.out.println("Found name " + currentName);
 	}
 	
 	: {
@@ -52,9 +50,9 @@ NEWLINE = (\n|\r|\r\n|\n\r)
 
 <PARSING_VALUE> {
 	[ ]?{FIELD_VALUE}[ ]?	{
-		currentValue = yytext().trim();
-		map.put(currentName, currentValue);
-		//System.out.println("Found value " + yytext().trim());
+		currentValue = yytext().toLowerCase().trim();
+		header.setField(currentName, currentValue);
+		//System.out.println("Found value " + currentValue);
 	}
 	
 	{NEWLINE} {

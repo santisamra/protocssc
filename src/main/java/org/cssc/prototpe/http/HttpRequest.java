@@ -7,8 +7,8 @@ public class HttpRequest extends HttpPacket {
 	private String path;
 	private HttpMethod method;
 
-	public HttpRequest(String version, String path, HttpMethod method) {
-		super(version);
+	public HttpRequest(String version, HttpHeader header, String path, HttpMethod method) {
+		super(version, header);
 		this.path = path;
 		this.method = method;
 	}
