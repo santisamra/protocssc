@@ -120,8 +120,7 @@ public class HttpResponseParser {
 		while(!lfRead) {
 			char readChar = (char)inputStream.read();
 			
-			if(readChar == '\r') {
-			} else if(readChar == '\n') {
+			if(readChar == '\n') {
 				lfRead = true;
 			} else {
 				lfRead = false;
