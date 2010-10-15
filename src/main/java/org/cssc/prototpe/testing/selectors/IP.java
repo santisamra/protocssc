@@ -1,4 +1,4 @@
-package org.cssc.prototpe.configuration;
+package org.cssc.prototpe.testing.selectors;
 
 
 public class IP implements Comparable<IP>{

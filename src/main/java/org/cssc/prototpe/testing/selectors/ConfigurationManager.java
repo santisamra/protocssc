@@ -1,4 +1,4 @@
-package org.cssc.prototpe.configuration;
+package org.cssc.prototpe.testing.selectors;
 
 
 import java.io.IOException;
