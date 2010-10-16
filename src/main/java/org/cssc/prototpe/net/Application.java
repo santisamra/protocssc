@@ -15,9 +15,9 @@ public class Application {
 	private static final int MAX_THREAD_COUNT = 2;
 	
 	private Application() {
-		httpListener = new EchoTestClientListener(8080);
 		applicationConfiguration = new ApplicationConfiguration();
 		applicationConfiguration.setThreadPoolSize(MAX_THREAD_COUNT);
+		httpListener = new EchoTestClientListener(8080);
 	}
 	
 	public ApplicationConfiguration getApplicationConfiguration() {
