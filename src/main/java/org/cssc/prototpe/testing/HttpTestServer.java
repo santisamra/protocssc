@@ -37,7 +37,7 @@ public class HttpTestServer {
 //				String str = new String(buf);
 				
 				HttpRequestParser parser = new HttpRequestParser(socket.getInputStream());
-				HttpRequest req = parser.parse();
+				HttpRequest req = parser.parse(); 
 				
 				System.out.println("Parsed request:");
 				System.out.println("Method: " + req.getMethod());

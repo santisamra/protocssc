@@ -9,7 +9,9 @@ import org.cssc.prototpe.net.interfaces.ClientHandler;
 import org.cssc.prototpe.parsers.HttpRequestParser;
 import org.cssc.prototpe.parsers.HttpResponseParser;
 
-public class HttpProxyClientHandler implements ClientHandler{
+public class HttpProxyHandler implements ClientHandler{
+	
+	private static HttpProxyHandler instance = null;
 	
 	private Socket clientSocket;
 	private Socket serverSocket;
@@ -29,7 +31,9 @@ public class HttpProxyClientHandler implements ClientHandler{
 			//TODO: Ask for the socket to someone
 			String host;
 			if( request.hasAbsolutePath()){
-				host = request.getPath();
+				//TODO: SUPER PARCHE, PONER EN LA CLASE QUE CORRESPONDE (HttpRequest)
+				String temp = request.getPath().substring(7);
+				host = temp.substring(0, temp.indexOf("/"));
 			} else {
 				String headerHost = request.getHeader().getField("Host");
 				if( headerHost == null ){
@@ -47,7 +51,9 @@ public class HttpProxyClientHandler implements ClientHandler{
 			responseParser = new HttpResponseParser(serverSocket.getInputStream());
 			
 			//TODO: uncomment this when this functionality is reached.
-			//response = responseParser.getParsedResponse();
+			response = responseParser.parse();
+			System.out.println(response.getContent().length);
+			System.out.println(response.getHeader().getField("content-length"));
 			
 			//TODO: process the response here
 			
@@ -66,6 +72,17 @@ public class HttpProxyClientHandler implements ClientHandler{
 		}
 		
 		
+	}
+	
+	public static HttpProxyHandler getInstance() {
+		if(instance == null) {
+			synchronized (HttpProxyHandler.class) {
+				if(instance == null) {
+					instance = new HttpProxyHandler();
+				}
+			}
+		}
+		return instance;
 	}
 
 	

@@ -1,6 +1,5 @@
 package org.cssc.prototpe.net;
 
-import org.cssc.prototpe.testing.EchoTestClientListener;
 
 
 /**
@@ -26,7 +25,7 @@ public class Application {
 		// TODO: Place here any parts of the application that are needed by other parts.
 		
 		// This must be last, as it requires a configuration.
-		httpListener = new EchoTestClientListener(8080);
+		httpListener = new HttpProxyClientListener(80);
 	}
 	
 	public ApplicationConfiguration getApplicationConfiguration() {
