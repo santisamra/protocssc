@@ -60,7 +60,6 @@ NEWLINE =	\r\n
 
 <YYINITIAL> {
 	[ ]?{METHOD}[ ] {
-		System.out.println("Found method: " + yytext().trim());
 		method = HttpMethod.fromString(yytext().trim());
 		yybegin(PARSING_PATH);
 	}
@@ -69,7 +68,6 @@ NEWLINE =	\r\n
 <PARSING_PATH> {
 	{PATH}[ ]/{VERSION} {
 		path = yytext().trim();
-		System.out.println("Found path: " + yytext().trim());
 	}
 	
 	{VERSION} {
@@ -80,7 +78,6 @@ NEWLINE =	\r\n
 <PARSING_VERSION> {
 	1\.[01][ ]?{NEWLINE} {
 		version = yytext().trim();
-		System.out.println("I got here");
 		remainingText = "";
 		yybegin(ADDING_REMAINING_TEXT);
 	}
@@ -89,7 +86,6 @@ NEWLINE =	\r\n
 <ADDING_REMAINING_TEXT> {
 	
 	([^\r\n]+{NEWLINE})*{NEWLINE}	{
-		System.out.println("here, finishing parsing");
 		remainingText = yytext().trim();
 		return YYEOF; //PARCHEEE
 	}
