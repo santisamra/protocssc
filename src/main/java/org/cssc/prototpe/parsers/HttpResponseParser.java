@@ -26,7 +26,11 @@ public class HttpResponseParser {
 
 		while(!(firstCrRead && firstLfRead &&
 				secondCrRead && secondLfRead)) {
-			char readChar = (char)inputStream.read();
+			int readInt = -1;
+			while(readInt == -1) {
+				readInt = inputStream.read();
+			}
+			char readChar = (char)readInt;
 			
 			if(readChar == '\r') {
 				if(firstCrRead && firstLfRead) {
@@ -78,7 +82,10 @@ public class HttpResponseParser {
 
 			byte[] content = new byte[contentLength];
 
-			inputStream.read(content);
+			int offset = 0;
+			while(offset < contentLength) {
+				offset += inputStream.read(content, offset, contentLength - offset);
+			}
 
 			return new HttpResponse(
 					parsedResponse.getVersion(),
@@ -95,15 +102,18 @@ public class HttpResponseParser {
 			/* I read the chunk size. */
 			int chunkSize = readChunkSize();
 			
-			System.out.println("Total = " + contentLength + "; this = " + chunkSize);
-			
 			while(chunkSize != 0) {
 				byte[] currentChunkData = new byte[chunkSize];
-				inputStream.read(currentChunkData);
+				int offset = 0;
+				while(offset < chunkSize) {
+					offset += inputStream.read(currentChunkData, offset, chunkSize - offset);
+				}
 				
-				char cr = (char)inputStream.read();
-				char lf = (char)inputStream.read();
-				if(cr != '\r' || lf != '\n') {
+				int cr = inputStream.read();
+				int lf = inputStream.read();
+				System.out.println(cr);
+				System.out.println(lf);
+				if(cr != 13 || lf != 10) {
 					throw new InvalidPacketException("Invalid chunked data.");
 				}
 				
@@ -115,8 +125,6 @@ public class HttpResponseParser {
 				
 				contentLength += chunkSize;
 				chunkSize = readChunkSize();
-				
-				System.out.println("Total = " + contentLength + "; this = " + chunkSize);
 			}
 			
 			return new HttpResponse(
@@ -136,7 +144,11 @@ public class HttpResponseParser {
 		StringBuffer buffer = new StringBuffer();
 		
 		while(!(crRead && lfRead)) {
-			char readChar = (char)inputStream.read();
+			int readInt = -1;
+			while(readInt == -1) {
+				readInt = inputStream.read();
+			}
+			char readChar = (char)readInt;
 			
 			if(readChar == '\r') {
 				crRead = true;
