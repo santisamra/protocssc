@@ -6,6 +6,7 @@ import java.io.StringReader;
 
 import org.cssc.prototpe.http.HttpResponse;
 import org.cssc.prototpe.parsers.exceptions.InvalidPacketException;
+import org.cssc.prototpe.parsers.lex.HttpResponseLexParser;
 
 public class HttpResponseParser {
 
@@ -18,20 +19,34 @@ public class HttpResponseParser {
 	public HttpResponse parse() throws IOException {
 		StringBuffer buffer = new StringBuffer();
 
+		boolean firstCrRead = false;
 		boolean firstLfRead = false;
+		boolean secondCrRead = false;
 		boolean secondLfRead = false;
 
-		while(!(firstLfRead && secondLfRead)) {
+		while(!(firstCrRead && firstLfRead &&
+				secondCrRead && secondLfRead)) {
 			char readChar = (char)inputStream.read();
 			
-			if(readChar == '\n') {
-				if(firstLfRead) {
-					secondLfRead = true;
+			if(readChar == '\r') {
+				if(firstCrRead && firstLfRead) {
+					secondCrRead = true;
 				} else {
+					firstCrRead = true;
+					firstLfRead = false;
+					secondCrRead = false;
+					secondLfRead = false;
+				}
+			} else if(readChar == '\n') {
+				if(firstCrRead && !secondCrRead) {
 					firstLfRead = true;
+				} else if(secondCrRead) {
+					secondLfRead = true;
 				}
 			} else {
+				firstCrRead = false;
 				firstLfRead = false;
+				secondCrRead = false;
 				secondLfRead = false;
 			}
 			
@@ -44,7 +59,7 @@ public class HttpResponseParser {
 		parser.parse();
 		HttpResponse parsedResponse = parser.getParsedResponse();
 
-		String transferCoding = parsedResponse.getHeader().getField("transfer-coding");
+		String transferCoding = parsedResponse.getHeader().getField("transfer-encoding");
 
 		if(transferCoding == null) {
 			String contentLengthString = parsedResponse.getHeader().getField("content-length");
@@ -61,7 +76,6 @@ public class HttpResponseParser {
 				throw new InvalidPacketException("Invalid content length.");
 			}
 
-//			System.out.println("Read content length: " + contentLength);
 			byte[] content = new byte[contentLength];
 
 			inputStream.read(content);
@@ -74,7 +88,6 @@ public class HttpResponseParser {
 					content);
 
 		} else if(transferCoding.equals("chunked")){
-			System.out.println("Content is chunked!");
 			/* I read the chunked-bodies. */
 			int contentLength = 0;
 			byte[] content = new byte[contentLength];
@@ -86,8 +99,9 @@ public class HttpResponseParser {
 				byte[] currentChunkData = new byte[chunkSize];
 				inputStream.read(currentChunkData);
 				
-				char readChar = (char)inputStream.read();
-				if(readChar != '\n') {
+				char cr = (char)inputStream.read();
+				char lf = (char)inputStream.read();
+				if(cr != '\r' || lf != '\n') {
 					throw new InvalidPacketException("Invalid chunked data.");
 				}
 				
@@ -113,16 +127,24 @@ public class HttpResponseParser {
 	}
 	
 	private int readChunkSize() throws IOException {
+		boolean crRead = false;
 		boolean lfRead = false;
 		StringBuffer buffer = new StringBuffer();
 		
-		//TODO: Mejorar el control de estas condiciones.
-		while(!lfRead) {
+		while(!(crRead && lfRead)) {
 			char readChar = (char)inputStream.read();
 			
-			if(readChar == '\n') {
-				lfRead = true;
+			if(readChar == '\r') {
+				crRead = true;
+			} else if(readChar == '\n') {
+				if(crRead) {
+					lfRead = true;
+				} else {
+					crRead = false;
+					lfRead = false;
+				}
 			} else {
+				crRead = false;
 				lfRead = false;
 			}
 			
@@ -130,7 +152,6 @@ public class HttpResponseParser {
 		}
 		
 		try {
-			System.out.println("Reading from buffer: " + buffer.toString().trim());
 			return Integer.parseInt(buffer.toString().trim(), 16);
 		} catch(NumberFormatException e) {
 			throw new InvalidPacketException("Chunk size must be hexadecimal.");

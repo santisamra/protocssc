@@ -1,4 +1,4 @@
-package org.cssc.prototpe.parsers;
+package org.cssc.prototpe.parsers.lex;
 
 import org.cssc.prototpe.http.HttpMethod;
 import org.cssc.prototpe.http.HttpHeader;

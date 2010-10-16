@@ -1,6 +1,6 @@
 package org.cssc.prototpe.parsers;
 
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Map;
 
@@ -9,12 +9,10 @@ import org.cssc.prototpe.http.HttpRequest;
 public class RequestTest {
 
 	public static void main(String[] args) {
-		HttpRequestLexParser parser = null;
+		HttpRequestParser parser = null;
 		try {
-			parser = new HttpRequestLexParser(new FileReader("src/main/resources/samples/request00.txt"));
-			parser.parse(); 
-			
-			HttpRequest req = parser.getParsedRequest();
+			parser = new HttpRequestParser(new FileInputStream("src/main/resources/samples/request00.req"));
+			HttpRequest req = parser.parse();
 			
 			System.out.println("Parsed request:");
 			System.out.println("Method: " + req.getMethod());

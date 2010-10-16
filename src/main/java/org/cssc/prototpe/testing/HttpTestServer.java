@@ -7,7 +7,7 @@ import java.net.Socket;
 import java.util.Map;
 
 import org.cssc.prototpe.http.HttpRequest;
-import org.cssc.prototpe.parsers.HttpRequestLexParser;
+import org.cssc.prototpe.parsers.HttpRequestParser;
 
 public class HttpTestServer {
 
@@ -36,12 +36,8 @@ public class HttpTestServer {
 //				System.out.println("\"");
 //				String str = new String(buf);
 				
-				HttpRequestLexParser parser = new HttpRequestLexParser(socket.getInputStream());
-				System.out.println("Created parser, parsing");
-				parser.parse();
-				System.out.println("Finished parsing");
-				
-				HttpRequest req = parser.getParsedRequest();
+				HttpRequestParser parser = new HttpRequestParser(socket.getInputStream());
+				HttpRequest req = parser.parse();
 				
 				System.out.println("Parsed request:");
 				System.out.println("Method: " + req.getMethod());

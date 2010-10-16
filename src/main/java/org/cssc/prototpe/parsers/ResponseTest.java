@@ -10,7 +10,7 @@ public class ResponseTest {
 	public static void main(String[] args) {
 		HttpResponseParser parser = null;
 		try {
-			parser = new HttpResponseParser(new FileInputStream("src/main/resources/samples/response00.txt"));
+			parser = new HttpResponseParser(new FileInputStream("src/main/resources/samples/response00.res"));
 			HttpResponse response = parser.parse();
 			
 			System.out.println("Content:");
