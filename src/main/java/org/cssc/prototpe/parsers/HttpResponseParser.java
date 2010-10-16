@@ -95,6 +95,8 @@ public class HttpResponseParser {
 			/* I read the chunk size. */
 			int chunkSize = readChunkSize();
 			
+			System.out.println("Total = " + contentLength + "; this = " + chunkSize);
+			
 			while(chunkSize != 0) {
 				byte[] currentChunkData = new byte[chunkSize];
 				inputStream.read(currentChunkData);
@@ -113,6 +115,8 @@ public class HttpResponseParser {
 				
 				contentLength += chunkSize;
 				chunkSize = readChunkSize();
+				
+				System.out.println("Total = " + contentLength + "; this = " + chunkSize);
 			}
 			
 			return new HttpResponse(
