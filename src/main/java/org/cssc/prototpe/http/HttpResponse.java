@@ -24,4 +24,20 @@ public class HttpResponse extends HttpPacket {
 	public byte[] getContent() {
 		return content;
 	}
+	
+	public String toString() {
+		StringBuffer buffer = new StringBuffer();
+		
+//		buffer.append("HTTP/" + getVersion() + " " + statusCode.getCode() + " " + reasonPhrase + "\r\n");
+//		
+//		for(String key: getHeader().getContentMap().keySet()) {
+//			buffer.append(key + ": " + getHeader().getContentMap().get(key) + "\r\n");
+//		}
+//		
+//		buffer.append("\r\n");
+		buffer.append(new String(content));
+		
+		return buffer.toString();
+		
+	}
 }

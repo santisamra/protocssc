@@ -23,4 +23,8 @@ public enum HttpResponseCode {
 		
 		throw new InvalidStatusCodeException();
 	}
+	
+	public int getCode() {
+		return code;
+	}
 }

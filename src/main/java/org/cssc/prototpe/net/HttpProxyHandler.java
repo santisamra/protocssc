@@ -52,8 +52,8 @@ public class HttpProxyHandler implements ClientHandler{
 			
 			//TODO: uncomment this when this functionality is reached.
 			response = responseParser.parse();
-			System.out.println(response.getContent().length);
-			System.out.println(response.getHeader().getField("content-length"));
+//			System.out.println(response.getContent().length);
+//			System.out.println(response.getHeader().getField("content-length"));
 			
 			//TODO: process the response here
 			
