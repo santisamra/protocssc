@@ -5,6 +5,7 @@ import org.cssc.prototpe.http.exceptions.InvalidStatusCodeException;
 public enum HttpResponseCode {
 
 	OK(200),
+	FOUND(302),
 	NOT_FOUND(404);
 	
 	private int code;
