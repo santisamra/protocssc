@@ -22,7 +22,12 @@ public class EchoHandler implements ClientHandler {
 			while(true) {
 				int bytesRead = socket.getInputStream().read(buffer);
 				print(buffer, bytesRead);
-				socket.getOutputStream().write(buffer, 0, bytesRead);
+				if(bytesRead > 0) {
+					socket.getOutputStream().write(buffer, 0, bytesRead);
+				} else {
+					socket.close();
+					return;
+				}
 			}
 		} catch(IOException e) {
 			try {

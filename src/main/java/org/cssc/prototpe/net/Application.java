@@ -15,6 +15,7 @@ public class Application {
 	private static final int MAX_THREAD_COUNT = 2;
 	
 	private Application() {
+		instance = this;
 		applicationConfiguration = new ApplicationConfiguration();
 		applicationConfiguration.setThreadPoolSize(MAX_THREAD_COUNT);
 		httpListener = new EchoTestClientListener(8080);
@@ -36,13 +37,6 @@ public class Application {
 	}
 	
 	public static Application getInstance() {
-		if(instance == null) {
-			synchronized(Application.class) {
-				if(instance == null) {
-					instance = new Application();
-				}
-			}
-		}
 		return instance;
 	}
 
