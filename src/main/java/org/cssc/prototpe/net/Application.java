@@ -15,9 +15,17 @@ public class Application {
 	private static final int MAX_THREAD_COUNT = 2;
 	
 	private Application() {
+		// This must be first, before anything else, as other parts of the
+		// application require this instance.
 		instance = this;
+		
+		// This MUST be second as other parts of the application require this configuration.
 		applicationConfiguration = new ApplicationConfiguration();
 		applicationConfiguration.setThreadPoolSize(MAX_THREAD_COUNT);
+		
+		// TODO: Place here any parts of the application that are needed by other parts.
+		
+		// This must be last, as it requires a configuration.
 		httpListener = new EchoTestClientListener(8080);
 	}
 	
