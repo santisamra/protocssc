@@ -19,7 +19,7 @@ public abstract class ClientListener {
 	protected ClientListener(int port, int backlog, InetAddress bindAddr) {
 		try {
 			serverSocket = new ServerSocket(port, backlog, bindAddr);
-			connectionManager = ThreadedConnectionManager.getInstance();
+			connectionManager = ThreadPoolConnectionManager.getInstance();
 		} catch (IOException e) {
 			throw new FatalException(e);
 		}

@@ -9,12 +9,21 @@ import org.cssc.prototpe.testing.EchoTestClientListener;
 public class Application {
 	
 	private static Application instance = null;
+	private ApplicationConfiguration applicationConfiguration;
 	private ClientListener httpListener;
 	
+	private static final int MAX_THREAD_COUNT = 2;
+	
 	private Application() {
-		httpListener = new EchoTestClientListener(80);
+		httpListener = new EchoTestClientListener(8080);
+		applicationConfiguration = new ApplicationConfiguration();
+		applicationConfiguration.setThreadPoolSize(MAX_THREAD_COUNT);
 	}
 	
+	public ApplicationConfiguration getApplicationConfiguration() {
+		return applicationConfiguration;
+	}
+
 	/**
 	 * The main method of the Application class. Executes the application.
 	 */
