@@ -5,6 +5,8 @@ import org.cssc.prototpe.http.exceptions.InvalidStatusCodeException;
 public enum HttpResponseCode {
 
 	OK(200),
+	NO_CONTENT(204),
+	PARTIAL_CONTENT(206),
 	FOUND(302),
 	NOT_FOUND(404);
 	
@@ -21,6 +23,7 @@ public enum HttpResponseCode {
 			}
 		}
 		
+		System.out.println("Invalid code: " + code);
 		throw new InvalidStatusCodeException();
 	}
 	

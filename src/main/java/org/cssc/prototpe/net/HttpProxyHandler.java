@@ -46,6 +46,11 @@ public class HttpProxyHandler implements ClientHandler{
 			serverSocket = new Socket(host, 80);
 			
 			serverSocket.getOutputStream().write(request.toString().getBytes());
+			System.out.println("Sent request: ");
+			System.out.println("Method: " + request.getMethod());
+			System.out.println("Host: " + request.getHeader().getField("host"));
+			System.out.println("Path: " + request.getPath());
+			System.out.println("---------------");
 			
 			//Should block here when the parser attempts reading from this input stream
 			responseParser = new HttpResponseParser(serverSocket.getInputStream());

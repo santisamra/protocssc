@@ -20,8 +20,6 @@ import java.io.InputStream;
 	private HttpResponseCode statusCode;
 	private String reasonPhrase;
 	private String remainingText;	
-	private byte[] content;
-	private InputStream is;
 	
 	public HttpResponse getParsedResponse() throws IOException {
 		HttpResponse ret;
@@ -35,16 +33,16 @@ import java.io.InputStream;
 			header = new HttpHeader();
 		}
 		
-		return new HttpResponse(version, header, statusCode, reasonPhrase, content);
+		return new HttpResponse(version, header, statusCode, reasonPhrase, null);
 	}
 	
 %}
 
 %eof{
 
-	System.out.println("Version: " + version);
-	System.out.println("Status code: " + statusCode);
-	System.out.println("Reason phrase: " + reasonPhrase);
+	//System.out.println("Version: " + version);
+	//System.out.println("Status code: " + statusCode);
+	//System.out.println("Reason phrase: " + reasonPhrase);
 	//System.out.println("Remaining text: \"");
 	//System.out.println(remainingText + "\"");
 
@@ -53,7 +51,7 @@ import java.io.InputStream;
 
 VERSION =		HTTP\/
 STATUS_CODE =	[1-5][0-9]{2}
-REASON_PHRASE =	[A-Za-z]+
+REASON_PHRASE =	[A-Za-z ]+
 NEWLINE =		\r\n
 
 %state PARSING_VERSION
@@ -103,5 +101,11 @@ NEWLINE =		\r\n
 }
 
 (.|{NEWLINE}) {
+	System.out.println("----- ERROR PARSING RESPONSE -----");
+	System.out.println("Version: " + version);
+	System.out.println("Status code: " + statusCode);
+	System.out.println("Reason phrase: " + reasonPhrase);
+	System.out.println("Remaining text:");
+	System.out.println(remainingText);
 	throw new InvalidPacketParsingException("Invalid packet.");
 }

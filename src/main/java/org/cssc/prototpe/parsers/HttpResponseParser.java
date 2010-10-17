@@ -111,8 +111,8 @@ public class HttpResponseParser {
 				
 				int cr = inputStream.read();
 				int lf = inputStream.read();
-				System.out.println(cr);
-				System.out.println(lf);
+//				System.out.println(cr);
+//				System.out.println(lf);
 				if(cr != 13 || lf != 10) {
 					throw new InvalidPacketException("Invalid chunked data.");
 				}
@@ -126,6 +126,10 @@ public class HttpResponseParser {
 				contentLength += chunkSize;
 				chunkSize = readChunkSize();
 			}
+			
+			/* The conent is not chunked now. */
+			parsedResponse.getHeader().removeField("transfer-encoding");
+			parsedResponse.getHeader().setField("content-length", Integer.toString(contentLength));
 			
 			return new HttpResponse(
 					parsedResponse.getVersion(),

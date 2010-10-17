@@ -27,6 +27,10 @@ public class HttpHeader {
 		return contentMap.get(field);
 	}
 	
+	public void removeField(String field) {
+		contentMap.remove(field);
+	}
+	
 	//TODO: Funcion de testing.
 	public Map<String, String> getContentMap() {
 		return contentMap;

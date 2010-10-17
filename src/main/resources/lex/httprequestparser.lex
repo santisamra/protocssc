@@ -47,7 +47,7 @@ import java.io.StringReader;
 %eof}
 
 METHOD =	[A-Za-z]+
-PATH =		[A-Za-z0-9\-_\.\/\?=&:]+
+PATH =		.+
 VERSION =	HTTP\/
 NEWLINE =	\r\n
 
@@ -92,9 +92,11 @@ NEWLINE =	\r\n
 }
 
 .|{NEWLINE} {
-	System.out.println("ERROR");
+	System.out.println("----- ERROR PARSING REQUEST ------");
 	System.out.println("Method: " + method);
 	System.out.println("Path: " + path);
 	System.out.println("Version: " + version);
+	System.out.println("Remaining text:");
+	System.out.println(remainingText);
 	throw new InvalidPacketParsingException("Invalid packet.");
 }
