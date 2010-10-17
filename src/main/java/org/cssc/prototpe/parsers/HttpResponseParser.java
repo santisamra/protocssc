@@ -94,7 +94,7 @@ public class HttpResponseParser {
 					parsedResponse.getReasonPhrase(),
 					content);
 
-		} else if(transferCoding.equals("chunked")){
+		} else if(transferCoding.toLowerCase().equals("chunked")){
 			/* I read the chunked-bodies. */
 			int contentLength = 0;
 			byte[] content = new byte[contentLength];

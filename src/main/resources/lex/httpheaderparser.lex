@@ -50,7 +50,7 @@ NEWLINE = \r\n
 
 <PARSING_VALUE> {
 	[ ]?{FIELD_VALUE}[ ]?	{
-		currentValue = yytext().toLowerCase().trim();
+		currentValue = yytext().trim();
 		header.setField(currentName, currentValue);
 		//System.out.println("Found value " + currentValue);
 	}

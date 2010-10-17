@@ -12,7 +12,7 @@ public class Application {
 	private ClientListener httpListener;
 	private Logger logger;
 	
-	private static final int MAX_THREAD_COUNT = 2;
+	private static final int MAX_THREAD_COUNT = 10;
 	private static final String LOGGING_FILE_NAME = "log.txt";
 	
 	private Application() {
