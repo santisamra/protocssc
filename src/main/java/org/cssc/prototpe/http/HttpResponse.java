@@ -25,7 +25,7 @@ public class HttpResponse extends HttpPacket {
 		return content;
 	}
 	
-	public String toString() {
+	public byte[] toBytes() {
 		StringBuffer buffer = new StringBuffer();
 		
 		buffer.append("HTTP/" + getVersion() + " " + statusCode.getCode() + " " + reasonPhrase + "\r\n");
@@ -35,9 +35,21 @@ public class HttpResponse extends HttpPacket {
 		}
 		
 		buffer.append("\r\n");
-		buffer.append(new String(content));
 		
-		return buffer.toString();
+		int bufferLength = buffer.length();
+		int contentLength = content.length;
+		byte[] ret = new byte[bufferLength + contentLength];
 		
+		int i;
+		for(i = 0; i < buffer.length(); i++) {
+			ret[i] = (byte)buffer.charAt(i);
+		}
+		
+		while(i < bufferLength + contentLength) {
+			ret[i] = content[i - bufferLength];
+			i++;
+		}
+		
+		return ret;
 	}
 }

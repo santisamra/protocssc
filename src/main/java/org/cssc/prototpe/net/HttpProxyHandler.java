@@ -68,7 +68,7 @@ public class HttpProxyHandler implements ClientHandler{
 
 				//TODO: implement toString correctly in the response.. 
 				//(Will it work although we are going through a string?)
-				clientSocket.getOutputStream().write(response.toString().getBytes());
+				clientSocket.getOutputStream().write(response.toBytes());
 			} catch(MissingHostException e) {
 				HttpResponse response = new HttpResponse("1.1", new HttpHeader(), HttpResponseCode.BAD_REQUEST, "Bad request", new byte[0]);
 				clientSocket.getOutputStream().write(response.toString().getBytes());

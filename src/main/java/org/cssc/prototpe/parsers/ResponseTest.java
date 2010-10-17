@@ -14,7 +14,7 @@ public class ResponseTest {
 			HttpResponse response = parser.parse();
 			
 			System.out.println("Content:");
-			System.out.println(new String(response.getContent()));
+			System.out.print(new String(response.getContent()));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
