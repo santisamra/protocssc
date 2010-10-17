@@ -52,7 +52,7 @@ public enum HttpResponseCode {
 		this.code = code;
 	}
 	
-	public static HttpResponseCode fromInt(int code) {
+	public static HttpResponseCode fromInt(int code) throws InvalidStatusCodeException {
 		for(HttpResponseCode r: HttpResponseCode.class.getEnumConstants()) {
 			if(r.code == code) {
 				return r;

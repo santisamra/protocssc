@@ -6,7 +6,7 @@ public enum HttpMethod {
 
 	GET("GET"),
 	POST("POST"),
-	PUT("PUT");
+	HEAD("HEAD");
 	
 	private String methodString;
 	
@@ -14,7 +14,7 @@ public enum HttpMethod {
 		this.methodString = methodString;
 	}
 	
-	public static HttpMethod fromString(String string) {
+	public static HttpMethod fromString(String string) throws InvalidMethodStringException {
 		if(string == null) {
 			throw new IllegalArgumentException("Method string cannot be null.");
 		}
