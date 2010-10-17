@@ -24,6 +24,11 @@ public class HttpProxyHandler implements ClientHandler{
 	private HttpResponseParser responseParser;
 	private HttpRequest request;
 	private HttpResponse response;
+	private Logger logger;
+	
+	private HttpProxyHandler() {
+		this.logger = Application.getInstance().getLogger();
+	}
 
 
 	@Override
@@ -33,6 +38,7 @@ public class HttpProxyHandler implements ClientHandler{
 			try {
 				requestParser = new HttpRequestParser(socket.getInputStream());
 				request = requestParser.parse();
+				logger.logRequest(socket.getInetAddress(), request);
 
 				//TODO: Ask for the socket to someone
 				String host = request.getEffectiveHost();
@@ -55,6 +61,8 @@ public class HttpProxyHandler implements ClientHandler{
 				//			System.out.println(response.getContent().length);
 				//			System.out.println(response.getHeader().getField("content-length"));
 
+				logger.logResponse(socket.getInetAddress(), response, request);
+				
 				//TODO: process the response here
 
 
