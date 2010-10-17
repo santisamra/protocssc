@@ -45,6 +45,7 @@ public class HttpProxyHandler implements ClientHandler{
 				serverSocket = new Socket(host, 80);
 
 				serverSocket.getOutputStream().write(request.toString().getBytes());
+				print(request.toString().getBytes());
 				System.out.println("Thread " + Thread.currentThread() + " sent request: ");
 				System.out.println("Method: " + request.getMethod());
 				System.out.println("Host: " + request.getHeader().getField("host"));
@@ -75,12 +76,15 @@ public class HttpProxyHandler implements ClientHandler{
 				//(Will it work although we are going through a string?)
 				clientSocket.getOutputStream().write(response.toBytes());
 			} catch(MissingHostException e) {
+				e.printStackTrace();
 				HttpResponse response = new HttpResponse("1.1", new HttpHeader(), HttpResponseCode.BAD_REQUEST, "Bad request", new byte[0]);
 				clientSocket.getOutputStream().write(response.toString().getBytes());
 			} catch(InvalidStatusCodeException e) {
+				e.printStackTrace();
 				HttpResponse response = new HttpResponse("1.1", new HttpHeader(), HttpResponseCode.BAD_GATEWAY, "Bad request", new byte[0]);
 				clientSocket.getOutputStream().write(response.toString().getBytes());
 			} catch(InvalidMethodStringException e) {
+				e.printStackTrace();
 				HttpResponse response = new HttpResponse("1.1", new HttpHeader(), HttpResponseCode.NOT_IMPLEMENTED, "Not implemented", new byte[0]);
 				clientSocket.getOutputStream().write(response.toString().getBytes());
 			}
@@ -103,5 +107,13 @@ public class HttpProxyHandler implements ClientHandler{
 
 	}
 
+	
+	private void print(byte[] buffer){
+		System.out.print("\"");
+		for( int i = 0; i < buffer.length && buffer[i] != 0; i++){
+			System.out.print((char)buffer[i]);
+		}
+		System.out.print("\"");
+	}
 
 }

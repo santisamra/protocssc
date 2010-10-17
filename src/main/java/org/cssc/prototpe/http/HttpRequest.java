@@ -3,6 +3,7 @@ package org.cssc.prototpe.http;
 import java.util.Map.Entry;
 
 import org.cssc.prototpe.http.exceptions.MissingHostException;
+import org.cssc.prototpe.net.exceptions.FatalException;
 
 public class HttpRequest extends HttpPacket {
 	
@@ -53,10 +54,27 @@ public class HttpRequest extends HttpPacket {
 		
 	}
 	
+	/**
+	 * Returns the effective, path-only section of the path, including the first /.
+	 */
+	public String getEffectivePath() {
+		if(hasAbsolutePath()) {
+			try {
+				String path = getPath();
+				String effHost = getEffectiveHost();
+				return path.substring(path.indexOf(effHost) + effHost.length());
+			} catch (MissingHostException e) {
+				throw new FatalException(e);
+			}
+		} else {
+			return getPath();
+		}
+	}
+	
 	@Override
 	public String toString() {
 		StringBuffer buffer = new StringBuffer();
-		buffer.append(this.method.toString() + " " + this.getPath() + " HTTP/" + this.getVersion() + "\n");
+		buffer.append(this.method.toString() + " " + this.getEffectivePath() + " HTTP/" + this.getVersion() + "\n");
 		
 		for(Entry<String,String> e: this.getHeader().getContentMap().entrySet() ){
 			buffer.append(e.getKey() + ": " + e.getValue() + "\n");
