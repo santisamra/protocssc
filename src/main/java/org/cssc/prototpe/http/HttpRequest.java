@@ -2,6 +2,8 @@ package org.cssc.prototpe.http;
 
 import java.util.Map.Entry;
 
+import org.cssc.prototpe.http.exceptions.MissingHostException;
+
 public class HttpRequest extends HttpPacket {
 	
 	private String path;
@@ -29,6 +31,26 @@ public class HttpRequest extends HttpPacket {
 		} else {
 			return true;
 		}
+	}
+	
+	/**
+	 * Returns a String with the host name to connect to,
+	 * preferrably from the HTTP request path; if impossible,
+	 * then it is taken from the "Host" header.
+	 * Throws an exception if it cannot find a host.
+	 */
+	public String getEffectiveHost() throws MissingHostException {
+		if(hasAbsolutePath()) {
+			String temp = getPath().substring(7);
+			return temp.substring(0, temp.indexOf("/"));
+		} else {
+			String headerHost = getHeader().getField("Host");
+			if( headerHost == null ){
+				throw new MissingHostException();
+			}
+			return headerHost;
+		}
+		
 	}
 	
 	@Override

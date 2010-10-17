@@ -3,8 +3,11 @@ package org.cssc.prototpe.net;
 import java.io.IOException;
 import java.net.Socket;
 
+import org.cssc.prototpe.http.HttpHeader;
 import org.cssc.prototpe.http.HttpRequest;
 import org.cssc.prototpe.http.HttpResponse;
+import org.cssc.prototpe.http.HttpResponseCode;
+import org.cssc.prototpe.http.exceptions.MissingHostException;
 import org.cssc.prototpe.net.interfaces.ClientHandler;
 import org.cssc.prototpe.parsers.HttpRequestParser;
 import org.cssc.prototpe.parsers.HttpResponseParser;
@@ -29,18 +32,8 @@ public class HttpProxyHandler implements ClientHandler{
 			request = requestParser.parse();
 			
 			//TODO: Ask for the socket to someone
-			String host;
-			if( request.hasAbsolutePath()){
-				//TODO: SUPER PARCHE, PONER EN LA CLASE QUE CORRESPONDE (HttpRequest)
-				String temp = request.getPath().substring(7);
-				host = temp.substring(0, temp.indexOf("/"));
-			} else {
-				String headerHost = request.getHeader().getField("Host");
-				if( headerHost == null ){
-					throw new IllegalStateException("Host wasn't provided.. no way of continuing this request");
-				}
-				host = headerHost + request.getPath();
-			}
+			try {
+				String host = request.getEffectiveHost();
 			
 			//TODO: Should I resolve this host and filter banned IPs?
 			serverSocket = new Socket(host, 80);
@@ -66,6 +59,9 @@ public class HttpProxyHandler implements ClientHandler{
 			//TODO: implement toString correctly in the response.. 
 			//(Will it work although we are going through a string?)
 			clientSocket.getOutputStream().write(response.toString().getBytes());
+			} catch(MissingHostException e) {
+				HttpResponse response = new HttpResponse("1.1", new HttpHeader(), HttpResponseCode.BAD_REQUEST, "Bad request", new byte[0]);
+			}
 			
 			
 			//TODO: don't close if this is a keep-alive connection
