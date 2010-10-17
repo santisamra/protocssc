@@ -10,7 +10,7 @@ public class HttpProxyClientListener extends ClientListener {
 
 	@Override
 	protected ClientHandler getHandler() {
-		return HttpProxyHandler.getInstance();
+		return new HttpProxyHandler();
 	}
 
 }

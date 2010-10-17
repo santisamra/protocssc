@@ -16,8 +16,6 @@ import org.cssc.prototpe.parsers.HttpResponseParser;
 
 public class HttpProxyHandler implements ClientHandler{
 
-	private static HttpProxyHandler instance = null;
-
 	private Socket clientSocket;
 	private Socket serverSocket;
 	private HttpRequestParser requestParser;
@@ -26,7 +24,7 @@ public class HttpProxyHandler implements ClientHandler{
 	private HttpResponse response;
 	private Logger logger;
 	
-	private HttpProxyHandler() {
+	public HttpProxyHandler() {
 		this.logger = Application.getInstance().getLogger();
 	}
 
@@ -100,19 +98,6 @@ public class HttpProxyHandler implements ClientHandler{
 
 
 	}
-
-	public static HttpProxyHandler getInstance() {
-		if(instance == null) {
-			synchronized (HttpProxyHandler.class) {
-				if(instance == null) {
-					instance = new HttpProxyHandler();
-				}
-			}
-		}
-		return instance;
-	}
-
-
 
 
 }
