@@ -39,11 +39,11 @@ NEWLINE = \r\n
 	[ ]?{FIELD_NAME}/:	{
 		//System.out.println("Searching name.");
 		currentName = yytext().toLowerCase().trim();
-		System.out.println("Found name " + currentName);
+		//System.out.println("Found name " + currentName);
 	}
 	
 	: {
-		System.out.println("Going to parsing value.");
+		//System.out.println("Going to parsing value.");
 		yybegin(PARSING_VALUE);
 	}
 }
@@ -52,16 +52,16 @@ NEWLINE = \r\n
 	[ ]?{FIELD_VALUE}[ ]?	{
 		currentValue = yytext().toLowerCase().trim();
 		header.setField(currentName, currentValue);
-		System.out.println("Found value " + currentValue);
+		//System.out.println("Found value " + currentValue);
 	}
 	
 	{NEWLINE} {
-		System.out.println("Going to YYINITIAL.");
+		//System.out.println("Going to YYINITIAL.");
 		yybegin(YYINITIAL);
 	}
 }
 
 . {
-	System.out.println("Found error: \"" + yytext() + "\"");
+	//System.out.println("Found error: \"" + yytext() + "\"");
 	throw new InvalidPacketParsingException("Invalid package.");
 }
