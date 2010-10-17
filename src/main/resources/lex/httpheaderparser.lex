@@ -28,8 +28,8 @@ import java.util.Map;
 
 
 FIELD_NAME =	[A-Za-z\-]+
-FIELD_VALUE =	.+
-NEWLINE = (\n|\r|\r\n|\n\r)
+FIELD_VALUE =	[^\r\n]+
+NEWLINE = \r\n
 
 %state PARSING_VALUE
 

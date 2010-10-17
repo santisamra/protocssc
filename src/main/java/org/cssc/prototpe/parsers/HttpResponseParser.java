@@ -69,7 +69,7 @@ public class HttpResponseParser {
 			String contentLengthString = parsedResponse.getHeader().getField("content-length");
 
 			if(contentLengthString == null) {
-				throw new InvalidPacketException("The packet has not a transfer enconding nor a content length.");
+				throw new InvalidPacketException("The packet has not a transfer encoding nor a content length.");
 			}
 
 			int contentLength;
