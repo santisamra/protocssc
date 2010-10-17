@@ -100,7 +100,7 @@ NEWLINE =		\r\n
 	}
 }
 
-(.|{NEWLINE}) {
+(.|\n) {
 	System.out.println("----- ERROR PARSING RESPONSE -----");
 	System.out.println("Version: " + version);
 	System.out.println("Status code: " + statusCode);

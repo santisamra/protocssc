@@ -91,7 +91,7 @@ NEWLINE =	\r\n
 	}
 }
 
-.|{NEWLINE} {
+.|\n {
 	System.out.println("----- ERROR PARSING REQUEST ------");
 	System.out.println("Method: " + method);
 	System.out.println("Path: " + path);
