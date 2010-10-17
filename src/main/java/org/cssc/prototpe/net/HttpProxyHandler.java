@@ -47,10 +47,11 @@ public class HttpProxyHandler implements ClientHandler{
 				serverSocket = new Socket(host, 80);
 
 				serverSocket.getOutputStream().write(request.toString().getBytes());
-				System.out.println("Sent request: ");
+				System.out.println("Thread " + Thread.currentThread() + " sent request: ");
 				System.out.println("Method: " + request.getMethod());
 				System.out.println("Host: " + request.getHeader().getField("host"));
 				System.out.println("Path: " + request.getPath());
+				System.out.println("Client socket: " + socket);
 				System.out.println("---------------");
 
 				//Should block here when the parser attempts reading from this input stream
@@ -58,6 +59,12 @@ public class HttpProxyHandler implements ClientHandler{
 
 				//TODO: uncomment this when this functionality is reached.
 				response = responseParser.parse();
+				
+				System.out.println("Thread " + Thread.currentThread() + " got response: ");
+				System.out.println("Status code: " + response.getStatusCode());
+				System.out.println("For request path: " + request.getPath());
+				System.out.println("---------------");
+				
 				//			System.out.println(response.getContent().length);
 				//			System.out.println(response.getHeader().getField("content-length"));
 
@@ -84,6 +91,8 @@ public class HttpProxyHandler implements ClientHandler{
 			//TODO: don't close if this is a keep-alive connection
 			serverSocket.close();
 			clientSocket.close();
+			System.out.println("Thread " + Thread.currentThread() + " closed client socket: " + clientSocket);
+			System.out.println("---------------");
 
 		} catch (IOException e){
 			e.printStackTrace();
