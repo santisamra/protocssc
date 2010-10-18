@@ -81,24 +81,11 @@ public class HttpProxyHandler implements ClientHandler{
 				/* Response first-line and header fields and firstly sent to client. */
 				clientSocket.getOutputStream().write(firstResponseBytes(response));
 
-				if(response.getHeader().getField("content-length") != null) {
 
-					byte[] temp = new byte[1024];
-					int readBytes;
+				String transferEncoding = response.getHeader().getField("transfer-encoding");
 
-					while((readBytes = responseParser.readNextNBodyBytes(temp, 0, 1024)) != -1) {
-						try {
-							clientSocket.getOutputStream().write(temp, 0, readBytes);
-						} catch(SocketException e) {
-							System.out.println("The client has closed his socket side.");
-							break;
-						}
-					}
-
-				} else {
-					String transferEncoding = response.getHeader().getField("transfer-encoding");
-
-					if(transferEncoding != null && transferEncoding.toLowerCase().equals("chunked")) {
+				if(transferEncoding != null) {
+					if(transferEncoding.toLowerCase().equals("chunked")) {
 						byte[] temp;
 
 						while((temp = responseParser.readNextChunk()) != null) {
@@ -109,6 +96,20 @@ public class HttpProxyHandler implements ClientHandler{
 								System.out.println("The client has closed his socket side.");
 								break;
 							}
+						}
+					}
+					
+				} else if(response.getHeader().getField("content-length") != null) {
+
+					byte[] temp = new byte[1024];
+					int readBytes;
+
+					while((readBytes = responseParser.readNextNBodyBytes(temp, 0, 1024)) != -1) {
+						try {
+							clientSocket.getOutputStream().write(temp, 0, readBytes);
+						} catch(SocketException e) {
+							System.out.println("The client has closed his socket side.");
+							break;
 						}
 					}
 
