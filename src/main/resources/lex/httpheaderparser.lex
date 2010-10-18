@@ -27,7 +27,7 @@ import java.util.Map;
 
 
 
-FIELD_NAME =	[A-Za-z0-9\-]+
+FIELD_NAME =	[A-Za-z0-9\-_]+
 FIELD_VALUE =	[^\r\n]+
 NEWLINE = \r\n
 

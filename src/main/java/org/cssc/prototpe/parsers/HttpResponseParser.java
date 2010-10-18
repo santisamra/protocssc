@@ -5,12 +5,14 @@ import java.io.InputStream;
 import java.io.StringReader;
 
 import org.cssc.prototpe.http.HttpResponse;
+import org.cssc.prototpe.parsers.exceptions.HttpParserException;
 import org.cssc.prototpe.parsers.exceptions.InvalidPacketException;
 import org.cssc.prototpe.parsers.lex.HttpResponseLexParser;
 
 public class HttpResponseParser {
 
 	private InputStream inputStream;
+	private HttpResponse parsedResponse;
 
 	public HttpResponseParser(InputStream inputStream) {
 		this.inputStream = inputStream;
@@ -61,7 +63,7 @@ public class HttpResponseParser {
 
 		HttpResponseLexParser parser = new HttpResponseLexParser(new StringReader(parsedString));
 		parser.parse();
-		HttpResponse parsedResponse = parser.getParsedResponse();
+		parsedResponse = parser.getParsedResponse();
 
 		String transferCoding = parsedResponse.getHeader().getField("transfer-encoding");
 
@@ -168,6 +170,30 @@ public class HttpResponseParser {
 		} catch(NumberFormatException e) {
 			throw new InvalidPacketException("Chunk size must be hexadecimal.");
 		}
+	}
+	
+	
+	/**
+	 * Reads next n bytes from a response body.
+	 * This method only works if the response has a content-length field
+	 * within its header.
+	 * @param buffer The buffer where the bytes will be placed.
+	 * @param offset The offset to write in the buffer.
+	 * @param n The number of bytes to read.
+	 * @return The number of read bytes.
+	 */
+	public int readNextNBodyBytes(byte[] buffer, int offset, int n) throws IOException {
+		if(parsedResponse == null) {
+			parsedResponse = parse();
+		}
+		
+		String contentLengthString = parsedResponse.getHeader().getField("content-length");
+		
+		if(contentLengthString == null) {
+			throw new HttpParserException("This response has not a content-length field within its header.");
+		}
+	
+		return 0;
 	}
 
 }
