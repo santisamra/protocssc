@@ -31,6 +31,10 @@ public class HttpHeader {
 		contentMap.remove(field);
 	}
 	
+	public boolean containsField(String field) {
+		return contentMap.containsKey(field);
+	}
+	
 	//TODO: Funcion de testing.
 	public Map<String, String> getContentMap() {
 		return contentMap;

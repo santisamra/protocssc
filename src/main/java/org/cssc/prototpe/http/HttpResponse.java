@@ -25,6 +25,10 @@ public class HttpResponse extends HttpPacket {
 		return content;
 	}
 	
+	public void setContent(byte[] content) {
+		this.content = content;
+	}
+	
 	public byte[] toBytes() {
 		StringBuffer buffer = new StringBuffer();
 		
