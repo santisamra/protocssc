@@ -1,10 +1,12 @@
 package org.cssc.prototpe.net;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.Socket;
 import java.net.SocketException;
 
 import org.cssc.prototpe.http.HttpHeader;
+import org.cssc.prototpe.http.HttpPacket;
 import org.cssc.prototpe.http.HttpRequest;
 import org.cssc.prototpe.http.HttpResponse;
 import org.cssc.prototpe.http.HttpResponseCode;
@@ -12,6 +14,7 @@ import org.cssc.prototpe.http.exceptions.InvalidMethodStringException;
 import org.cssc.prototpe.http.exceptions.InvalidStatusCodeException;
 import org.cssc.prototpe.http.exceptions.MissingHostException;
 import org.cssc.prototpe.net.interfaces.ClientHandler;
+import org.cssc.prototpe.parsers.HttpParser;
 import org.cssc.prototpe.parsers.HttpRequestParser;
 import org.cssc.prototpe.parsers.HttpResponseParser;
 
@@ -45,7 +48,7 @@ public class HttpProxyHandler implements ClientHandler{
 				//TODO: Should I resolve this host and filter banned IPs?
 				serverSocket = new Socket(host, 80);
 
-				serverSocket.getOutputStream().write(request.toString().getBytes());
+				writeHttpPacket(request, requestParser, serverSocket.getOutputStream());
 
 				print(request.toString().getBytes());
 				System.out.println("Thread " + Thread.currentThread() + " sent request: ");
@@ -66,54 +69,9 @@ public class HttpProxyHandler implements ClientHandler{
 				System.out.println("For request path: " + request.getPath());
 				System.out.println("---------------");
 
-				//			System.out.println(response.getContent().length);
-				//			System.out.println(response.getHeader().getField("content-length"));
-
 				logger.logResponse(socket.getInetAddress(), response, request);
 
-				//TODO: process the response here
-
-
-				//TODO: implement toString correctly in the response.. 
-				//(Will it work although we are going through a string?)
-				//				clientSocket.getOutputStream().write(response.toBytes());
-
-				/* Response first-line and header fields and firstly sent to client. */
-				clientSocket.getOutputStream().write(firstResponseBytes(response));
-
-
-				String transferEncoding = response.getHeader().getField("transfer-encoding");
-
-				if(transferEncoding != null) {
-					if(transferEncoding.toLowerCase().equals("chunked")) {
-						byte[] temp;
-
-						while((temp = responseParser.readNextChunk()) != null) {
-
-							try {
-								clientSocket.getOutputStream().write(temp);
-							} catch(SocketException e) {
-								System.out.println("The client has closed his socket side.");
-								break;
-							}
-						}
-					}
-					
-				} else if(response.getHeader().getField("content-length") != null) {
-
-					byte[] temp = new byte[1024];
-					int readBytes;
-
-					while((readBytes = responseParser.readNextNBodyBytes(temp, 0, 1024)) != -1) {
-						try {
-							clientSocket.getOutputStream().write(temp, 0, readBytes);
-						} catch(SocketException e) {
-							System.out.println("The client has closed his socket side.");
-							break;
-						}
-					}
-
-				}
+				writeHttpPacket(response, responseParser, clientSocket.getOutputStream());
 
 			} catch(MissingHostException e) {
 				e.printStackTrace();
@@ -154,20 +112,43 @@ public class HttpProxyHandler implements ClientHandler{
 		}
 		System.out.print("\"");
 	}
+	
+	
+	private void writeHttpPacket(HttpPacket packet, HttpParser parser, OutputStream outputStream) throws IOException {
+		outputStream.write(packet.toString().getBytes());
+		
+		String transferEncoding = packet.getHeader().getField("transfer-encoding");
 
+		if(transferEncoding != null) {
+			if(transferEncoding.toLowerCase().equals("chunked")) {
+				byte[] temp;
 
-	private byte[] firstResponseBytes(HttpResponse response) {
-		StringBuffer buffer = new StringBuffer();
+				while((temp = parser.readNextChunk()) != null) {
 
-		buffer.append("HTTP/" + response.getVersion() + " " + response.getStatusCode().getCode() + " " + response.getReasonPhrase() + "\r\n");
+					try {
+						outputStream.write(temp);
+					} catch(SocketException e) {
+						System.out.println("The client has closed his socket side.");
+						break;
+					}
+				}
+			}
+			
+		} else if(packet.getHeader().getField("content-length") != null) {
 
-		for(String key: response.getHeader().getMap().keySet()) {
-			buffer.append(key + ": " + response.getHeader().getMap().get(key) + "\r\n");
+			byte[] temp = new byte[1024];
+			int readBytes;
+
+			while((readBytes = parser.readNextNBodyBytes(temp, 0, 1024)) != -1) {
+				try {
+					outputStream.write(temp, 0, readBytes);
+				} catch(SocketException e) {
+					System.out.println("The client has closed his socket side.");
+					break;
+				}
+			}
+
 		}
-
-		buffer.append("\r\n");
-
-		return buffer.toString().getBytes();
 	}
 
 }

@@ -29,31 +29,17 @@ public class HttpResponse extends HttpPacket {
 		this.content = content;
 	}
 	
-	public byte[] toBytes() {
+	public String toString() {
 		StringBuffer buffer = new StringBuffer();
-		
-		buffer.append("HTTP/" + getVersion() + " " + statusCode.getCode() + " " + reasonPhrase + "\r\n");
-		
+
+		buffer.append("HTTP/" + getVersion() + " " + getStatusCode().getCode() + " " + getReasonPhrase() + "\r\n");
+
 		for(String key: getHeader().getMap().keySet()) {
 			buffer.append(key + ": " + getHeader().getMap().get(key) + "\r\n");
 		}
-		
+
 		buffer.append("\r\n");
-		
-		int bufferLength = buffer.length();
-		int contentLength = content.length;
-		byte[] ret = new byte[bufferLength + contentLength];
-		
-		int i;
-		for(i = 0; i < buffer.length(); i++) {
-			ret[i] = (byte)buffer.charAt(i);
-		}
-		
-		while(i < bufferLength + contentLength) {
-			ret[i] = content[i - bufferLength];
-			i++;
-		}
-		
-		return ret;
+
+		return buffer.toString();
 	}
 }

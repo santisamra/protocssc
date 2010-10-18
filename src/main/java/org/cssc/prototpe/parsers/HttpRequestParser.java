@@ -2,22 +2,23 @@ package org.cssc.prototpe.parsers;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
 
 import org.cssc.prototpe.http.HttpRequest;
 import org.cssc.prototpe.parsers.lex.HttpRequestLexParser;
 
-public class HttpRequestParser {
-	
-	private InputStream inputStream;
+public class HttpRequestParser extends HttpParser {
 	
 	public HttpRequestParser(InputStream inputStream) {
-		this.inputStream = inputStream;
+		super(inputStream);
 	}
 	
 	public HttpRequest parse() throws IOException {
-		HttpRequestLexParser parser = new HttpRequestLexParser(inputStream);
+		HttpRequestLexParser parser = new HttpRequestLexParser(new StringReader(parseFirstPart()));
 		parser.parse();
-		return parser.getParsedRequest();
+
+		parsedPacket = parser.getParsedRequest();
+		return (HttpRequest)parsedPacket;
 	}
 
 }

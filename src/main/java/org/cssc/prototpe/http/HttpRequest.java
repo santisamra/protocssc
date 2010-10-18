@@ -74,13 +74,13 @@ public class HttpRequest extends HttpPacket {
 	@Override
 	public String toString() {
 		StringBuffer buffer = new StringBuffer();
-		buffer.append(this.method.toString() + " " + this.getEffectivePath() + " HTTP/" + this.getVersion() + "\n");
+		buffer.append(this.method.toString() + " " + this.getEffectivePath() + " HTTP/" + this.getVersion() + "\r\n");
 		
 		for(Entry<String,String> e: this.getHeader().getMap().entrySet() ){
-			buffer.append(e.getKey() + ": " + e.getValue() + "\n");
+			buffer.append(e.getKey() + ": " + e.getValue() + "\r\n");
 		}
 		
-		buffer.append("\n");
+		buffer.append("\r\n");
 		return buffer.toString();
 	}
 }
