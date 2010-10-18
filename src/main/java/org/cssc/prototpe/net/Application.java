@@ -11,6 +11,7 @@ public class Application {
 	private ApplicationConfiguration applicationConfiguration;
 	private ClientListener httpListener;
 	private Logger logger;
+	private ServerManager serverManager;
 	
 	private static final int MAX_THREAD_COUNT = 50;
 	private static final String LOGGING_FILE_NAME = "log.txt";
@@ -27,6 +28,7 @@ public class Application {
 		
 		// TODO: Place here any parts of the application that are needed by other parts.
 		logger = new Logger(applicationConfiguration.getLoggingFileName());
+		serverManager = new ServerManager();
 		
 		// This must be last, as it requires a configuration.
 		httpListener = new HttpProxyClientListener(80);
@@ -38,6 +40,10 @@ public class Application {
 
 	public Logger getLogger() {
 		return logger;
+	}
+	
+	public ServerManager getServerManager() {
+		return serverManager;
 	}
 	
 	/**

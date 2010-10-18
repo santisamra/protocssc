@@ -13,12 +13,11 @@ import java.util.Map;
 public class ServerManager {
 	
 	private static final int HTTP_PORT = 80;
-	private static ServerManager instance = null;
 	
 	private Map<InetAddress, Socket> socketMap;
 	private Map<InetAddress, Integer> usageAmount;
 	
-	private ServerManager() {
+	public ServerManager() {
 		this.socketMap = new HashMap<InetAddress, Socket>();
 		this.usageAmount = new HashMap<InetAddress, Integer>();
 	}
@@ -57,16 +56,4 @@ public class ServerManager {
 			socketMap.notifyAll();
 		}
 	}
-	
-	public static ServerManager getInstance() {
-		if(instance == null) {
-			synchronized(ServerManager.class) {
-				if(instance == null) {
-					instance = new ServerManager();
-				}
-			}
-		}
-		return instance;
-	}
-
 }
