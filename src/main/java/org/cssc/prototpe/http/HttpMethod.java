@@ -25,7 +25,7 @@ public enum HttpMethod {
 			}
 		}
 		
-		throw new InvalidMethodStringException();
+		throw new InvalidMethodStringException(string + " is not a supported method for this proxy.");
 	}
 	
 	public String toString() {
