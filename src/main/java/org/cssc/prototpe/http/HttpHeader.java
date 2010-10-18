@@ -35,8 +35,7 @@ public class HttpHeader {
 		return contentMap.containsKey(field);
 	}
 	
-	//TODO: Funcion de testing.
-	public Map<String, String> getContentMap() {
+	public Map<String, String> getMap() {
 		return contentMap;
 	}
 }

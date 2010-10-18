@@ -2,6 +2,7 @@ package org.cssc.prototpe.net;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.net.SocketException;
 
 import org.cssc.prototpe.http.HttpHeader;
 import org.cssc.prototpe.http.HttpRequest;
@@ -45,6 +46,7 @@ public class HttpProxyHandler implements ClientHandler{
 				serverSocket = new Socket(host, 80);
 
 				serverSocket.getOutputStream().write(request.toString().getBytes());
+
 				print(request.toString().getBytes());
 				System.out.println("Thread " + Thread.currentThread() + " sent request: ");
 				System.out.println("Method: " + request.getMethod());
@@ -74,7 +76,44 @@ public class HttpProxyHandler implements ClientHandler{
 
 				//TODO: implement toString correctly in the response.. 
 				//(Will it work although we are going through a string?)
-				clientSocket.getOutputStream().write(response.toBytes());
+				//				clientSocket.getOutputStream().write(response.toBytes());
+
+				/* Response first-line and header fields and firstly sent to client. */
+				clientSocket.getOutputStream().write(firstResponseBytes(response));
+
+				if(response.getHeader().getField("content-length") != null) {
+
+					byte[] temp = new byte[1024];
+					int readBytes;
+
+					while((readBytes = responseParser.readNextNBodyBytes(temp, 0, 1024)) != -1) {
+						try {
+							clientSocket.getOutputStream().write(temp, 0, readBytes);
+						} catch(SocketException e) {
+							System.out.println("The client has closed his socket side.");
+							break;
+						}
+					}
+
+				} else {
+					String transferEncoding = response.getHeader().getField("transfer-encoding");
+
+					if(transferEncoding != null && transferEncoding.toLowerCase().equals("chunked")) {
+						byte[] temp;
+
+						while((temp = responseParser.readNextChunk()) != null) {
+
+							try {
+								clientSocket.getOutputStream().write(temp);
+							} catch(SocketException e) {
+								System.out.println("The client has closed his socket side.");
+								break;
+							}
+						}
+					}
+
+				}
+
 			} catch(MissingHostException e) {
 				e.printStackTrace();
 				HttpResponse response = new HttpResponse("1.1", new HttpHeader(), HttpResponseCode.BAD_REQUEST, "Bad request", new byte[0]);
@@ -89,13 +128,12 @@ public class HttpProxyHandler implements ClientHandler{
 				clientSocket.getOutputStream().write(response.toString().getBytes());
 			}
 
-
 			//TODO: don't close if this is a keep-alive connection
 
 			if(serverSocket != null) {
 				serverSocket.close();
 			}
-			
+
 			clientSocket.close();
 			System.out.println("Thread " + Thread.currentThread() + " closed client socket: " + clientSocket);
 			System.out.println("---------------");
@@ -107,13 +145,28 @@ public class HttpProxyHandler implements ClientHandler{
 
 	}
 
-	
+
 	private void print(byte[] buffer){
 		System.out.print("\"");
 		for( int i = 0; i < buffer.length && buffer[i] != 0; i++){
 			System.out.print((char)buffer[i]);
 		}
 		System.out.print("\"");
+	}
+
+
+	private byte[] firstResponseBytes(HttpResponse response) {
+		StringBuffer buffer = new StringBuffer();
+
+		buffer.append("HTTP/" + response.getVersion() + " " + response.getStatusCode().getCode() + " " + response.getReasonPhrase() + "\r\n");
+
+		for(String key: response.getHeader().getMap().keySet()) {
+			buffer.append(key + ": " + response.getHeader().getMap().get(key) + "\r\n");
+		}
+
+		buffer.append("\r\n");
+
+		return buffer.toString().getBytes();
 	}
 
 }

@@ -13,8 +13,11 @@ public class ResponseTest {
 			parser = new HttpResponseParser(new FileInputStream("src/main/resources/samples/response00.res"));
 			HttpResponse response = parser.parse();
 			
-			System.out.println("Content:");
-			System.out.print(new String(response.getContent()));
+			byte[] temp;
+			
+			while((temp = parser.readNextChunk()) != null) {
+				System.out.println("\"" + new String(temp) + "\"");
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

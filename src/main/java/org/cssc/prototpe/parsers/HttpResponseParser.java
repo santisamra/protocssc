@@ -11,11 +11,16 @@ import org.cssc.prototpe.parsers.lex.HttpResponseLexParser;
 
 public class HttpResponseParser {
 
+	private static int CHUNK_BUFFER_SIZE = 50;
+
 	private InputStream inputStream;
 	private HttpResponse parsedResponse;
+	private int readContentBytes;
+	private boolean lastChunkRead = false;
 
 	public HttpResponseParser(InputStream inputStream) {
 		this.inputStream = inputStream;
+		this.readContentBytes = 0;
 	}
 
 	public HttpResponse parse() throws IOException {
@@ -63,89 +68,101 @@ public class HttpResponseParser {
 
 		HttpResponseLexParser parser = new HttpResponseLexParser(new StringReader(parsedString));
 		parser.parse();
+
 		parsedResponse = parser.getParsedResponse();
-
-		String transferCoding = parsedResponse.getHeader().getField("transfer-encoding");
-
-		byte[] content = new byte[0];
-
-		if(transferCoding == null) {
-			String contentLengthString = parsedResponse.getHeader().getField("content-length");
-
-			if(contentLengthString != null) {
-
-				int contentLength;
-
-				try {
-					contentLength = Integer.valueOf(contentLengthString);
-				} catch(NumberFormatException e) {
-					throw new InvalidPacketException("Invalid content length.");
-				}
-
-				content = new byte[contentLength];
-
-				int offset = 0;
-				while(offset < contentLength) {
-					offset += inputStream.read(content, offset, contentLength - offset);
-				}
-			}
-
-		} else if(transferCoding.toLowerCase().equals("chunked")){
-			/* I read the chunked-bodies. */
-			int contentLength = 0;
-			content = new byte[contentLength];
-
-			/* I read the chunk size. */
-			int chunkSize = readChunkSize();
-
-			while(chunkSize != 0) {
-				byte[] currentChunkData = new byte[chunkSize];
-				int offset = 0;
-				while(offset < chunkSize) {
-					offset += inputStream.read(currentChunkData, offset, chunkSize - offset);
-				}
-
-				int cr = inputStream.read();
-				int lf = inputStream.read();
-				//				System.out.println(cr);
-				//				System.out.println(lf);
-				if(cr != 13 || lf != 10) {
-					throw new InvalidPacketException("Invalid chunked data.");
-				}
-
-				/* I append the arrays. */
-				byte[] temp = new byte[contentLength + chunkSize];
-				System.arraycopy(content, 0, temp, 0, contentLength);
-				System.arraycopy(currentChunkData, 0, temp, contentLength, chunkSize);
-				content = temp;
-
-				contentLength += chunkSize;
-				chunkSize = readChunkSize();
-			}
-
-			/* The conent is not chunked now. */
-			parsedResponse.getHeader().removeField("transfer-encoding");
-			parsedResponse.getHeader().setField("content-length", Integer.toString(contentLength));
-		}
-
-		return new HttpResponse(
-				parsedResponse.getVersion(),
-				parsedResponse.getHeader(),
-				parsedResponse.getStatusCode(),
-				parsedResponse.getReasonPhrase(),
-				content);
+		return parsedResponse;
 	}
 
-	private int readChunkSize() throws IOException {
+	
+	/**
+	 * Reads next n bytes from a response body.
+	 * This method only works if the response has a content-length field
+	 * within its header.
+	 * @param buffer The buffer where the bytes will be stored.
+	 * @param offset The offset to write in the buffer.
+	 * @param n The number of bytes to read.
+	 * @return The number of read bytes.
+	 */
+	public int readNextNBodyBytes(byte[] buffer, int offset, int n) throws IOException {
+		if(parsedResponse == null) {
+			parsedResponse = parse();
+		}
+
+		String contentLengthString = parsedResponse.getHeader().getField("content-length");
+
+		if(contentLengthString == null) {
+			throw new HttpParserException("This response has not a content-length field within its header.");
+		}
+
+		if(buffer.length - offset + 1 < n) {
+			throw new HttpParserException("There is not enough space in the buffer to store " + n + " bytes.");
+		}
+
+		int contentLength = Integer.valueOf(contentLengthString);
+
+
+		//2: because of the \r\n at the end of the content.
+		if(n + readContentBytes > contentLength) {
+			n = contentLength - readContentBytes;
+		}
+		
+		if(n <= 0) {
+			return -1;
+		}
+
+		int aux = inputStream.read(buffer, offset, n);
+		readContentBytes += aux;
+
+		return aux;
+	}
+
+
+	/**
+	 * Reads the next chunk of a chunked response body.
+	 * This method only works if the response has a transfer-encoding field
+	 * within its header, and its value is "chunked".
+	 */
+	public byte[] readNextChunk() throws IOException {
+		if(parsedResponse == null) {
+			parsedResponse = parse();
+		}
+
+		if(lastChunkRead) {
+			return null;
+		}
+
+		String transferEncodingString = parsedResponse.getHeader().getField("transfer-encoding");
+
+		if(transferEncodingString == null) {
+			throw new HttpParserException("This response has not a transfer-encoding field within its header.");
+		}
+
+		if(!transferEncodingString.toLowerCase().equals("chunked")) {
+			throw new HttpParserException("The transfer-encoding for this response is not \"chunked\".");
+		}
+
+		byte[] ret = new byte[CHUNK_BUFFER_SIZE];
+
+		int i = 0;
+		StringBuffer buffer = new StringBuffer();
+		int chunkSize;
 		boolean crRead = false;
 		boolean lfRead = false;
-		StringBuffer buffer = new StringBuffer();
 
+		/* Firstly, the chunk size is read. */
 		while(!(crRead && lfRead)) {
+			if(i == ret.length) {
+				byte[] temp = new byte[ret.length + CHUNK_BUFFER_SIZE];
+				System.arraycopy(ret, 0, temp, 0, ret.length);
+				ret = temp;
+			}
+
 			int readInt = -1;
 			while(readInt == -1) {
 				readInt = inputStream.read();
 			}
+			ret[i] = (byte)readInt;
+			i++;
 			char readChar = (char)readInt;
 
 			if(readChar == '\r') {
@@ -166,34 +183,45 @@ public class HttpResponseParser {
 		}
 
 		try {
-			return Integer.parseInt(buffer.toString().trim(), 16);
+			chunkSize = Integer.parseInt(buffer.toString().trim(), 16);
 		} catch(NumberFormatException e) {
 			throw new InvalidPacketException("Chunk size must be hexadecimal.");
 		}
-	}
-	
-	
-	/**
-	 * Reads next n bytes from a response body.
-	 * This method only works if the response has a content-length field
-	 * within its header.
-	 * @param buffer The buffer where the bytes will be placed.
-	 * @param offset The offset to write in the buffer.
-	 * @param n The number of bytes to read.
-	 * @return The number of read bytes.
-	 */
-	public int readNextNBodyBytes(byte[] buffer, int offset, int n) throws IOException {
-		if(parsedResponse == null) {
-			parsedResponse = parse();
+
+		if(chunkSize > 0) {
+			int tempLength = i;
+
+			byte[] temp = new byte[tempLength + chunkSize + 2];
+			System.arraycopy(ret, 0, temp, 0, tempLength);
+			ret = temp;
+
+			while(i < tempLength + chunkSize) {
+				int readInt = -1;
+				while(readInt == -1) {
+					readInt = inputStream.read();
+				}
+
+				ret[i] = (byte)readInt;
+				i++;
+			}
+
+			int cr = inputStream.read();
+			int lf = inputStream.read();
+			if(cr != 13 || lf != 10) {
+				throw new HttpParserException("Invalid chunked data.");
+			}
+
+			ret[i] = (byte)cr;
+			ret[i + 1] = (byte)lf;
+
+		} else {
+			lastChunkRead = true;
+			byte[] temp = new byte[i];
+			System.arraycopy(ret, 0, temp, 0, i);
+			ret = temp;
 		}
-		
-		String contentLengthString = parsedResponse.getHeader().getField("content-length");
-		
-		if(contentLengthString == null) {
-			throw new HttpParserException("This response has not a content-length field within its header.");
-		}
-	
-		return 0;
+
+		return ret;
 	}
 
 }

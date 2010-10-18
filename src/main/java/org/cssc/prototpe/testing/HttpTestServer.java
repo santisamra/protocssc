@@ -44,7 +44,7 @@ public class HttpTestServer {
 				System.out.println("Path: " + req.getPath());
 				System.out.println("Version: " + req.getVersion());
 				
-				Map<String, String> contentMap = req.getHeader().getContentMap();
+				Map<String, String> contentMap = req.getHeader().getMap();
 				for(String key: contentMap.keySet()) {
 					System.out.println("Field: \"" + key + "\"" + " - Value: \"" + contentMap.get(key) + "\"");
 				}

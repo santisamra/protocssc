@@ -34,8 +34,8 @@ public class HttpResponse extends HttpPacket {
 		
 		buffer.append("HTTP/" + getVersion() + " " + statusCode.getCode() + " " + reasonPhrase + "\r\n");
 		
-		for(String key: getHeader().getContentMap().keySet()) {
-			buffer.append(key + ": " + getHeader().getContentMap().get(key) + "\r\n");
+		for(String key: getHeader().getMap().keySet()) {
+			buffer.append(key + ": " + getHeader().getMap().get(key) + "\r\n");
 		}
 		
 		buffer.append("\r\n");

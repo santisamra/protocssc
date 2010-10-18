@@ -76,7 +76,7 @@ public class HttpRequest extends HttpPacket {
 		StringBuffer buffer = new StringBuffer();
 		buffer.append(this.method.toString() + " " + this.getEffectivePath() + " HTTP/" + this.getVersion() + "\n");
 		
-		for(Entry<String,String> e: this.getHeader().getContentMap().entrySet() ){
+		for(Entry<String,String> e: this.getHeader().getMap().entrySet() ){
 			buffer.append(e.getKey() + ": " + e.getValue() + "\n");
 		}
 		
