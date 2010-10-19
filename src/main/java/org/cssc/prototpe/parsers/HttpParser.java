@@ -210,9 +210,24 @@ public abstract class HttpParser {
 			ret[i + 1] = (byte)lf;
 
 		} else {
+			
+			//TODO: There might be a trailer here in the middle.
+			//See RFC 2616 section 3.6.1.
+			
+			int cr = inputStream.read();
+			int lf = inputStream.read();
+			if(cr != 13 || lf != 10) {
+				throw new HttpParserException("Invalid chunked data.");
+			}
+			ret[i] = (byte)cr;
+			ret[i + 1] = (byte)lf;
+			
 			lastChunkRead = true;
-			byte[] temp = new byte[i];
-			System.arraycopy(ret, 0, temp, 0, i);
+			byte[] temp = new byte[i + 2];
+			System.arraycopy(ret, 0, temp, 0, i + 2);
+			
+			
+			
 			ret = temp;
 		}
 

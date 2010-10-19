@@ -42,4 +42,5 @@ public class HttpResponse extends HttpPacket {
 
 		return buffer.toString();
 	}
+	
 }

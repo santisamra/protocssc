@@ -14,6 +14,7 @@ public class Application {
 	private ServerManager serverManager;
 	
 	private static final int MAX_THREAD_COUNT = 50;
+	private static final int MAX_PERSISTANT_SERVER_CONNECTIONS = 2;
 	private static final String LOGGING_FILE_NAME = "log.txt";
 	
 	private Application() {
@@ -23,12 +24,14 @@ public class Application {
 		
 		// This MUST be second as other parts of the application require this configuration.
 		applicationConfiguration = new ApplicationConfiguration();
+		//TODO: this is a parche
 		applicationConfiguration.setThreadPoolSize(MAX_THREAD_COUNT);
 		applicationConfiguration.setLoggingFileName(LOGGING_FILE_NAME);
+		applicationConfiguration.setMaxPersistantServerConnections(MAX_PERSISTANT_SERVER_CONNECTIONS);
 		
 		// TODO: Place here any parts of the application that are needed by other parts.
 		logger = new Logger(applicationConfiguration.getLoggingFileName());
-		serverManager = new ServerManager();
+		serverManager = new ServerManager(applicationConfiguration.getMaxPersistantServerConnections());
 		
 		// This must be last, as it requires a configuration.
 		httpListener = new HttpProxyClientListener(80);

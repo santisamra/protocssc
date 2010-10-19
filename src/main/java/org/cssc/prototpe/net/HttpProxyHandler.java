@@ -2,6 +2,7 @@ package org.cssc.prototpe.net;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
 
@@ -18,6 +19,8 @@ import org.cssc.prototpe.parsers.HttpParser;
 import org.cssc.prototpe.parsers.HttpRequestParser;
 import org.cssc.prototpe.parsers.HttpResponseParser;
 
+//TODO GENERAL: el control de errores ES MALISIMO
+
 public class HttpProxyHandler implements ClientHandler{
 
 	private Socket clientSocket;
@@ -26,81 +29,108 @@ public class HttpProxyHandler implements ClientHandler{
 	private HttpResponseParser responseParser;
 	private HttpRequest request;
 	private HttpResponse response;
+
 	private Logger logger;
+	private ServerManager serverManager;
 
 	public HttpProxyHandler() {
 		this.logger = Application.getInstance().getLogger();
+		this.serverManager = Application.getInstance().getServerManager();
 	}
 
 
 	@Override
 	public void handle(Socket socket) {
 		this.clientSocket = socket;
-		try{
+		boolean closedConnection = false;
+		while(!closedConnection) {
+			serverSocket = null;
+			InetAddress serverAddress = null;
 			try {
-				requestParser = new HttpRequestParser(socket.getInputStream());
-				request = requestParser.parse();
-				logger.logRequest(socket.getInetAddress(), request);
+				try {
+					requestParser = new HttpRequestParser(socket.getInputStream());
+					request = requestParser.parse();
+					logger.logRequest(socket.getInetAddress(), request);
 
-				//TODO: Ask for the socket to someone
-				String host = request.getEffectiveHost();
+					//TODO: Ask for the socket to someone
+					String host = request.getEffectiveHost();
 
-				//TODO: Should I resolve this host and filter banned IPs?
-				serverSocket = new Socket(host, 80);
+					//TODO: Should I resolve this host and filter banned IPs?
+					serverAddress = InetAddress.getByName(host);
+					serverSocket = serverManager.getSocket(serverAddress);
 
-				writeHttpPacket(request, requestParser, serverSocket.getOutputStream());
+					response = null;
+					
+					try {
+						writeHttpPacket(request, requestParser, serverSocket.getOutputStream());
 
-				print(request.toString().getBytes());
-				System.out.println("Thread " + Thread.currentThread() + " sent request: ");
-				System.out.println("Method: " + request.getMethod());
-				System.out.println("Host: " + request.getHeader().getField("host"));
-				System.out.println("Path: " + request.getPath());
-				System.out.println("Client socket: " + socket);
-				System.out.println("---------------");
+						//Should block here when the parser attempts reading from this input stream
+						responseParser = new HttpResponseParser(serverSocket.getInputStream());
 
-				//Should block here when the parser attempts reading from this input stream
-				responseParser = new HttpResponseParser(serverSocket.getInputStream());
+						response = responseParser.parse();
+					} catch(IOException e) {
+						//TODO: Problem with the server connection!
+						e.printStackTrace();
+						serverSocket.close();
+						HttpResponse response = new HttpResponse("1.1", new HttpHeader(), HttpResponseCode.BAD_GATEWAY, "Bad request", new byte[0]);
+						clientSocket.getOutputStream().write(response.toString().getBytes());
+					}
 
-				//TODO: uncomment this when this functionality is reached.
-				response = responseParser.parse();
+					if(response != null) {
+						logger.logResponse(socket.getInetAddress(), response, request);
 
-				System.out.println("Thread " + Thread.currentThread() + " got response: ");
-				System.out.println("Status code: " + response.getStatusCode());
-				System.out.println("For request path: " + request.getPath());
-				System.out.println("---------------");
+						writeHttpPacket(response, responseParser, clientSocket.getOutputStream());
 
-				logger.logResponse(socket.getInetAddress(), response, request);
+						if(response.mustCloseConnection()) {
+							serverSocket.close();
+						}
 
-				writeHttpPacket(response, responseParser, clientSocket.getOutputStream());
+						if(request.mustCloseConnection()) {
+							clientSocket.close();
+							closedConnection = true;
+							System.out.println("Thread " + Thread.currentThread() + " closed client socket: " + clientSocket);
+							System.out.println("---------------");
+						}
+					}
 
-			} catch(MissingHostException e) {
-				e.printStackTrace();
-				HttpResponse response = new HttpResponse("1.1", new HttpHeader(), HttpResponseCode.BAD_REQUEST, "Bad request", new byte[0]);
-				clientSocket.getOutputStream().write(response.toString().getBytes());
-			} catch(InvalidStatusCodeException e) {
-				e.printStackTrace();
-				HttpResponse response = new HttpResponse("1.1", new HttpHeader(), HttpResponseCode.BAD_GATEWAY, "Bad request", new byte[0]);
-				clientSocket.getOutputStream().write(response.toString().getBytes());
-			} catch(InvalidMethodStringException e) {
-				e.printStackTrace();
-				HttpResponse response = new HttpResponse("1.1", new HttpHeader(), HttpResponseCode.NOT_IMPLEMENTED, "Not implemented", new byte[0]);
-				clientSocket.getOutputStream().write(response.toString().getBytes());
+				} catch(MissingHostException e) {
+					e.printStackTrace();
+					HttpResponse response = new HttpResponse("1.1", new HttpHeader(), HttpResponseCode.BAD_REQUEST, "Bad request", new byte[0]);
+					clientSocket.getOutputStream().write(response.toString().getBytes());
+				} catch(InvalidStatusCodeException e) {
+					e.printStackTrace();
+					HttpResponse response = new HttpResponse("1.1", new HttpHeader(), HttpResponseCode.BAD_GATEWAY, "Bad request", new byte[0]);
+					clientSocket.getOutputStream().write(response.toString().getBytes());
+				} catch(InvalidMethodStringException e) {
+					e.printStackTrace();
+					HttpResponse response = new HttpResponse("1.1", new HttpHeader(), HttpResponseCode.NOT_IMPLEMENTED, "Not implemented", new byte[0]);
+					clientSocket.getOutputStream().write(response.toString().getBytes());
+				}
+				
+				serverManager.finishedRequest(serverAddress);
+
+				//TODO: don't close if this is a keep-alive connection
+
+				//			if(serverSocket != null) {
+				//				serverSocket.close();
+				//			}
+
+
+			} catch (IOException e){
+//								e.printStackTrace();
+				System.out.println("Here");
+				try {
+					if(serverAddress != null) {
+						serverManager.finishedRequest(serverAddress);
+					}
+					clientSocket.close();
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+				closedConnection = true;
 			}
 
-			//TODO: don't close if this is a keep-alive connection
-
-			if(serverSocket != null) {
-				serverSocket.close();
-			}
-
-			clientSocket.close();
-			System.out.println("Thread " + Thread.currentThread() + " closed client socket: " + clientSocket);
-			System.out.println("---------------");
-
-		} catch (IOException e){
-			e.printStackTrace();
 		}
-
 
 	}
 
@@ -112,11 +142,11 @@ public class HttpProxyHandler implements ClientHandler{
 		}
 		System.out.print("\"");
 	}
-	
-	
+
+
 	private void writeHttpPacket(HttpPacket packet, HttpParser parser, OutputStream outputStream) throws IOException {
 		outputStream.write(packet.toString().getBytes());
-		
+
 		String transferEncoding = packet.getHeader().getField("transfer-encoding");
 
 		if(transferEncoding != null) {
@@ -133,7 +163,7 @@ public class HttpProxyHandler implements ClientHandler{
 					}
 				}
 			}
-			
+
 		} else if(packet.getHeader().getField("content-length") != null) {
 
 			byte[] temp = new byte[1024];

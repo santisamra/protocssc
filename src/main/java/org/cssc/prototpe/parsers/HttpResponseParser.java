@@ -14,7 +14,10 @@ public class HttpResponseParser extends HttpParser {
 	}
 
 	public HttpResponse parse() throws IOException {
-		HttpResponseLexParser parser = new HttpResponseLexParser(new StringReader(parseFirstPart()));
+		String buf = parseFirstPart();
+//		System.err.println("\"" + buf + "\"");
+		StringReader reader = new StringReader(buf);
+		HttpResponseLexParser parser = new HttpResponseLexParser(reader);
 		parser.parse();
 
 		parsedPacket = parser.getParsedResponse();

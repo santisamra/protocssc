@@ -17,4 +17,19 @@ public abstract class HttpPacket {
 	public HttpHeader getHeader() {
 		return header;
 	}
+	
+	public boolean mustCloseConnection() {
+		if(!getVersion().equals("1.0")) {
+			if(getHeader().containsField("connection")) {
+				if(getHeader().getField("connection").contains("close")) {
+					return true;
+				} else {
+					return false;
+				}
+			} else {
+				return false;
+			}
+		}
+		return true;
+	}
 }
