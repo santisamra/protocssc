@@ -65,7 +65,9 @@ NEWLINE =		\r\n
 <YYINITIAL> {
 	[ ]?{VERSION} {
 		//System.out.println("Encontre version.");
+		//System.out.println(yytext());
 		yybegin(PARSING_VERSION);
+		
 	}
 }
 
@@ -73,6 +75,7 @@ NEWLINE =		\r\n
 	1\.[01][ ] {
 		//System.out.println("Encontre numero de version.");
 		version = yytext().trim();
+		//System.out.println(yytext());
 		yybegin(PARSING_STATUS_CODE);
 	}
 }
@@ -81,14 +84,22 @@ NEWLINE =		\r\n
 	{STATUS_CODE}[ ] {
 		//System.out.println("Encontre status code.");
 		statusCode = HttpResponseCode.fromInt(Integer.valueOf(yytext().trim()));
+		//System.out.println(yytext());
 		yybegin(PARSING_REASON_PHRASE);
 	}
 }
 
+
 <PARSING_REASON_PHRASE> {
+	{NEWLINE} {
+	//System.out.println(yytext());
+		yybegin(ADDING_REMAINING_TEXT);
+	}
+
 	{REASON_PHRASE}[ ]?{NEWLINE} {
 		//System.out.println("Encontre reason phrase.");
 		reasonPhrase = yytext().trim();
+		//System.out.println(yytext());
 		yybegin(ADDING_REMAINING_TEXT);
 	}
 }
@@ -97,6 +108,7 @@ NEWLINE =		\r\n
 	([^\r\n]+{NEWLINE})*{NEWLINE} {
 		//System.out.println("Encontre remaining text.");
 		remainingText = yytext().trim();
+		//System.out.println(yytext());
 	}
 }
 
