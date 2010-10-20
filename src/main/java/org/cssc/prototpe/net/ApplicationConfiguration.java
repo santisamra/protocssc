@@ -1,6 +1,11 @@
 package org.cssc.prototpe.net;
 
 import java.net.InetAddress;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.cssc.prototpe.net.filters.ApplicationFilter;
+import org.cssc.prototpe.net.filters.FilterCondition;
 
 public class ApplicationConfiguration {
 	
@@ -9,6 +14,12 @@ public class ApplicationConfiguration {
 	private String loggingFileName;
 	private InetAddress proxy;
 	private int proxyport;
+	
+	private List<ApplicationFilter> filters;
+	
+	public ApplicationConfiguration() {
+		this.filters = new LinkedList<ApplicationFilter>();
+	}
 	
 	public int getMaxPersistantServerConnections() {
 		return maxPersistantServerConnections;
@@ -49,6 +60,23 @@ public class ApplicationConfiguration {
 	
 	public boolean isProxied(){
 		return proxy != null && proxyport != 0;
+	}
+	
+	public void addFilter(ApplicationFilter filter) {
+		filters.add(filter);
+	}
+	
+	public ApplicationFilter getFilterForCondition(FilterCondition condition) {
+		for(ApplicationFilter f: filters) {
+			if(f.getCondition().getIps().containsAll(condition.getIps()) ||
+			   f.getCondition().getBrowser().equals(condition.getBrowser()) ||
+			   f.getCondition().getOperatingSystem().equals(condition.getOperatingSystem())) {
+				
+				return f;
+			}
+		}
+		
+		return null;
 	}
 	
 }
