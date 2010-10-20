@@ -20,6 +20,11 @@ public class HttpRequest extends HttpPacket {
 		return path;
 	}
 	
+	//TODO: is this OK?
+	public void setPath(String path){
+		this.path = path;
+	}
+	
 	public HttpMethod getMethod() {
 		return method;
 	}

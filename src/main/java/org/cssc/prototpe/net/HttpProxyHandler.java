@@ -23,12 +23,15 @@ import org.cssc.prototpe.parsers.HttpResponseParser;
 
 public class HttpProxyHandler implements ClientHandler{
 
+	private static final int HTTP_PORT = 80;
+	
 	private Socket clientSocket;
 	private Socket serverSocket;
 	private HttpRequestParser requestParser;
 	private HttpResponseParser responseParser;
 	private HttpRequest request;
 	private HttpResponse response;
+	private ApplicationConfiguration configuration;
 
 	private Logger logger;
 	private ServerManager serverManager;
@@ -36,6 +39,7 @@ public class HttpProxyHandler implements ClientHandler{
 	public HttpProxyHandler() {
 		this.logger = Application.getInstance().getLogger();
 		this.serverManager = Application.getInstance().getServerManager();
+		this.configuration = Application.getInstance().getApplicationConfiguration();
 	}
 
 
@@ -56,8 +60,17 @@ public class HttpProxyHandler implements ClientHandler{
 					String host = request.getEffectiveHost();
 
 					//TODO: Should I resolve this host and filter banned IPs?
-					serverAddress = InetAddress.getByName(host);
-					serverSocket = serverManager.getSocket(serverAddress);
+					
+					if( configuration.isProxied()){
+						serverAddress = configuration.getProxy();
+						serverSocket = serverManager.getSocket(serverAddress, configuration.getProxyPort());
+						System.out.println(request.getEffectivePath());
+						System.out.println(request.getEffectiveHost());
+						request.setPath("http://" + request.getEffectiveHost() + request.getEffectivePath());
+					} else {
+						serverAddress = InetAddress.getByName(host);
+						serverSocket = serverManager.getSocket(serverAddress, HTTP_PORT);
+					}
 
 					response = null;
 					

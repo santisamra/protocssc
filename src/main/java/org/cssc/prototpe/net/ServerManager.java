@@ -14,8 +14,6 @@ import java.util.Map;
  */
 public class ServerManager {
 	
-	private static final int HTTP_PORT = 80;
-	
 	private Map<InetAddress, Socket> socketMap;
 	private Map<InetAddress, Integer> usageAmount;
 	private List<Socket> socketList;
@@ -30,7 +28,7 @@ public class ServerManager {
 		this.socketList = new LinkedList<Socket>();
 	}
 	
-	public Socket getSocket(InetAddress addr) throws IOException {
+	public Socket getSocket(InetAddress addr, int port) throws IOException {
 		Socket s;
 		System.out.println("Getting socket for address " + addr);
 		synchronized(socketMap) {
@@ -42,7 +40,7 @@ public class ServerManager {
 			if(s == null || s.isClosed() || !s.isConnected()) {
 				// Must create a new connection
 				System.out.println("Creating a new connection for " + addr);
-				s = new Socket(addr, HTTP_PORT);
+				s = new Socket(addr, port);
 				socketMap.put(addr, s);
 				usedSocks++;
 				if(usedSocks > maximumOpenSockets) {
