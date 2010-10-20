@@ -18,6 +18,8 @@ import org.cssc.prototpe.net.interfaces.ClientHandler;
 import org.cssc.prototpe.parsers.HttpParser;
 import org.cssc.prototpe.parsers.HttpRequestParser;
 import org.cssc.prototpe.parsers.HttpResponseParser;
+import org.cssc.prototpe.parsers.exceptions.InvalidPacketException;
+import org.cssc.prototpe.parsers.exceptions.InvalidPacketParsingException;
 
 //TODO GENERAL: el control de errores ES MALISIMO
 
@@ -86,11 +88,26 @@ public class HttpProxyHandler implements ClientHandler{
 
 						response = responseParser.parse();
 						System.out.println("Got response");
+					} catch(InvalidPacketParsingException e) {
+						//TODO: Problem with the server connection!
+						e.printStackTrace();
+						serverSocket.close();
+						HttpResponse response = new HttpResponse("1.1", new HttpHeader(), HttpResponseCode.BAD_GATEWAY, "Bad gateway", new byte[0]);
+						response.getHeader().setField("content-length", "0");
+						clientSocket.getOutputStream().write(response.toString().getBytes());
+					} catch(InvalidPacketException e) {
+						//TODO: Problem with the server connection!
+						e.printStackTrace();
+						serverSocket.close();
+						HttpResponse response = new HttpResponse("1.1", new HttpHeader(), HttpResponseCode.BAD_GATEWAY, "Bad gateway", new byte[0]);
+						response.getHeader().setField("content-length", "0");
+						clientSocket.getOutputStream().write(response.toString().getBytes());
 					} catch(IOException e) {
 						//TODO: Problem with the server connection!
 						e.printStackTrace();
 						serverSocket.close();
-						HttpResponse response = new HttpResponse("1.1", new HttpHeader(), HttpResponseCode.BAD_GATEWAY, "Bad request", new byte[0]);
+						HttpResponse response = new HttpResponse("1.1", new HttpHeader(), HttpResponseCode.BAD_GATEWAY, "Bad gateway", new byte[0]);
+						response.getHeader().setField("content-length", "0");
 						clientSocket.getOutputStream().write(response.toString().getBytes());
 					}
 
@@ -114,14 +131,22 @@ public class HttpProxyHandler implements ClientHandler{
 				} catch(MissingHostException e) {
 					e.printStackTrace();
 					HttpResponse response = new HttpResponse("1.1", new HttpHeader(), HttpResponseCode.BAD_REQUEST, "Bad request", new byte[0]);
+					response.getHeader().setField("content-length", "0");
 					clientSocket.getOutputStream().write(response.toString().getBytes());
 				} catch(InvalidStatusCodeException e) {
 					e.printStackTrace();
-					HttpResponse response = new HttpResponse("1.1", new HttpHeader(), HttpResponseCode.BAD_GATEWAY, "Bad request", new byte[0]);
+					HttpResponse response = new HttpResponse("1.1", new HttpHeader(), HttpResponseCode.BAD_GATEWAY, "Bad gateway", new byte[0]);
+					response.getHeader().setField("content-length", "0");
 					clientSocket.getOutputStream().write(response.toString().getBytes());
 				} catch(InvalidMethodStringException e) {
 					e.printStackTrace();
 					HttpResponse response = new HttpResponse("1.1", new HttpHeader(), HttpResponseCode.NOT_IMPLEMENTED, "Not implemented", new byte[0]);
+					response.getHeader().setField("content-length", "0");
+					clientSocket.getOutputStream().write(response.toString().getBytes());
+				} catch(InvalidPacketParsingException e) {
+					e.printStackTrace();
+					HttpResponse response = new HttpResponse("1.1", new HttpHeader(), HttpResponseCode.BAD_GATEWAY, "Bad gateway", new byte[0]);
+					response.getHeader().setField("content-length", "0");
 					clientSocket.getOutputStream().write(response.toString().getBytes());
 				}
 				
