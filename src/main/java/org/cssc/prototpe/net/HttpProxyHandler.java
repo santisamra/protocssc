@@ -56,8 +56,6 @@ public class HttpProxyHandler implements ClientHandler{
 					request = requestParser.parse();
 					logger.logRequest(socket.getInetAddress(), request);
 
-					//TODO: Ask for the socket to someone
-					String host = request.getEffectiveHost();
 
 					//TODO: Should I resolve this host and filter banned IPs?
 					
@@ -68,6 +66,10 @@ public class HttpProxyHandler implements ClientHandler{
 						System.out.println(request.getEffectiveHost());
 						request.setPath("http://" + request.getEffectiveHost() + request.getEffectivePath());
 					} else {
+						
+						//TODO: Ask for the socket to someone
+						String host = request.getEffectiveHost();
+
 						serverAddress = InetAddress.getByName(host);
 						serverSocket = serverManager.getSocket(serverAddress, HTTP_PORT);
 					}
