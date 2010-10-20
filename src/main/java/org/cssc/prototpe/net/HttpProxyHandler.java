@@ -78,6 +78,9 @@ public class HttpProxyHandler implements ClientHandler{
 
 					response = null;
 					
+					//Doing this to be able to establish a connection with the origin server
+					request.getHeader().removeField("connection");
+					
 					try {
 						System.out.println("About to write request");
 						writeHttpPacket(request, requestParser, serverSocket.getOutputStream());
@@ -116,7 +119,7 @@ public class HttpProxyHandler implements ClientHandler{
 
 						writeHttpPacket(response, responseParser, clientSocket.getOutputStream());
 
-						if(true || response.mustCloseConnection()) {
+						if(response.mustCloseConnection()) {
 							serverSocket.close();
 						}
 
