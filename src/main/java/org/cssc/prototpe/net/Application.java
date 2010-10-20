@@ -34,7 +34,7 @@ public class Application {
 		serverManager = new ServerManager(applicationConfiguration.getMaxPersistantServerConnections());
 		
 		// This must be last, as it requires a configuration.
-		httpListener = new HttpProxyClientListener(80);
+		httpListener = new HttpProxyClientListener(8080);
 	}
 	
 	public ApplicationConfiguration getApplicationConfiguration() {
