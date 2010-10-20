@@ -68,7 +68,7 @@ public class HttpProxyHandler implements ClientHandler{
 						System.out.println(request.getEffectiveHost());
 						request.setPath("http://" + request.getEffectiveHost() + request.getEffectivePath());
 					} else {
-						
+						System.out.println(request.getEffectivePath());
 						//TODO: Ask for the socket to someone
 						String host = request.getEffectiveHost();
 

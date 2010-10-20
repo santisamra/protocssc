@@ -40,11 +40,22 @@ public class Application {
 		serverManager = new ServerManager(applicationConfiguration.getMaxPersistantServerConnections());
 		
 		//TODO: Nada validado obviamente.. TESTING PURO
-		int port = Integer.valueOf(JOptionPane.showInputDialog("Port?"));
+		int port; 
+		
+		try{
+			port = Integer.valueOf(JOptionPane.showInputDialog("Port?"));
+		}catch(NumberFormatException e){
+			port = 8080;
+		}
+		
 		System.out.println("Starting server at port " + port);
 		String proxyIP = JOptionPane.showInputDialog("Proxy Chaining IP? Otherwise leave empty");
-		int proxyport = Integer.valueOf(JOptionPane.showInputDialog("Proxy Chaining Port? Otherwise put 0"));
-		
+		int proxyport;
+		try{
+			proxyport = Integer.valueOf(JOptionPane.showInputDialog("Proxy Chaining Port? Otherwise leave empty"));
+		} catch (NumberFormatException e){
+			proxyport = 0;
+		}
 		try {
 			if( proxyIP != null && proxyport != 0){
 				System.out.println("Setting proxy chain at: " + proxyIP + ":" + proxyport);
@@ -53,6 +64,7 @@ public class Application {
 		} catch (UnknownHostException e) {
 			//SOMEBODY HELP
 			e.printStackTrace();
+			return;
 		}
 		
 		// This must be last, as it requires a configuration.

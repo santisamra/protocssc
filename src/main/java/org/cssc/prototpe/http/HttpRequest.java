@@ -3,6 +3,7 @@ package org.cssc.prototpe.http;
 import java.util.Map.Entry;
 
 import org.cssc.prototpe.http.exceptions.MissingHostException;
+import org.cssc.prototpe.net.Application;
 import org.cssc.prototpe.net.exceptions.FatalException;
 
 public class HttpRequest extends HttpPacket {
@@ -77,9 +78,18 @@ public class HttpRequest extends HttpPacket {
 	}
 	
 	@Override
-	public String toString() {
+	public String toString(){
 		StringBuffer buffer = new StringBuffer();
-		buffer.append(this.method.toString() + " " + this.getEffectivePath() + " HTTP/" + this.getVersion() + "\r\n");
+		if( Application.getInstance().getApplicationConfiguration().isProxied()){
+			try {
+				buffer.append(this.method.toString() + " http://" + this.getEffectiveHost() + this.getEffectivePath() + " HTTP/" + this.getVersion() + "\r\n");
+			} catch (MissingHostException e1) {
+				e1.printStackTrace();
+				return null;
+			}
+		} else {
+			buffer.append(this.method.toString() + " " + this.getEffectivePath() + " HTTP/" + this.getVersion() + "\r\n");
+		}
 		
 		for(Entry<String,String> e: this.getHeader().getMap().entrySet() ){
 			buffer.append(e.getKey() + ": " + e.getValue() + "\r\n");
