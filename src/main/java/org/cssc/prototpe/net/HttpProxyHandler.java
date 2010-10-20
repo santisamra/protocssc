@@ -54,15 +54,17 @@ public class HttpProxyHandler implements ClientHandler{
 			InetAddress serverAddress = null;
 			try {
 				try {
+					System.out.println("Por parsear.");
 					requestParser = new HttpRequestParser(socket.getInputStream());
 					request = requestParser.parse();
 					logger.logRequest(socket.getInetAddress(), request);
-
+					System.out.println("Parsee request para " + request.getEffectiveHost());
 
 					//TODO: Should I resolve this host and filter banned IPs?
 					
 					if( configuration.isProxied()){
 						serverAddress = configuration.getProxy();
+						
 						serverSocket = serverManager.getSocket(serverAddress, configuration.getProxyPort());
 						System.out.println(request.getEffectivePath());
 						System.out.println(request.getEffectiveHost());
@@ -154,6 +156,10 @@ public class HttpProxyHandler implements ClientHandler{
 				}
 				
 				serverManager.finishedRequest(serverAddress);
+				if(!clientSocket.isClosed()) {
+					closedConnection = true;
+					clientSocket.close();
+				}
 
 
 			} catch (IOException e){
@@ -215,6 +221,21 @@ public class HttpProxyHandler implements ClientHandler{
 				} catch(SocketException e) {
 					System.out.println("The client has closed his socket side.");
 					break;
+				}
+			}
+
+		} else {
+			if(packet instanceof HttpResponse) {
+				byte[] temp = new byte[1024];
+				int readBytes;
+
+				while((readBytes = parser.readNextNBodyBytes(temp, 0, 1024)) != -1) {
+					try {
+						outputStream.write(temp, 0, readBytes);
+					} catch(SocketException e) {
+						System.out.println("The client has closed his socket side.");
+						break;
+					}
 				}
 			}
 

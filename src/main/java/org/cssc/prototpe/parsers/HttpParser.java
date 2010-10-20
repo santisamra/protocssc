@@ -10,20 +10,20 @@ import org.cssc.prototpe.parsers.exceptions.InvalidPacketException;
 public abstract class HttpParser {
 
 	private static int CHUNK_BUFFER_SIZE = 50;
-	
+
 	protected HttpPacket parsedPacket;
 	private InputStream inputStream;
 	private int readContentBytes;
 	private boolean lastChunkRead;
-	
+
 	protected HttpParser(InputStream inputStream) {
 		this.inputStream = inputStream;
 		this.readContentBytes = 0;
 		lastChunkRead = false;
 	}
-	
+
 	protected abstract HttpPacket parse() throws IOException;
-	
+
 	protected String parseFirstPart() throws IOException {
 		StringBuffer buffer = new StringBuffer();
 
@@ -68,8 +68,8 @@ public abstract class HttpParser {
 
 		return buffer.toString();
 	}
-	
-	
+
+
 	/**
 	 * Reads next n bytes from a response body.
 	 * This method only works if the response has a content-length field
@@ -87,32 +87,39 @@ public abstract class HttpParser {
 		String contentLengthString = parsedPacket.getHeader().getField("content-length");
 
 		if(contentLengthString == null) {
-			throw new HttpParserException("This response has not a content-length field within its header.");
+			
+			try {
+				return inputStream.read(buffer, offset, n);
+			} catch(IOException e) {
+				return -1;
+			}
+			
+		} else {
+
+			if(buffer.length - offset + 1 < n) {
+				throw new HttpParserException("There is not enough space in the buffer to store " + n + " bytes.");
+			}
+
+			int contentLength = Integer.valueOf(contentLengthString);
+
+
+			//2: because of the \r\n at the end of the content.
+			if(n + readContentBytes > contentLength) {
+				n = contentLength - readContentBytes;
+			}
+
+			if(n <= 0) {
+				return -1;
+			}
+
+			int aux = inputStream.read(buffer, offset, n);
+			readContentBytes += aux;
+
+			return aux;
 		}
-
-		if(buffer.length - offset + 1 < n) {
-			throw new HttpParserException("There is not enough space in the buffer to store " + n + " bytes.");
-		}
-
-		int contentLength = Integer.valueOf(contentLengthString);
-
-
-		//2: because of the \r\n at the end of the content.
-		if(n + readContentBytes > contentLength) {
-			n = contentLength - readContentBytes;
-		}
-		
-		if(n <= 0) {
-			return -1;
-		}
-
-		int aux = inputStream.read(buffer, offset, n);
-		readContentBytes += aux;
-
-		return aux;
 	}
-	
-	
+
+
 	/**
 	 * Reads the next chunk of a chunked response body.
 	 * This method only works if the response has a transfer-encoding field
@@ -213,10 +220,10 @@ public abstract class HttpParser {
 			ret[i + 1] = (byte)lf;
 
 		} else {
-			
+
 			//TODO: There might be a trailer here in the middle.
 			//See RFC 2616 section 3.6.1.
-			
+
 			int cr = inputStream.read();
 			int lf = inputStream.read();
 			if(cr != 13 || lf != 10) {
@@ -224,13 +231,13 @@ public abstract class HttpParser {
 			}
 			ret[i] = (byte)cr;
 			ret[i + 1] = (byte)lf;
-			
+
 			lastChunkRead = true;
 			byte[] temp = new byte[i + 2];
 			System.arraycopy(ret, 0, temp, 0, i + 2);
-			
-			
-			
+
+
+
 			ret = temp;
 		}
 
