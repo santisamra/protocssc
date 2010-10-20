@@ -13,7 +13,7 @@ public class Application {
 	private Logger logger;
 	private ServerManager serverManager;
 	
-	private static final int MAX_THREAD_COUNT = 50;
+	private static final int MAX_THREAD_COUNT = 2;
 	private static final int MAX_PERSISTANT_SERVER_CONNECTIONS = 2;
 	private static final String LOGGING_FILE_NAME = "log.txt";
 	

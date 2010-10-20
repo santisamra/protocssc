@@ -62,12 +62,15 @@ public class HttpProxyHandler implements ClientHandler{
 					response = null;
 					
 					try {
+						System.out.println("About to write request");
 						writeHttpPacket(request, requestParser, serverSocket.getOutputStream());
+						System.out.println("Written request, awaiting response");
 
 						//Should block here when the parser attempts reading from this input stream
 						responseParser = new HttpResponseParser(serverSocket.getInputStream());
 
 						response = responseParser.parse();
+						System.out.println("Got response");
 					} catch(IOException e) {
 						//TODO: Problem with the server connection!
 						e.printStackTrace();
@@ -81,11 +84,11 @@ public class HttpProxyHandler implements ClientHandler{
 
 						writeHttpPacket(response, responseParser, clientSocket.getOutputStream());
 
-						if(response.mustCloseConnection()) {
+						if(true || response.mustCloseConnection()) {
 							serverSocket.close();
 						}
 
-						if(request.mustCloseConnection()) {
+						if(true || request.mustCloseConnection()) {
 							clientSocket.close();
 							closedConnection = true;
 							System.out.println("Thread " + Thread.currentThread() + " closed client socket: " + clientSocket);
@@ -108,12 +111,6 @@ public class HttpProxyHandler implements ClientHandler{
 				}
 				
 				serverManager.finishedRequest(serverAddress);
-
-				//TODO: don't close if this is a keep-alive connection
-
-				//			if(serverSocket != null) {
-				//				serverSocket.close();
-				//			}
 
 
 			} catch (IOException e){

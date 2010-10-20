@@ -34,8 +34,11 @@ public class ServerManager {
 		Socket s;
 		System.out.println("Getting socket for address " + addr);
 		synchronized(socketMap) {
+			System.out.println("Entered synchronized block");
 			s = socketMap.get(addr);
+			System.out.println("Obtained tentative socket");
 			ensureUnused(addr);
+			System.out.println("Ensured unused, checking if closed");
 			if(s == null || s.isClosed() || !s.isConnected()) {
 				// Must create a new connection
 				System.out.println("Creating a new connection for " + addr);
@@ -51,6 +54,7 @@ public class ServerManager {
 			socketList.add(0, s);
 			usageAmount.put(addr, 1);
 		}
+		System.out.println("Exiting block");
 		return s;
 	}
 

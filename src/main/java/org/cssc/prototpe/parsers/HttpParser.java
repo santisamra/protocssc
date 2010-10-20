@@ -34,9 +34,10 @@ public abstract class HttpParser {
 
 		while(!(firstCrRead && firstLfRead &&
 				secondCrRead && secondLfRead)) {
-			int readInt = -1;
-			while(readInt == -1) {
-				readInt = inputStream.read();
+			int readInt;
+			readInt = inputStream.read();
+			if(readInt == -1) {
+				throw new IOException("-1 when reading int");
 			}
 			char readChar = (char)readInt;
 
@@ -152,9 +153,10 @@ public abstract class HttpParser {
 				ret = temp;
 			}
 
-			int readInt = -1;
-			while(readInt == -1) {
-				readInt = inputStream.read();
+			int readInt;
+			readInt = inputStream.read();
+			if(readInt == -1) {
+				throw new IOException("-1 when reading int");
 			}
 			ret[i] = (byte)readInt;
 			i++;
@@ -191,9 +193,10 @@ public abstract class HttpParser {
 			ret = temp;
 
 			while(i < tempLength + chunkSize) {
-				int readInt = -1;
-				while(readInt == -1) {
-					readInt = inputStream.read();
+				int readInt;
+				readInt = inputStream.read();
+				if(readInt == -1) {
+					throw new IOException("-1 when reading int");
 				}
 
 				ret[i] = (byte)readInt;
