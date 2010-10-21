@@ -19,16 +19,17 @@ public abstract class Filter {
 		this.clientSocket = clientSocket;
 	}
 	
-	protected boolean applyFilter(ApplicationFilter filter) {
+	protected boolean applyFilter(ApplicationFilter filter) throws IOException {
 		if(filter.isAllAccessesBlocked()) {
 			writeResponse("src/main/resources/html/errors/accessDenied.html");
+			clientSocket.close();
 			return true;
 		}
 		
 		return false;
 	}
 	
-	protected void writeResponse(String htmlResponsePath) {
+	private void writeResponse(String htmlResponsePath) {
 		InputStream inputStream = null;
 		
 		try {

@@ -2,8 +2,13 @@ package org.cssc.prototpe.net;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.swing.JOptionPane;
+
+import org.cssc.prototpe.net.filters.ApplicationFilter;
+import org.cssc.prototpe.net.filters.FilterCondition;
 
 
 
@@ -91,8 +96,17 @@ public class Application {
 	}
 	
 	
-	public static void main(String[] args) {
-		new Application().launch();
+	public static void main(String[] args) throws UnknownHostException {
+		System.setProperty("java.net.preferIPv6Addresses", "false");
+		Application application = new Application();
+		
+		List<InetAddress> ips = new LinkedList<InetAddress>();
+		ips.add(InetAddress.getByName("0:0:0:0:0:0:0:1"));
+		ApplicationFilter filter = new ApplicationFilter(new FilterCondition(ips, null, null), true, null, null,
+				null, 0, false, false);
+		application.getApplicationConfiguration().addFilter(filter);
+		
+		application.launch();
 	}
 	
 	public static Application getInstance() {

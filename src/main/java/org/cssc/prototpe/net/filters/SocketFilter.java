@@ -1,5 +1,6 @@
 package org.cssc.prototpe.net.filters;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.LinkedList;
@@ -13,11 +14,12 @@ public class SocketFilter extends Filter {
 		super(clientSocket);
 	}
 
-	public boolean filter(Socket clientSocket) {
+	public boolean filter(Socket clientSocket) throws IOException {
 		List<InetAddress> ips = new LinkedList<InetAddress>();
 		ips.add(clientSocket.getInetAddress());
+		System.out.println(clientSocket.getInetAddress());
 		
-		FilterCondition condition = new FilterCondition(ips, "", "");
+		FilterCondition condition = new FilterCondition(ips, null, null);
 		ApplicationFilter filter = Application.getInstance().getApplicationConfiguration().getFilterForCondition(condition);
 		
 		return applyFilter(filter);

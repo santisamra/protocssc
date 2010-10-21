@@ -68,9 +68,13 @@ public class ApplicationConfiguration {
 	
 	public ApplicationFilter getFilterForCondition(FilterCondition condition) {
 		for(ApplicationFilter f: filters) {
-			if(f.getCondition().getIps().containsAll(condition.getIps()) ||
-			   f.getCondition().getBrowser().equals(condition.getBrowser()) ||
-			   f.getCondition().getOperatingSystem().equals(condition.getOperatingSystem())) {
+			List<InetAddress> ips = f.getCondition().getIps();
+			String browser = f.getCondition().getBrowser();
+			String operatingSystem = f.getCondition().getOperatingSystem();
+			
+			if((ips != null && ips.containsAll(condition.getIps())) ||
+			   (browser != null && f.getCondition().getBrowser().equals(condition.getBrowser())) ||
+			   (operatingSystem != null && f.getCondition().getOperatingSystem().equals(condition.getOperatingSystem()))) {
 				
 				return f;
 			}
