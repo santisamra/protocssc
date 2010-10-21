@@ -43,4 +43,10 @@ public class HttpResponse extends HttpPacket {
 		return buffer.toString();
 	}
 	
+	public static HttpResponse emptyResponse(HttpResponseCode responseCode) {
+		HttpResponse r = new HttpResponse("1.1", new HttpHeader(), responseCode, responseCode.toString(), new byte[0]);
+		r.getHeader().setField("content-length", "0");
+		return r;
+	}
+	
 }

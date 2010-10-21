@@ -100,23 +100,17 @@ public class HttpProxyHandler implements ClientHandler{
 						//TODO: Problem with the server connection!
 						e.printStackTrace();
 						serverSocket.close();
-						HttpResponse response = new HttpResponse("1.1", new HttpHeader(), HttpResponseCode.BAD_GATEWAY, "Bad gateway", new byte[0]);
-						response.getHeader().setField("content-length", "0");
-						clientSocket.getOutputStream().write(response.toString().getBytes());
+						clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_GATEWAY).toString().getBytes());
 					} catch(InvalidPacketException e) {
 						//TODO: Problem with the server connection!
 						e.printStackTrace();
 						serverSocket.close();
-						HttpResponse response = new HttpResponse("1.1", new HttpHeader(), HttpResponseCode.BAD_GATEWAY, "Bad gateway", new byte[0]);
-						response.getHeader().setField("content-length", "0");
-						clientSocket.getOutputStream().write(response.toString().getBytes());
+						clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_GATEWAY).toString().getBytes());
 					} catch(IOException e) {
 						//TODO: Problem with the server connection!
 						e.printStackTrace();
 						serverSocket.close();
-						HttpResponse response = new HttpResponse("1.1", new HttpHeader(), HttpResponseCode.BAD_GATEWAY, "Bad gateway", new byte[0]);
-						response.getHeader().setField("content-length", "0");
-						clientSocket.getOutputStream().write(response.toString().getBytes());
+						clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_GATEWAY).toString().getBytes());
 					}
 
 					if(response != null) {
@@ -140,27 +134,20 @@ public class HttpProxyHandler implements ClientHandler{
 
 				} catch(MissingHostException e) {
 					e.printStackTrace();
-					HttpResponse response = new HttpResponse("1.1", new HttpHeader(), HttpResponseCode.BAD_REQUEST, "Bad request", new byte[0]);
-					response.getHeader().setField("content-length", "0");
-					clientSocket.getOutputStream().write(response.toString().getBytes());
+					clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_REQUEST).toString().getBytes());
 				} catch(InvalidStatusCodeException e) {
 					e.printStackTrace();
-					HttpResponse response = new HttpResponse("1.1", new HttpHeader(), HttpResponseCode.BAD_GATEWAY, "Bad gateway", new byte[0]);
-					response.getHeader().setField("content-length", "0");
-					clientSocket.getOutputStream().write(response.toString().getBytes());
+					clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_GATEWAY).toString().getBytes());
 				} catch(InvalidMethodStringException e) {
 					e.printStackTrace();
-					HttpResponse response = new HttpResponse("1.1", new HttpHeader(), HttpResponseCode.NOT_IMPLEMENTED, "Not implemented", new byte[0]);
-					response.getHeader().setField("content-length", "0");
-					clientSocket.getOutputStream().write(response.toString().getBytes());
+					clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.NOT_IMPLEMENTED).toString().getBytes());
 				} catch(InvalidPacketParsingException e) {
 					e.printStackTrace();
-					HttpResponse response = new HttpResponse("1.1", new HttpHeader(), HttpResponseCode.BAD_GATEWAY, "Bad gateway", new byte[0]);
-					response.getHeader().setField("content-length", "0");
-					clientSocket.getOutputStream().write(response.toString().getBytes());
+					clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_GATEWAY).toString().getBytes());
 				}
 				
 //				serverManager.finishedRequest(serverAddress);
+				//TODO: parche
 				if(!clientSocket.isClosed()) {
 					closedConnection = true;
 					clientSocket.close();
