@@ -5,7 +5,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.cssc.prototpe.net.filters.application.ApplicationFilter;
-import org.cssc.prototpe.net.filters.application.FilterCondition;
 
 public class ApplicationConfiguration {
 	

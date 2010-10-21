@@ -2,13 +2,9 @@ package org.cssc.prototpe.net;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.LinkedList;
-import java.util.List;
 
 import javax.swing.JOptionPane;
 
-import org.cssc.prototpe.net.filters.application.ApplicationFilter;
-import org.cssc.prototpe.net.filters.application.FilterCondition;
 import org.cssc.prototpe.net.interfaces.ServerManager;
 
 
@@ -25,8 +21,8 @@ public class Application {
 	private Logger logger;
 	private ServerManager serverManager;
 	
-	private static final int MAX_THREAD_COUNT = 30;
-	private static final int MAX_PERSISTANT_SERVER_CONNECTIONS = 50;
+	private static final int MAX_THREAD_COUNT = 5;
+	private static final int MAX_PERSISTANT_SERVER_CONNECTIONS = 20;
 	private static final String LOGGING_FILE_NAME = "log.txt";
 	
 	private Application() {

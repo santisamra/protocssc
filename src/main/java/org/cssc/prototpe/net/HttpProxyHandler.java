@@ -73,6 +73,8 @@ public class HttpProxyHandler implements ClientHandler{
 					} catch(InvalidMethodStringException e) {
 						e.printStackTrace();
 						clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.NOT_IMPLEMENTED).toString().getBytes());
+						closeClientSocket();
+						return;
 					}
 
 
@@ -86,10 +88,14 @@ public class HttpProxyHandler implements ClientHandler{
 
 					} catch (MissingHostException e) {
 						e.printStackTrace();
-						clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_REQUEST).toString().getBytes());					
+						clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_REQUEST).toString().getBytes());
+						closeClientSocket();
+						return;
 					} catch (UnknownHostException e) {
 						e.printStackTrace();
 						clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_REQUEST).toString().getBytes());
+						closeClientSocket();
+						return;
 					}
 
 					
@@ -105,15 +111,21 @@ public class HttpProxyHandler implements ClientHandler{
 								writeHttpPacket(request, requestParser, serverSocket.getOutputStream());
 							} catch(Exception e1) {
 								e1.printStackTrace();
-								clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_GATEWAY).toString().getBytes());							
+								clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_GATEWAY).toString().getBytes());
+								closeClientSocket();
+								return;
 							}
 						}
 					} catch(InvalidPacketParsingException e) {
 						e.printStackTrace();
 						clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_REQUEST).toString().getBytes());
+						closeClientSocket();
+						return;
 					} catch(InvalidPacketException e) {
 						e.printStackTrace();
 						clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_REQUEST).toString().getBytes());
+						closeClientSocket();
+						return;
 					}
 					
 					// READING RESPONSE
@@ -124,12 +136,18 @@ public class HttpProxyHandler implements ClientHandler{
 					} catch(InvalidStatusCodeException e) {
 						e.printStackTrace();
 						clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_GATEWAY).toString().getBytes());
+						closeClientSocket();
+						return;
 					} catch(InvalidPacketParsingException e) {
 						e.printStackTrace();
 						clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_GATEWAY).toString().getBytes());
+						closeClientSocket();
+						return;
 					} catch(InvalidPacketException e) {
 						e.printStackTrace();
 						clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_GATEWAY).toString().getBytes());
+						closeClientSocket();
+						return;
 					}
 
 					// WRITING RESPONSE
