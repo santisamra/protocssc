@@ -89,10 +89,12 @@ public class PersistentServerManager implements ServerManager {
 	}
 
 	public void finishedRequest(Socket socket) {
-		System.out.println("Closing " + socket.getInetAddress());
-		synchronized(socketMap) {
-			usageAmount.put(socket.getInetAddress(), 0);
-			socketMap.notifyAll();
+		if(socket != null) {
+			System.out.println("Closing " + socket.getInetAddress());
+			synchronized(socketMap) {
+				usageAmount.put(socket.getInetAddress(), 0);
+				socketMap.notifyAll();
+			}
 		}
 	}
 }
