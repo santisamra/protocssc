@@ -2,13 +2,10 @@ package org.cssc.prototpe.net;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.LinkedList;
-import java.util.List;
 
 import javax.swing.JOptionPane;
 
-import org.cssc.prototpe.net.filters.ApplicationFilter;
-import org.cssc.prototpe.net.filters.FilterCondition;
+import org.cssc.prototpe.net.interfaces.ServerManager;
 
 
 
@@ -42,7 +39,8 @@ public class Application {
 		
 		// TODO: Place here any parts of the application that are needed by other parts.
 		logger = new Logger(applicationConfiguration.getLoggingFileName());
-		serverManager = new ServerManager(applicationConfiguration.getMaxPersistantServerConnections());
+//		serverManager = new PersistentServerManager(applicationConfiguration.getMaxPersistantServerConnections());
+		serverManager = new SimpleServerManager();
 		
 		//TODO: Nada validado obviamente.. TESTING PURO
 		int port; 

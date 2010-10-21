@@ -8,11 +8,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.cssc.prototpe.net.interfaces.ServerManager;
+
 /**
  * This class is in charge of handling the persistant connections with
  * the servers.
  */
-public class ServerManager {
+public class PersistentServerManager implements ServerManager {
 	
 	private Map<InetAddress, Socket> socketMap;
 	private Map<InetAddress, Integer> usageAmount;
@@ -20,7 +22,7 @@ public class ServerManager {
 	private int usedSocks;
 	private int maximumOpenSockets;
 	
-	public ServerManager(int maximumOpenSockets) {
+	public PersistentServerManager(int maximumOpenSockets) {
 		this.socketMap = new HashMap<InetAddress, Socket>();
 		this.usageAmount = new HashMap<InetAddress, Integer>();
 		this.usedSocks = 0;
@@ -33,10 +35,10 @@ public class ServerManager {
 		System.out.println("Getting socket for address " + addr);
 		synchronized(socketMap) {
 			System.out.println("Entered synchronized block");
-			s = socketMap.get(addr);
-			System.out.println("Obtained tentative socket");
 			ensureUnused(addr);
-			System.out.println("Ensured unused, checking if closed");
+			System.out.println("Ensured unused, obtaining tentative socket");
+			s = socketMap.get(addr);
+			System.out.println("Obtained tentative socket, ensuring it's not closed");
 			if(s == null || s.isClosed() || !s.isConnected()) {
 				// Must create a new connection
 				System.out.println("Creating a new connection for " + addr);
@@ -86,10 +88,10 @@ public class ServerManager {
 		}
 	}
 
-	public void finishedRequest(InetAddress addr) {
-		System.out.println("Closing " + addr);
+	public void finishedRequest(Socket socket) {
+		System.out.println("Closing " + socket.getInetAddress());
 		synchronized(socketMap) {
-			usageAmount.put(addr, 0);
+			usageAmount.put(socket.getInetAddress(), 0);
 			socketMap.notifyAll();
 		}
 	}

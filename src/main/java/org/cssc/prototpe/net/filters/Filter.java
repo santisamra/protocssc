@@ -14,50 +14,52 @@ import org.cssc.prototpe.net.filters.exceptions.FilterException;
 public abstract class Filter {
 
 	protected Socket clientSocket;
-	
+
 	public Filter(Socket clientSocket) {
 		this.clientSocket = clientSocket;
 	}
-	
+
 	protected boolean applyFilter(ApplicationFilter filter) throws IOException {
-		if(filter.isAllAccessesBlocked()) {
-			writeResponse("src/main/resources/html/errors/accessDenied.html");
-			clientSocket.close();
-			return true;
+		if(filter != null) {
+			if(filter.isAllAccessesBlocked()) {
+				writeResponse("src/main/resources/html/errors/accessDenied.html");
+				clientSocket.close();
+				return true;
+			}
 		}
-		
+
 		return false;
 	}
-	
+
 	private void writeResponse(String htmlResponsePath) {
 		InputStream inputStream = null;
-		
+
 		try {
 			inputStream = new FileInputStream(htmlResponsePath);
 		} catch (FileNotFoundException e) {
 			throw new FilterException(e);
 		}
-		
+
 		int contentLength = 0;
 		StringBuffer buffer = new StringBuffer();
-		
+
 		int readInt;
-		
+
 		try {
 			while((readInt = inputStream.read()) != -1) {
 				buffer.append((char)readInt);
 				contentLength++;
 			}
-			
+
 			HttpHeader header = new HttpHeader();
 			header.setField("content-length", Integer.toString(contentLength));
 			HttpResponse response = new HttpResponse("1.1", header, HttpResponseCode.FORBIDDEN, "FORBIDDEN", new byte[0]);
 			clientSocket.getOutputStream().write(response.toString().getBytes());
 			clientSocket.getOutputStream().write(buffer.toString().getBytes());
-			
+
 		} catch (IOException e) {
 			throw new FilterException(e);
 		}
-		
+
 	}
 }
