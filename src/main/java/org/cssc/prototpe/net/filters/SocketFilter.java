@@ -22,6 +22,10 @@ public class SocketFilter extends Filter {
 		FilterCondition condition = new FilterCondition(ips, null, null);
 		ApplicationFilter filter = Application.getInstance().getApplicationConfiguration().getFilterForCondition(condition);
 		
-		return applyFilter(filter);
+		if(filter != null) {
+			return applyFilter(filter);
+		}
+		
+		return false;
 	}
 }
