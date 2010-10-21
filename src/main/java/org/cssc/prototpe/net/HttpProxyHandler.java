@@ -7,6 +7,7 @@ import java.net.Socket;
 import java.net.SocketException;
 
 import org.cssc.prototpe.http.HttpHeader;
+import org.cssc.prototpe.http.HttpMethod;
 import org.cssc.prototpe.http.HttpPacket;
 import org.cssc.prototpe.http.HttpRequest;
 import org.cssc.prototpe.http.HttpResponse;
@@ -75,7 +76,9 @@ public class HttpProxyHandler implements ClientHandler{
 						String host = request.getEffectiveHost();
 
 						serverAddress = InetAddress.getByName(host);
-						serverSocket = serverManager.getSocket(serverAddress, HTTP_PORT);
+						serverSocket = new Socket(serverAddress, HTTP_PORT);//serverManager.getSocket(serverAddress, HTTP_PORT);
+						//TODO: HAY QUE SACAR ESTOOOO
+//						serverSocket.setSoTimeout(3000);
 					}
 
 					response = null;
@@ -118,8 +121,10 @@ public class HttpProxyHandler implements ClientHandler{
 
 					if(response != null) {
 						logger.logResponse(socket.getInetAddress(), response, request);
-
-						writeHttpPacket(response, responseParser, clientSocket.getOutputStream());
+						
+						if( response.getStatusCode().isPossibleContent() && !request.getMethod().equals(HttpMethod.HEAD)) {
+							writeHttpPacket(response, responseParser, clientSocket.getOutputStream());
+						}
 
 						if(response.mustCloseConnection()) {
 							serverSocket.close();
@@ -155,7 +160,7 @@ public class HttpProxyHandler implements ClientHandler{
 					clientSocket.getOutputStream().write(response.toString().getBytes());
 				}
 				
-				serverManager.finishedRequest(serverAddress);
+//				serverManager.finishedRequest(serverAddress);
 				if(!clientSocket.isClosed()) {
 					closedConnection = true;
 					clientSocket.close();
@@ -167,7 +172,7 @@ public class HttpProxyHandler implements ClientHandler{
 				System.out.println("Here");
 				try {
 					if(serverAddress != null) {
-						serverManager.finishedRequest(serverAddress);
+//						serverManager.finishedRequest(serverAddress);
 					}
 					clientSocket.close();
 				} catch (IOException e1) {
@@ -192,7 +197,7 @@ public class HttpProxyHandler implements ClientHandler{
 
 	private void writeHttpPacket(HttpPacket packet, HttpParser parser, OutputStream outputStream) throws IOException {
 		outputStream.write(packet.toString().getBytes());
-
+		System.out.println(packet);
 		String transferEncoding = packet.getHeader().getField("transfer-encoding");
 
 		if(transferEncoding != null) {
@@ -231,6 +236,7 @@ public class HttpProxyHandler implements ClientHandler{
 
 				while((readBytes = parser.readNextNBodyBytes(temp, 0, 1024)) != -1) {
 					try {
+						print(temp);
 						outputStream.write(temp, 0, readBytes);
 					} catch(SocketException e) {
 						System.out.println("The client has closed his socket side.");
