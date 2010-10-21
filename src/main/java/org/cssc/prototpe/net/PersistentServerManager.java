@@ -45,14 +45,14 @@ public class PersistentServerManager implements ServerManager {
 				s = new Socket(addr, port);
 				socketMap.put(addr, s);
 				usedSocks++;
-				if(usedSocks > maximumOpenSockets) {
-					closeOldestSocket();
-					usedSocks--;
-				}
 			}
 			socketList.remove(s);
 			socketList.add(0, s);
 			usageAmount.put(addr, 1);
+			if(usedSocks > maximumOpenSockets) {
+				closeOldestSocket();
+				usedSocks--;
+			}
 		}
 		System.out.println("Exiting block");
 		return s;

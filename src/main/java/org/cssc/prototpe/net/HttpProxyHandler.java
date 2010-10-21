@@ -255,7 +255,7 @@ public class HttpProxyHandler implements ClientHandler{
 			}
 
 		} else {
-			if(packet instanceof HttpResponse) {
+			if(packet instanceof HttpResponse && ((HttpResponse)packet).getStatusCode().isPossibleContent()) {
 				byte[] temp = new byte[1024];
 				int readBytes;
 
