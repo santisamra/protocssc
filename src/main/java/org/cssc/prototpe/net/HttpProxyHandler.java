@@ -65,8 +65,18 @@ public class HttpProxyHandler implements ClientHandler{
 				serverSocket = null;
 				response = null;
 				try {
+					
+					// READING REQUEST
 					System.out.println("Por parsear.");
-					listenAndParseRequest();
+					try {
+						listenAndParseRequest();
+					} catch(InvalidMethodStringException e) {
+						e.printStackTrace();
+						clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.NOT_IMPLEMENTED).toString().getBytes());
+					}
+
+
+					// GENERATING CONNECTION
 					try {
 						System.out.println("Parsee request para " + request.getEffectiveHost());
 
@@ -77,8 +87,13 @@ public class HttpProxyHandler implements ClientHandler{
 					} catch (MissingHostException e) {
 						e.printStackTrace();
 						clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_REQUEST).toString().getBytes());					
+					} catch (UnknownHostException e) {
+						e.printStackTrace();
+						clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_REQUEST).toString().getBytes());
 					}
 
+					
+					// WRITING REQUEST
 					try {
 						try {
 							System.out.println("About to write request");
@@ -93,46 +108,42 @@ public class HttpProxyHandler implements ClientHandler{
 								clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_GATEWAY).toString().getBytes());							
 							}
 						}
-						System.out.println("Written request, awaiting response");
-						listenAndParseResponse();
-						System.out.println("Got response");
 					} catch(InvalidPacketParsingException e) {
-						//TODO: Problem with the server connection!
 						e.printStackTrace();
 						clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_REQUEST).toString().getBytes());
 					} catch(InvalidPacketException e) {
 						e.printStackTrace();
-						clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_GATEWAY).toString().getBytes());
+						clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_REQUEST).toString().getBytes());
+					}
+					
+					// READING RESPONSE
+					try {
+						System.out.println("Written request, awaiting response");
+						listenAndParseResponse();
+						System.out.println("Got response");
 					} catch(InvalidStatusCodeException e) {
 						e.printStackTrace();
 						clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_GATEWAY).toString().getBytes());
-					} catch(InvalidMethodStringException e) {
+					} catch(InvalidPacketParsingException e) {
 						e.printStackTrace();
-						clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.NOT_IMPLEMENTED).toString().getBytes());
+						clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_GATEWAY).toString().getBytes());
+					} catch(InvalidPacketException e) {
+						e.printStackTrace();
+						clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_GATEWAY).toString().getBytes());
 					}
 
+					// WRITING RESPONSE
 					writeHttpPacket(response, responseParser, clientSocket.getOutputStream());
-					
+
+					// FINISHED!
 					serverManager.finishedRequest(serverSocket);
 					//TODO: parche
-					if(!clientSocket.isClosed()) {
-						closedConnection = true;
-						clientSocket.close();
-					}
-
-
-				} catch (IOException e){
-					//	e.printStackTrace();
-					System.out.println("Here");
-					try {
-						if(serverSocket != null) {
-							serverManager.finishedRequest(serverSocket);
-						}
-						clientSocket.close();
-					} catch (IOException e1) {
-						e1.printStackTrace();
-					}
 					closedConnection = true;
+					closeClientSocket();
+
+				} catch(IOException e) {
+					closedConnection = true;
+					closeClientSocket();
 				}
 			}
 		}
@@ -150,7 +161,7 @@ public class HttpProxyHandler implements ClientHandler{
 		requestParser = new HttpRequestParser(clientSocket.getInputStream());
 		request = requestParser.parse();
 		logger.logRequest(clientSocket.getInetAddress(), request);
-		
+
 		//Doing this to be able to establish a connection with the origin server
 		request.getHeader().removeField("connection");
 	}
@@ -165,9 +176,7 @@ public class HttpProxyHandler implements ClientHandler{
 			request.setPath("http://" + request.getEffectiveHost() + request.getEffectivePath());
 		} else {
 			System.out.println(request.getEffectivePath());
-			//TODO: Ask for the socket to someone
 			String host = request.getEffectiveHost();
-
 			serverSocket = serverManager.getSocket(InetAddress.getByName(host), HTTP_PORT);
 			//TODO: HAY QUE SACAR ESTOOOO
 			//						serverSocket.setSoTimeout(3000);
@@ -234,6 +243,17 @@ public class HttpProxyHandler implements ClientHandler{
 				}
 			}
 
+		}
+	}
+
+	private void closeClientSocket() {
+		if(clientSocket != null) {
+			try {
+				clientSocket.close();
+			} catch (IOException e) {
+				//TODO: what to do here?
+				e.printStackTrace(); 
+			}
 		}
 	}
 
