@@ -12,18 +12,18 @@ public class SocketFilter extends Filter {
 		super(clientSocket);
 	}
 
-	public boolean filter(Socket clientSocket) throws IOException {
+	public boolean filter() throws IOException {
 		ApplicationFilter filter = Application.getInstance().getApplicationConfiguration().getFilterForCondition(clientSocket.getInetAddress(), null);
 		
 		if(filter != null) {
-			return applySocketFilter(filter);
+			return applyFilter(filter);
 		}
 		
 		return false;
 	}
 	
 
-	protected boolean applySocketFilter(ApplicationFilter filter) throws IOException {
+	private boolean applyFilter(ApplicationFilter filter) throws IOException {
 		if(filter.isAllAccessesBlocked()) {
 			writeResponse("src/main/resources/html/errors/accessDenied.html");
 			clientSocket.close();
