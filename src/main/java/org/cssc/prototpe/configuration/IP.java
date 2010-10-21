@@ -1,4 +1,4 @@
-package org.cssc.prototpe.testing.selectors;
+package org.cssc.prototpe.configuration;
 
 
 
