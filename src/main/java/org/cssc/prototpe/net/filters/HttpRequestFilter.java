@@ -1,11 +1,12 @@
 package org.cssc.prototpe.net.filters;
 
+import java.net.Socket;
+
 import org.cssc.prototpe.http.HttpRequest;
-import org.cssc.prototpe.net.Application;
 
 public class HttpRequestFilter {
 
-	public boolean filterRequest(HttpRequest request) {
+	public boolean filter(Socket clientSocket, HttpRequest request) {
 		
 		
 		return false;

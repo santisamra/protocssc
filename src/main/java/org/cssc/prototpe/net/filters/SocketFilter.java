@@ -1,12 +1,10 @@
 package org.cssc.prototpe.net.filters;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.Socket;
-import java.util.LinkedList;
-import java.util.List;
 
 import org.cssc.prototpe.net.Application;
+import org.cssc.prototpe.net.filters.application.ApplicationFilter;
 
 public class SocketFilter extends Filter {
 	
@@ -15,15 +13,21 @@ public class SocketFilter extends Filter {
 	}
 
 	public boolean filter(Socket clientSocket) throws IOException {
-		List<InetAddress> ips = new LinkedList<InetAddress>();
-		ips.add(clientSocket.getInetAddress());
-		System.out.println(clientSocket.getInetAddress());
-		
-		FilterCondition condition = new FilterCondition(ips, null, null);
-		ApplicationFilter filter = Application.getInstance().getApplicationConfiguration().getFilterForCondition(condition);
+		ApplicationFilter filter = Application.getInstance().getApplicationConfiguration().getFilterForCondition(clientSocket.getInetAddress(), null);
 		
 		if(filter != null) {
-			return applyFilter(filter);
+			return applySocketFilter(filter);
+		}
+		
+		return false;
+	}
+	
+
+	protected boolean applySocketFilter(ApplicationFilter filter) throws IOException {
+		if(filter.isAllAccessesBlocked()) {
+			writeResponse("src/main/resources/html/errors/accessDenied.html");
+			clientSocket.close();
+			return true;
 		}
 		
 		return false;

@@ -9,9 +9,10 @@ import java.net.Socket;
 import org.cssc.prototpe.http.HttpHeader;
 import org.cssc.prototpe.http.HttpResponse;
 import org.cssc.prototpe.http.HttpResponseCode;
+import org.cssc.prototpe.net.filters.application.ApplicationFilter;
 import org.cssc.prototpe.net.filters.exceptions.FilterException;
 
-public abstract class Filter {
+public class Filter {
 
 	protected Socket clientSocket;
 
@@ -19,19 +20,7 @@ public abstract class Filter {
 		this.clientSocket = clientSocket;
 	}
 
-	protected boolean applyFilter(ApplicationFilter filter) throws IOException {
-		if(filter != null) {
-			if(filter.isAllAccessesBlocked()) {
-				writeResponse("src/main/resources/html/errors/accessDenied.html");
-				clientSocket.close();
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	private void writeResponse(String htmlResponsePath) {
+	protected void writeResponse(String htmlResponsePath) {
 		InputStream inputStream = null;
 
 		try {

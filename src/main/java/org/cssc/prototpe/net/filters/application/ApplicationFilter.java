@@ -1,4 +1,4 @@
-package org.cssc.prototpe.net.filters;
+package org.cssc.prototpe.net.filters.application;
 
 import java.net.InetAddress;
 import java.util.List;

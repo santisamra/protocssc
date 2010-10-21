@@ -2,10 +2,15 @@ package org.cssc.prototpe.net;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.swing.JOptionPane;
 
+import org.cssc.prototpe.net.filters.application.ApplicationFilter;
+import org.cssc.prototpe.net.filters.application.FilterCondition;
 import org.cssc.prototpe.net.interfaces.ServerManager;
+
 
 
 

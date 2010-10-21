@@ -4,8 +4,8 @@ import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.cssc.prototpe.net.filters.ApplicationFilter;
-import org.cssc.prototpe.net.filters.FilterCondition;
+import org.cssc.prototpe.net.filters.application.ApplicationFilter;
+import org.cssc.prototpe.net.filters.application.FilterCondition;
 
 public class ApplicationConfiguration {
 	
@@ -66,15 +66,15 @@ public class ApplicationConfiguration {
 		filters.add(filter);
 	}
 	
-	public ApplicationFilter getFilterForCondition(FilterCondition condition) {
+	public ApplicationFilter getFilterForCondition(InetAddress ip, String userAgent) {
 		for(ApplicationFilter f: filters) {
 			List<InetAddress> ips = f.getCondition().getIps();
 			String browser = f.getCondition().getBrowser();
 			String operatingSystem = f.getCondition().getOperatingSystem();
 			
-			if((ips != null && ips.containsAll(condition.getIps())) ||
-			   (browser != null && f.getCondition().getBrowser().equals(condition.getBrowser())) ||
-			   (operatingSystem != null && f.getCondition().getOperatingSystem().equals(condition.getOperatingSystem()))) {
+			if((ips != null && ips.contains(ip) ||
+			   (browser != null && userAgent != null && userAgent.contains(browser)) ||
+			   (operatingSystem != null && userAgent != null && userAgent.contains(operatingSystem)))) {
 				
 				return f;
 			}
