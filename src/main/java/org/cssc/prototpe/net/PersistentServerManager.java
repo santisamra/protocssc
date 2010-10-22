@@ -39,14 +39,18 @@ public class PersistentServerManager implements ServerManager {
 			System.out.println("Ensured unused, obtaining tentative socket");
 			s = socketMap.get(addr);
 			System.out.println("Obtained tentative socket, ensuring it's not closed");
+			if(s != null) {
+				socketList.remove(s);
+			}
 			if(s == null || s.isClosed() || !s.isConnected()) {
 				// Must create a new connection
 				System.out.println("Creating a new connection for " + addr);
+				if(s == null) {
+					usedSocks++;
+				}
 				s = new Socket(addr, port);
 				socketMap.put(addr, s);
-				usedSocks++;
 			}
-			socketList.remove(s);
 			socketList.add(0, s);
 			usageAmount.put(addr, 1);
 			if(usedSocks > maximumOpenSockets) {
@@ -81,6 +85,7 @@ public class PersistentServerManager implements ServerManager {
 		ensureUnused(oldestSocket.getInetAddress());
 		try {
 			oldestSocket.close();
+			socketList.remove(socketList.size() - 1);
 		} catch (IOException e) {
 			//TODO: what to do here?
 			System.err.println(oldestSocket);

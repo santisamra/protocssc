@@ -165,11 +165,14 @@ public class HttpProxyHandler implements ClientHandler{
 						if(response.mustCloseConnection()) {
 							serverSocket.close();
 						}
-
-						//TODO: parche
-						closedConnection = true;
-						closeClientSocket();
+						
+						if(request.mustCloseConnection() || response.mustCloseConnection()) {
+							closedConnection = true;
+							closeClientSocket();
+						}
+						
 					}
+					
 
 				} catch(IOException e) {
 					closedConnection = true;
