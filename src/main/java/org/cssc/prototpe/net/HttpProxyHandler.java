@@ -185,7 +185,13 @@ public class HttpProxyHandler implements ClientHandler{
 						}
 
 						// WRITING RESPONSE
-						writeHttpPacket(response, responseParser, clientSocket.getOutputStream());
+						try {
+							writeHttpPacket(response, responseParser, clientSocket.getOutputStream());
+						} catch(IOException e) {
+							closeClientSocket();
+							closedConnection = true;
+							mustCloseServerConnection = true;
+						}
 
 						// FINISHED!
 						if(mustCloseServerConnection) {
@@ -296,12 +302,7 @@ public class HttpProxyHandler implements ClientHandler{
 
 				while((temp = parser.readNextChunk()) != null) {
 
-					try {
 						outputStream.write(temp);
-					} catch(SocketException e) {
-						System.out.println("The client has closed his socket side.");
-						break;
-					}
 				}
 			}
 
@@ -311,12 +312,7 @@ public class HttpProxyHandler implements ClientHandler{
 			int readBytes;
 
 			while((readBytes = parser.readNextNBodyBytes(temp, 0, 1024)) != -1) {
-				try {
 					outputStream.write(temp, 0, readBytes);
-				} catch(SocketException e) {
-					System.out.println("The client has closed his socket side.");
-					break;
-				}
 			}
 
 		} else {
@@ -325,13 +321,8 @@ public class HttpProxyHandler implements ClientHandler{
 				int readBytes;
 
 				while((readBytes = parser.readNextNBodyBytes(temp, 0, 1024)) != -1) {
-					try {
 						//						print(temp);
 						outputStream.write(temp, 0, readBytes);
-					} catch(SocketException e) {
-						System.out.println("The client has closed his socket side.");
-						break;
-					}
 				}
 			}
 
