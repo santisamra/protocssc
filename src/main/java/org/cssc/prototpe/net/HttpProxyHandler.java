@@ -177,19 +177,25 @@ public class HttpProxyHandler implements ClientHandler{
 							closeClientSocket();
 							return;
 						}
+						
+						boolean mustCloseServerConnection = response.mustCloseConnection();
+						response.getHeader().removeField("connection");
+						if(request.mustCloseConnection()) {
+							response.getHeader().setField("connection", "close");
+						}
 
 						// WRITING RESPONSE
 						writeHttpPacket(response, responseParser, clientSocket.getOutputStream());
 
 						// FINISHED!
-						if(response.mustCloseConnection()) {
+						if(mustCloseServerConnection) {
 							serverSocket.close();
 						}
 						
 						
 					}
 					
-					if(request.mustCloseConnection() || (response != null && response.mustCloseConnection())) {
+					if(request.mustCloseConnection()) {
 						closedConnection = true;
 						closeClientSocket();
 					}

@@ -20,9 +20,9 @@ public class HttpHeader {
 			throw new IllegalArgumentException("Value cannot be null.");
 		}
 		
-//		if(field.equals("proxy-connection")) {
-//			field = "connection";
-//		}
+		if(field.equals("proxy-connection")) {
+			field = "connection";
+		}
 		
 		contentMap.put(field, value);
 	}
