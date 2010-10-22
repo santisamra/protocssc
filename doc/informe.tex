@@ -71,7 +71,36 @@ lo tanto, no se desarrollaron ni implementaron protocolos propios.
 
 \section{Problemas encontrados}
 
+Durante el desarrollo se encontraron gran cantidad de problemas, que debieron
+ser solucionados para lograr un producto sólido. Se mencionan a continuación
+algunos de ellos:
+
+\subsection{Decisión sobre el uso de threads o E/S asincrónica}
+
+\subsection{Interpretación y parseo de mensajes HTTP}
+
+\subsection{Compatibilidad con HTTP 1.0}
+
+\subsection{Conexiones persistentes}
+
+\subsection{Proxy transparente}
+
+
+
 \section{Limitaciones}
+
+El proxy desarrollado tiene las siguientes limitaciones:
+
+\begin{itemize}
+  \item No soporta \emph{pipelining} de requests al servidor. Por ello, si bien
+  se reusan las conexiones a los servidores cuando llegan distintos requests, la
+  eficiencia de ello deja mucho que desear. De hecho, funciona más rápidamente
+  si las conexiones a los servidores no se reusan, creándose una nueva cada vez
+  que se realiza un request.
+  \item No soporta todos los métodos HTTP, solo GET, HEAD y POST; con lo cual
+  hay ciertas páginas que no funcionan del todo bien porque usan otros métodos 
+  (por ejemplo, el chat de GMail, que usa CONNECT).
+\end{itemize}
 
 \section{Posibles extensiones}
 
