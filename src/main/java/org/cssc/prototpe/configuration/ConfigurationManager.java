@@ -1,8 +1,7 @@
 package org.cssc.prototpe.configuration;
 
-
-
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -19,7 +18,7 @@ import org.xml.sax.SAXParseException;
 public class ConfigurationManager {
 	
 	private static ConfigurationManager instance;
-	private Set<User> users;
+	private Set<Filter> filters;
 	
 	private ConfigurationManager(){
 		try {
@@ -37,13 +36,13 @@ public class ConfigurationManager {
 	}
 	private void parse() throws SAXException, IOException{
 	    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		Actions actions=null;
 		Filter filter=null;
-		User user=null;
-		Set<IP> originIPs=null;
+		Set<InetAddress> originIPs=null;
 		String browser=null;
 		String oS=null;
 		boolean blockAllAccesses=false;
-		Set<IP> blockedIPs = null;
+		Set<InetAddress> blockedIPs = null;
 		Set<String> blockedURIs = null;
 		Set<String> blockedMediaTypes = null;
 		double maxContentLength=0;
@@ -63,24 +62,24 @@ public class ConfigurationManager {
 	
 			    	for(int l=0; l<configs.getLength(); l++){
 			    		if(configs.item(l).getNodeName().equals("filters")){
-			    			users = new TreeSet<User>();
-			    			NodeList filters = configs.item(l).getChildNodes();
-			    			for(int n=0; n<filters.getLength(); n++){
-			    	    		if(filters.item(n).getNodeName().equals("filter")){
-				    				NodeList filterConf = filters.item(n).getChildNodes();
+			    			filters = new TreeSet<Filter>();
+			    			NodeList filtersNodeList = configs.item(l).getChildNodes();
+			    			for(int n=0; n<filtersNodeList.getLength(); n++){
+			    	    		if(filtersNodeList.item(n).getNodeName().equals("filter")){
+				    				NodeList filterConf = filtersNodeList.item(n).getChildNodes();
 				    				for(int conf=0; conf<filterConf.getLength(); conf++){
 				    					if(filterConf.item(conf).getNodeName().equals("conditions")){
 				    						NodeList conditions = filterConf.item(conf).getChildNodes();
 				    				    	for(int i=0; i<conditions.getLength(); i++){ //por cada condition
 				    				    		Node currNode = conditions.item(i);
 				    				    		if(currNode.getNodeName().equals("origin-IPs")){
-				    				    			originIPs = new TreeSet<IP>();
+				    				    			originIPs = new TreeSet<InetAddress>();
 				    				    			 NodeList ips = currNode.getChildNodes();
 				    				    			 for(int j=0; j<ips.getLength(); j++){
 				    				    				 if(ips.item(j).getNodeName().equals("IP")){
 				    				    					 try {
 				    											IP ip = new IP(ips.item(j).getChildNodes().item(0).getTextContent());
-				    											originIPs.add(ip);
+				    											originIPs.add(ip.getInetAddress());
 				    				    					 } catch (Exception e) {
 				    											break; //lo salteo si el ip es invalido
 				    				    					 }
@@ -96,20 +95,20 @@ public class ConfigurationManager {
 				    				    	}
 				    					}
 				    					else if(filterConf.item(conf).getNodeName().equals("actions")){
-				    						NodeList actions = filterConf.item(conf).getChildNodes();
-				    				    	for(int i=0; i<actions.getLength(); i++){ //por cada config
-				    				    		Node currNode = actions.item(i);
+				    						NodeList actionsNodeList = filterConf.item(conf).getChildNodes();
+				    				    	for(int i=0; i<actionsNodeList.getLength(); i++){ //por cada config
+				    				    		Node currNode = actionsNodeList.item(i);
 				    				    		if(currNode.getNodeName().equals("block-all-accesses")){
 				    				    			blockAllAccesses=currNode.getChildNodes().item(0).getTextContent().equalsIgnoreCase("true")?true:false;
 				    				    		}
 				    				    		else if(currNode.getNodeName().equals("blocked-IPs")){
-				    				    			blockedIPs = new TreeSet<IP>();
+				    				    			blockedIPs = new TreeSet<InetAddress>();
 				    				    			 NodeList ips = currNode.getChildNodes();
 				    				    			 for(int j=0; j<ips.getLength(); j++){
 				    				    				 if(ips.item(j).getNodeName().equals("IP")){
 				    				    					 try {
 				    											IP ip = new IP(ips.item(j).getChildNodes().item(0).getTextContent());
-				    											blockedIPs.add(ip);
+				    											blockedIPs.add(ip.getInetAddress());
 				    				    					 } catch (Exception e) {
 				    											break; //lo salteo si el ip es invalido
 				    				    					 }
@@ -144,42 +143,27 @@ public class ConfigurationManager {
 				    				    		}
 				    				    		else if(currNode.getNodeName().equals("transform")){
 				    				    			 NodeList transforms = currNode.getChildNodes();
-//				    				    			 System.out.println("transf");
-//				    				    			 System.out.println(transforms);
 				    				    			 for(int j=0; j<transforms.getLength(); j++){
-//				    				    				 System.out.println(j);
-//				    				    				 System.out.println(transforms.item(j).getNodeName());
 				    				    				 if(transforms.item(j).getNodeName().equals("tl33t")){
-//				    				    					 System.out.println(transforms.item(j).getChildNodes().item(0));
 				    				    					 transforml33t=transforms.item(j).getChildNodes().item(0).getTextContent().equalsIgnoreCase("true")?true:false;
-//				    				    					 System.out.println("lala1");
 				    				    				 }else if(transforms.item(j).getNodeName().equals("images180")){
-//				    				    					 System.out.println("lala2");
 				    				    					 transforml80=transforms.item(j).getChildNodes().item(0).getTextContent().equalsIgnoreCase("true")?true:false;
-//				    				    					 System.out.println("lala3");
 				    				    				 }
 				    				    			 }
 				    				    		}
-//				    				    		System.out.println(currNode.getNodeName());
 				    				    	}
-//				    				    	System.out.println("antess");
-				    				    	filter = new Filter(blockAllAccesses, blockedIPs, blockedURIs, 
+				    				    	actions = new Actions(blockAllAccesses, blockedIPs, blockedURIs, 
 				    				    			blockedMediaTypes, maxContentLength, transforml80, transforml33t);
-//				    				    	System.out.println(filter);
 				    					}
 				    				}
-//				    				System.out.println("antes1");
-				    				user = new User(filter, originIPs, browser, oS);
-				    				System.out.println(user);
-				    				users.add(user);
-//				    				System.out.println("despues");
+				    				filter = new Filter(actions, originIPs, browser, oS);
+				    				filters.add(filter);
 			    	    		}
 			    			}
 			    		}
 			    	}
 		    	}
 	    	}
-	    	System.out.println(users.size());
 	    } catch (SAXParseException spe) {
 	    	throw new SAXException(":"+spe.getLineNumber()+":"+spe.getColumnNumber());
 	    } catch (SAXException se){
@@ -194,6 +178,6 @@ public class ConfigurationManager {
 
 	@Override
 	public String toString() {
-		return "ConfigurationManager [users=" + users + "]";
+		return "ConfigurationManager [users=" + filters + "]";
 	}
 }
