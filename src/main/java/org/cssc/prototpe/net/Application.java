@@ -7,8 +7,8 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 
-import org.cssc.prototpe.net.filters.application.ApplicationFilter;
-import org.cssc.prototpe.net.filters.application.FilterCondition;
+import org.cssc.prototpe.configuration.filters.application.ApplicationFilter;
+import org.cssc.prototpe.configuration.filters.application.FilterCondition;
 import org.cssc.prototpe.net.interfaces.ServerManager;
 
 

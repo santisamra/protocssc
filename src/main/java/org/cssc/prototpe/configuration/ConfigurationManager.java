@@ -2,13 +2,15 @@ package org.cssc.prototpe.configuration;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.cssc.prototpe.configuration.filters.application.ApplicationFilter;
+import org.cssc.prototpe.configuration.filters.application.FilterCondition;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -18,7 +20,6 @@ import org.xml.sax.SAXParseException;
 public class ConfigurationManager {
 	
 	private static ConfigurationManager instance;
-	private Set<Filter> filters;
 	
 	private ConfigurationManager(){
 		try {
@@ -36,18 +37,18 @@ public class ConfigurationManager {
 	}
 	private void parse() throws SAXException, IOException{
 	    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		Actions actions=null;
-		Filter filter=null;
-		Set<InetAddress> originIPs=null;
-		String browser=null;
-		String oS=null;
+		FilterCondition condition = null;
+		ApplicationFilter filter = null;
+		List<InetAddress> originIPs = null;
+		String browser = null;
+		String oS = null;
 		boolean blockAllAccesses=false;
-		Set<InetAddress> blockedIPs = null;
-		Set<String> blockedURIs = null;
-		Set<String> blockedMediaTypes = null;
+		List<InetAddress> blockedIPs = null;
+		List<String> blockedURIs = null;
+		List<String> blockedMediaTypes = null;
 		double maxContentLength=0;
-		boolean transforml80=false;
-		boolean transforml33t=false;
+		boolean l33tTransform = false;
+		boolean rotateImages = false;
 	    try {
 	    	DocumentBuilder builder = factory.newDocumentBuilder();
 	    	Document document = builder.parse( System.getProperty("user.dir")+"\\config.xml");
@@ -62,7 +63,6 @@ public class ConfigurationManager {
 	
 			    	for(int l=0; l<configs.getLength(); l++){
 			    		if(configs.item(l).getNodeName().equals("filters")){
-			    			filters = new TreeSet<Filter>();
 			    			NodeList filtersNodeList = configs.item(l).getChildNodes();
 			    			for(int n=0; n<filtersNodeList.getLength(); n++){
 			    	    		if(filtersNodeList.item(n).getNodeName().equals("filter")){
@@ -73,7 +73,7 @@ public class ConfigurationManager {
 				    				    	for(int i=0; i<conditions.getLength(); i++){ //por cada condition
 				    				    		Node currNode = conditions.item(i);
 				    				    		if(currNode.getNodeName().equals("origin-IPs")){
-				    				    			originIPs = new TreeSet<InetAddress>();
+				    				    			originIPs = new LinkedList<InetAddress>();
 				    				    			 NodeList ips = currNode.getChildNodes();
 				    				    			 for(int j=0; j<ips.getLength(); j++){
 				    				    				 if(ips.item(j).getNodeName().equals("IP")){
@@ -102,7 +102,7 @@ public class ConfigurationManager {
 				    				    			blockAllAccesses=currNode.getChildNodes().item(0).getTextContent().equalsIgnoreCase("true")?true:false;
 				    				    		}
 				    				    		else if(currNode.getNodeName().equals("blocked-IPs")){
-				    				    			blockedIPs = new TreeSet<InetAddress>();
+				    				    			blockedIPs = new LinkedList<InetAddress>();
 				    				    			 NodeList ips = currNode.getChildNodes();
 				    				    			 for(int j=0; j<ips.getLength(); j++){
 				    				    				 if(ips.item(j).getNodeName().equals("IP")){
@@ -116,7 +116,7 @@ public class ConfigurationManager {
 				    				    			 }
 				    				    		}
 				    				    		else if(currNode.getNodeName().equals("blocked-URIs")){
-				    				    			blockedURIs = new TreeSet<String>();
+				    				    			blockedURIs = new LinkedList<String>();
 				    				    			 NodeList uris = currNode.getChildNodes();
 				    				    			 for(int j=0; j<uris.getLength(); j++){
 				    				    				 if(uris.item(j).getNodeName().equals("URI")){
@@ -125,7 +125,7 @@ public class ConfigurationManager {
 				    				    			 }
 				    				    		}
 				    				    		else if(currNode.getNodeName().equals("blocked-MediaTypes")){
-				    				    			blockedMediaTypes = new TreeSet<String>();
+				    				    			blockedMediaTypes = new LinkedList<String>();
 				    				    			 NodeList mediaTypes = currNode.getChildNodes();
 				    				    			 for(int j=0; j<mediaTypes.getLength(); j++){
 				    				    				 if(mediaTypes.item(j).getNodeName().equals("MediaType")){
@@ -145,19 +145,32 @@ public class ConfigurationManager {
 				    				    			 NodeList transforms = currNode.getChildNodes();
 				    				    			 for(int j=0; j<transforms.getLength(); j++){
 				    				    				 if(transforms.item(j).getNodeName().equals("tl33t")){
-				    				    					 transforml33t=transforms.item(j).getChildNodes().item(0).getTextContent().equalsIgnoreCase("true")?true:false;
+				    				    					 l33tTransform=transforms.item(j).getChildNodes().item(0).getTextContent().equalsIgnoreCase("true")?true:false;
 				    				    				 }else if(transforms.item(j).getNodeName().equals("images180")){
-				    				    					 transforml80=transforms.item(j).getChildNodes().item(0).getTextContent().equalsIgnoreCase("true")?true:false;
+				    				    					 rotateImages=transforms.item(j).getChildNodes().item(0).getTextContent().equalsIgnoreCase("true")?true:false;
 				    				    				 }
 				    				    			 }
 				    				    		}
 				    				    	}
-				    				    	actions = new Actions(blockAllAccesses, blockedIPs, blockedURIs, 
-				    				    			blockedMediaTypes, maxContentLength, transforml80, transforml33t);
+//				    				    	actions = new Actions(blockAllAccesses, blockedIPs, blockedURIs, 
+//				    				    			blockedMediaTypes, maxContentLength, rotateImages, l33tTransform);
 				    					}
 				    				}
-				    				filter = new Filter(actions, originIPs, browser, oS);
-				    				filters.add(filter);
+//				    				filter = new Filter(actions, originIPs, browser, oS);
+//				    				filters.add(filter);
+				    				
+				    				condition = new FilterCondition(originIPs, browser, oS);
+				    				
+				    				filter = new ApplicationFilter(
+											condition,
+											blockAllAccesses,
+											blockedIPs,
+											blockedURIs,
+											blockedMediaTypes,
+											maxContentLength,
+											l33tTransform,
+											rotateImages
+									);
 			    	    		}
 			    			}
 			    		}
@@ -176,8 +189,8 @@ public class ConfigurationManager {
 	    }
 	}
 
-	@Override
-	public String toString() {
-		return "ConfigurationManager [users=" + filters + "]";
-	}
+//	@Override
+//	public String toString() {
+//		return "ConfigurationManager [users=" + filters + "]";
+//	}
 }

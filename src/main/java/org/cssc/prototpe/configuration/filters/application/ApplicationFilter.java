@@ -1,4 +1,4 @@
-package org.cssc.prototpe.net.filters.application;
+package org.cssc.prototpe.configuration.filters.application;
 
 import java.net.InetAddress;
 import java.util.List;
@@ -12,13 +12,13 @@ public class ApplicationFilter {
 	private List<InetAddress> blockedIPs;
 	private List<String> blockedURIs;
 	private List<String> blockedMediaTypes;
-	private int maxContentLength;
+	private double maxContentLength;
 	private boolean l33tTransform;
 	private boolean rotateImages;
 	
 	public ApplicationFilter(FilterCondition condition, boolean allAccessesAreBlocked,
 			List<InetAddress> blockedIPs, List<String> blockedURIs,
-			List<String> blockedMediaTypes, int maxContentLength,
+			List<String> blockedMediaTypes, double maxContentLength,
 			boolean l33tTransform, boolean rotateImages) {
 		super();
 		this.condition = condition;
@@ -71,7 +71,7 @@ public class ApplicationFilter {
 		this.blockedMediaTypes = blockedMediaTypes;
 	}
 	
-	public int getMaxContentLength() {
+	public double getMaxContentLength() {
 		return maxContentLength;
 	}
 	

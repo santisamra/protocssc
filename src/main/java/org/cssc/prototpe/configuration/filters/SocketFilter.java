@@ -1,10 +1,10 @@
-package org.cssc.prototpe.net.filters;
+package org.cssc.prototpe.configuration.filters;
 
 import java.io.IOException;
 import java.net.Socket;
 
+import org.cssc.prototpe.configuration.filters.application.ApplicationFilter;
 import org.cssc.prototpe.net.Application;
-import org.cssc.prototpe.net.filters.application.ApplicationFilter;
 
 public class SocketFilter extends Filter {
 	

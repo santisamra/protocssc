@@ -1,14 +1,14 @@
-package org.cssc.prototpe.net.filters;
+package org.cssc.prototpe.configuration.filters;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.List;
 
+import org.cssc.prototpe.configuration.filters.application.ApplicationFilter;
 import org.cssc.prototpe.http.HttpRequest;
 import org.cssc.prototpe.http.exceptions.MissingHostException;
 import org.cssc.prototpe.net.Application;
-import org.cssc.prototpe.net.filters.application.ApplicationFilter;
 
 public class HttpRequestFilter extends Filter {
 

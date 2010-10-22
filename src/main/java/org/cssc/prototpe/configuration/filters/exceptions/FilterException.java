@@ -1,4 +1,4 @@
-package org.cssc.prototpe.net.filters.exceptions;
+package org.cssc.prototpe.configuration.filters.exceptions;
 
 @SuppressWarnings("serial")
 public class FilterException extends RuntimeException {
