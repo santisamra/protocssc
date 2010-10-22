@@ -51,7 +51,7 @@ public class HttpRequest extends HttpPacket {
 			String temp = getPath().substring(7);
 			return temp.substring(0, temp.indexOf("/"));
 		} else {
-			String headerHost = getHeader().getField("Host");
+			String headerHost = getHeader().getField("host");
 			if( headerHost == null ){
 				throw new MissingHostException();
 			}
