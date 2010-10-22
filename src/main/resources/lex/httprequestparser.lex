@@ -21,9 +21,9 @@ import java.io.StringReader;
 	
 	public HttpRequest getParsedRequest() throws IOException {
 		HttpRequest ret;
-		HttpHeader header;
+		HttpHeader header = new HttpHeader();
 		
-		if(remainingText != null && remainingText.length() > 0) {
+		if(remainingText != null && !"".equals(remainingText)) {
 			HttpHeaderParser headerParser = new HttpHeaderParser(new StringReader(remainingText));
 			headerParser.parse();
 			header = headerParser.getParsedHeader();
@@ -47,7 +47,7 @@ import java.io.StringReader;
 %eof}
 
 METHOD =	[A-Za-z]+
-PATH =		.+
+PATH =		\/.*|http:\/\/.*\/.*
 VERSION =	HTTP\/
 NEWLINE =	\r\n
 
@@ -87,6 +87,7 @@ NEWLINE =	\r\n
 	
 	([^\r\n]+{NEWLINE})*{NEWLINE}	{
 		remainingText = yytext().trim();
+		System.out.println("Remaining text: \"" + yytext() + "\"");
 		return YYEOF; //PARCHEEE
 	}
 }

@@ -8,6 +8,7 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
+import org.cssc.prototpe.http.HttpMethod;
 import org.cssc.prototpe.http.HttpPacket;
 import org.cssc.prototpe.http.HttpRequest;
 import org.cssc.prototpe.http.HttpResponse;
@@ -129,14 +130,14 @@ public class HttpProxyHandler implements ClientHandler{
 						try {
 							try {
 								System.out.println("About to write request");
-								writeHttpPacket(request, requestParser, serverSocket.getOutputStream());
+								writeHttpPacket(request, requestParser, serverSocket.getOutputStream(), false);
 							} catch(IOException e2) {
 								// Must retry only once
 								try {
 									serverSocket.close();
 									serverManager.finishedRequest(serverSocket);
 									generateServerSocket();
-									writeHttpPacket(request, requestParser, serverSocket.getOutputStream());
+									writeHttpPacket(request, requestParser, serverSocket.getOutputStream(), false);
 								} catch(Exception e1) {
 									e1.printStackTrace();
 									clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_GATEWAY).toString().getBytes());
@@ -177,7 +178,7 @@ public class HttpProxyHandler implements ClientHandler{
 							closeClientSocket();
 							return;
 						}
-						
+
 						boolean mustCloseServerConnection = response.mustCloseConnection();
 						response.getHeader().removeField("connection");
 						if(request.mustCloseConnection()) {
@@ -185,8 +186,10 @@ public class HttpProxyHandler implements ClientHandler{
 						}
 
 						// WRITING RESPONSE
+
 						try {
-							writeHttpPacket(response, responseParser, clientSocket.getOutputStream());
+							boolean writeContent = !request.getMethod().equals(HttpMethod.HEAD) || response.getStatusCode().isPossibleContent();
+							writeHttpPacket(response, responseParser, clientSocket.getOutputStream(), writeContent);
 						} catch(IOException e) {
 							closeClientSocket();
 							closedConnection = true;
@@ -197,10 +200,10 @@ public class HttpProxyHandler implements ClientHandler{
 						if(mustCloseServerConnection) {
 							serverSocket.close();
 						}
-						
-						
+
+
 					}
-					
+
 					if(request.mustCloseConnection()) {
 						closedConnection = true;
 						closeClientSocket();
@@ -262,39 +265,9 @@ public class HttpProxyHandler implements ClientHandler{
 	}
 
 
-	private void writeHttpPacket(HttpPacket packet, HttpParser parser, OutputStream outputStream) throws IOException {
+	private void writeHttpPacket(HttpPacket packet, HttpParser parser, OutputStream outputStream, boolean writeContent) throws IOException {
 		outputStream.write(packet.toString().getBytes());
-		System.out.println(packet);
 		String transferEncoding = packet.getHeader().getField("transfer-encoding");
-		
-		//TODO GIGANTESCO!!!!!!!!!!!!!
-		//TODO GIGANTESCO!!!!!!!!!!!!!
-		//TODO GIGANTESCO!!!!!!!!!!!!!
-		//TODO GIGANTESCO!!!!!!!!!!!!!
-		//TODO GIGANTESCO!!!!!!!!!!!!!
-		//TODO GIGANTESCO!!!!!!!!!!!!!
-		//TODO GIGANTESCO!!!!!!!!!!!!!
-		//TODO GIGANTESCO!!!!!!!!!!!!!
-		//TODO GIGANTESCO!!!!!!!!!!!!!
-		//TODO GIGANTESCO!!!!!!!!!!!!!
-		//TODO GIGANTESCO!!!!!!!!!!!!!
-		//TODO GIGANTESCO!!!!!!!!!!!!!
-		//TODO GIGANTESCO!!!!!!!!!!!!!
-		//TODO GIGANTESCO!!!!!!!!!!!!!
-		//Cuando se rehaga esto, HACER QUE SI EL REQUEST ES HEAD ENTONCES EL RESPONSE NO LEA CONTENIDO!
-		//TODO GIGANTESCO!!!!!!!!!!!!!
-		//TODO GIGANTESCO!!!!!!!!!!!!!
-		//TODO GIGANTESCO!!!!!!!!!!!!!
-		//TODO GIGANTESCO!!!!!!!!!!!!!
-		//TODO GIGANTESCO!!!!!!!!!!!!!
-		//TODO GIGANTESCO!!!!!!!!!!!!!
-		//TODO GIGANTESCO!!!!!!!!!!!!!
-		//TODO GIGANTESCO!!!!!!!!!!!!!
-		//TODO GIGANTESCO!!!!!!!!!!!!!
-		//TODO GIGANTESCO!!!!!!!!!!!!!
-		//TODO GIGANTESCO!!!!!!!!!!!!!
-		//TODO GIGANTESCO!!!!!!!!!!!!!
-		//TODO GIGANTESCO!!!!!!!!!!!!!		
 
 		if(transferEncoding != null) {
 			if(transferEncoding.toLowerCase().equals("chunked")) {
@@ -302,32 +275,22 @@ public class HttpProxyHandler implements ClientHandler{
 
 				while((temp = parser.readNextChunk()) != null) {
 
-						outputStream.write(temp);
+					outputStream.write(temp);
 				}
 			}
 
-		} else if(packet.getHeader().getField("content-length") != null) {
+		} else if(packet.getHeader().getField("content-length") != null || writeContent) {
 
 			byte[] temp = new byte[1024];
 			int readBytes;
 
 			while((readBytes = parser.readNextNBodyBytes(temp, 0, 1024)) != -1) {
-					outputStream.write(temp, 0, readBytes);
-			}
-
-		} else {
-			if(packet instanceof HttpResponse && ((HttpResponse)packet).getStatusCode().isPossibleContent()) {
-				byte[] temp = new byte[1024];
-				int readBytes;
-
-				while((readBytes = parser.readNextNBodyBytes(temp, 0, 1024)) != -1) {
-						//						print(temp);
-						outputStream.write(temp, 0, readBytes);
-				}
+				outputStream.write(temp, 0, readBytes);
 			}
 
 		}
 	}
+
 
 	private void closeClientSocket() {
 		if(clientSocket != null) {

@@ -49,6 +49,7 @@ public class HttpRequest extends HttpPacket {
 	public String getEffectiveHost() throws MissingHostException {
 		if(hasAbsolutePath()) {
 			String temp = getPath().substring(7);
+			System.out.println("TEMP: " + temp);
 			return temp.substring(0, temp.indexOf("/"));
 		} else {
 			String headerHost = getHeader().getField("host");
@@ -78,7 +79,7 @@ public class HttpRequest extends HttpPacket {
 	}
 	
 	@Override
-	public String toString(){
+	public String toString() {
 		StringBuffer buffer = new StringBuffer();
 		if( Application.getInstance().getApplicationConfiguration().isProxied()){
 			try {
@@ -89,6 +90,14 @@ public class HttpRequest extends HttpPacket {
 			}
 		} else {
 			buffer.append(this.method.toString() + " " + this.getEffectivePath() + " HTTP/" + this.getVersion() + "\r\n");
+		}
+		
+		if(!getHeader().containsField("host")) {
+			try {
+				getHeader().setField("host", getEffectiveHost());
+			} catch (MissingHostException e) {
+				e.printStackTrace();
+			}
 		}
 		
 		for(Entry<String,String> e: this.getHeader().getMap().entrySet() ){

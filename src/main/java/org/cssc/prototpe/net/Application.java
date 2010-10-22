@@ -25,7 +25,7 @@ public class Application {
 	private Logger logger;
 	private ServerManager serverManager;
 
-	private static final int MAX_THREAD_COUNT = 5;
+	private static final int MAX_THREAD_COUNT = 50;
 	private static final int MAX_PERSISTANT_SERVER_CONNECTIONS = 20;
 	private static final int CLIENT_KEEP_ALIVE_TIMEOUT_MS = 30000;
 	private static final String LOGGING_FILE_NAME = "log.txt";

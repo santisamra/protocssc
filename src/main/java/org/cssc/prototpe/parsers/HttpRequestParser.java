@@ -18,9 +18,6 @@ public class HttpRequestParser extends HttpParser {
 		parser.parse();
 
 		parsedPacket = parser.getParsedRequest();
-		if(parsedPacket.getHeader().getField("host").equals("static02.linkedin.com")) {
-			System.out.println("Argh");
-		}
 		return (HttpRequest)parsedPacket;
 	}
 
