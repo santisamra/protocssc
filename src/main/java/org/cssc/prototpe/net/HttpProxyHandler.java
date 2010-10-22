@@ -184,12 +184,19 @@ public class HttpProxyHandler implements ClientHandler{
 						if(request.mustCloseConnection()) {
 							response.getHeader().setField("connection", "close");
 						}
+						//TODO: somebody help me if the request was 1.0
+						response.setVersion("1.1");
 
 						// WRITING RESPONSE
 
 						try {
 							boolean writeContent = !request.getMethod().equals(HttpMethod.HEAD) || response.getStatusCode().isPossibleContent();
 							writeHttpPacket(response, responseParser, clientSocket.getOutputStream(), writeContent);
+//							if(!response.getHeader().containsField("transfer-encoding") &&
+//									!response.getHeader().containsField("content-length")) {
+//								closeClientSocket();
+//								closedConnection = true;
+//							}
 						} catch(IOException e) {
 							closeClientSocket();
 							closedConnection = true;

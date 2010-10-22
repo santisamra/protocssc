@@ -32,4 +32,8 @@ public abstract class HttpPacket {
 		}
 		return true;
 	}
+
+	public void setVersion(String version) {
+		this.version = version;
+	}
 }
