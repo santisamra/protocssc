@@ -46,8 +46,8 @@ public class Application {
 
 		// TODO: Place here any parts of the application that are needed by other parts.
 		logger = new Logger(applicationConfiguration.getLoggingFileName());
-//		serverManager = new SimpleServerManager();
-		serverManager = new PersistentServerManager(applicationConfiguration.getMaxPersistantServerConnections());
+		serverManager = new SimpleServerManager();
+//		serverManager = new PersistentServerManager(applicationConfiguration.getMaxPersistantServerConnections());
 
 		//TODO: Nada validado obviamente.. TESTING PURO
 		int port; 
