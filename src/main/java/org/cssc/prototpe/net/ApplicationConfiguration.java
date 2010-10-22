@@ -13,7 +13,16 @@ public class ApplicationConfiguration {
 	private String loggingFileName;
 	private InetAddress proxy;
 	private int proxyport;
+	private int clientKeepAliveTimeout;
 	
+	public int getClientKeepAliveTimeout() {
+		return clientKeepAliveTimeout;
+	}
+
+	public void setClientKeepAliveTimeout(int clientKeepAliveTimeout) {
+		this.clientKeepAliveTimeout = clientKeepAliveTimeout;
+	}
+
 	private List<ApplicationFilter> filters;
 	
 	public ApplicationConfiguration() {

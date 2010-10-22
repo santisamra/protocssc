@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
 import org.cssc.prototpe.http.HttpPacket;
@@ -62,6 +63,12 @@ public class HttpProxyHandler implements ClientHandler{
 
 		if(!socketFiltering) {
 			boolean closedConnection = false;
+			try {
+				this.clientSocket.setSoTimeout(configuration.getClientKeepAliveTimeout());
+			} catch(SocketException e) {
+				closeClientSocket();
+				return;
+			}
 			while(!closedConnection) {
 				serverSocket = null;
 				response = null;
@@ -74,6 +81,9 @@ public class HttpProxyHandler implements ClientHandler{
 					} catch(InvalidMethodStringException e) {
 						e.printStackTrace();
 						clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.NOT_IMPLEMENTED).toString().getBytes());
+						closeClientSocket();
+						return;
+					} catch(SocketTimeoutException e) {
 						closeClientSocket();
 						return;
 					}
@@ -166,13 +176,13 @@ public class HttpProxyHandler implements ClientHandler{
 							serverSocket.close();
 						}
 						
-						if(request.mustCloseConnection() || response.mustCloseConnection()) {
-							closedConnection = true;
-							closeClientSocket();
-						}
 						
 					}
 					
+					if(request.mustCloseConnection() || (response != null && response.mustCloseConnection())) {
+						closedConnection = true;
+						closeClientSocket();
+					}
 
 				} catch(IOException e) {
 					closedConnection = true;
@@ -234,6 +244,35 @@ public class HttpProxyHandler implements ClientHandler{
 		outputStream.write(packet.toString().getBytes());
 		System.out.println(packet);
 		String transferEncoding = packet.getHeader().getField("transfer-encoding");
+		
+		//TODO GIGANTESCO!!!!!!!!!!!!!
+		//TODO GIGANTESCO!!!!!!!!!!!!!
+		//TODO GIGANTESCO!!!!!!!!!!!!!
+		//TODO GIGANTESCO!!!!!!!!!!!!!
+		//TODO GIGANTESCO!!!!!!!!!!!!!
+		//TODO GIGANTESCO!!!!!!!!!!!!!
+		//TODO GIGANTESCO!!!!!!!!!!!!!
+		//TODO GIGANTESCO!!!!!!!!!!!!!
+		//TODO GIGANTESCO!!!!!!!!!!!!!
+		//TODO GIGANTESCO!!!!!!!!!!!!!
+		//TODO GIGANTESCO!!!!!!!!!!!!!
+		//TODO GIGANTESCO!!!!!!!!!!!!!
+		//TODO GIGANTESCO!!!!!!!!!!!!!
+		//TODO GIGANTESCO!!!!!!!!!!!!!
+		//Cuando se rehaga esto, HACER QUE SI EL REQUEST ES HEAD ENTONCES EL RESPONSE NO LEA CONTENIDO!
+		//TODO GIGANTESCO!!!!!!!!!!!!!
+		//TODO GIGANTESCO!!!!!!!!!!!!!
+		//TODO GIGANTESCO!!!!!!!!!!!!!
+		//TODO GIGANTESCO!!!!!!!!!!!!!
+		//TODO GIGANTESCO!!!!!!!!!!!!!
+		//TODO GIGANTESCO!!!!!!!!!!!!!
+		//TODO GIGANTESCO!!!!!!!!!!!!!
+		//TODO GIGANTESCO!!!!!!!!!!!!!
+		//TODO GIGANTESCO!!!!!!!!!!!!!
+		//TODO GIGANTESCO!!!!!!!!!!!!!
+		//TODO GIGANTESCO!!!!!!!!!!!!!
+		//TODO GIGANTESCO!!!!!!!!!!!!!
+		//TODO GIGANTESCO!!!!!!!!!!!!!		
 
 		if(transferEncoding != null) {
 			if(transferEncoding.toLowerCase().equals("chunked")) {

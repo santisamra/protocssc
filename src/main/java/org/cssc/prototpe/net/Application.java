@@ -27,6 +27,7 @@ public class Application {
 
 	private static final int MAX_THREAD_COUNT = 5;
 	private static final int MAX_PERSISTANT_SERVER_CONNECTIONS = 20;
+	private static final int CLIENT_KEEP_ALIVE_TIMEOUT_MS = 30000;
 	private static final String LOGGING_FILE_NAME = "log.txt";
 
 	private Application() {
@@ -40,6 +41,7 @@ public class Application {
 		applicationConfiguration.setThreadPoolSize(MAX_THREAD_COUNT);
 		applicationConfiguration.setLoggingFileName(LOGGING_FILE_NAME);
 		applicationConfiguration.setMaxPersistantServerConnections(MAX_PERSISTANT_SERVER_CONNECTIONS);
+		applicationConfiguration.setClientKeepAliveTimeout(CLIENT_KEEP_ALIVE_TIMEOUT_MS);
 
 
 		// TODO: Place here any parts of the application that are needed by other parts.
@@ -70,7 +72,7 @@ public class Application {
 				applicationConfiguration.setProxy(InetAddress.getByName(proxyIP), proxyport);
 			}
 		} catch (UnknownHostException e) {
-			//SOMEBODY HELP
+			//TODO: SOMEBODY HELP
 			e.printStackTrace();
 			return;
 		}
