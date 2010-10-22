@@ -124,6 +124,7 @@ public class Application {
 		);
 		application.getApplicationConfiguration().addFilter(filter);
 
+		new ApplicationConfigurationServer(8082);
 		application.launch();
 	}
 
