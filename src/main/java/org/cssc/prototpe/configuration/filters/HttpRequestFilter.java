@@ -46,12 +46,10 @@ public class HttpRequestFilter extends Filter {
 				clientSocket.close();
 				return true;
 			} else if(blockedURIs != null) {
-				String requestURI = "http://" + request.getEffectiveHost() + request.getEffectivePath();
+				String requestUri = "http://" + request.getEffectiveHost() + request.getEffectivePath();
 				
 				for(String s: filter.getBlockedURIs()) {
-					String regExpURI = s.replace("*", ".*");
-					
-					if(requestURI.matches(regExpURI)) {
+					if(uriMatchesExpression(requestUri, s)) {
 						writeResponse("src/main/resources/html/errors/uriAccessDenied.html");
 						clientSocket.close();
 						return true;
@@ -63,6 +61,40 @@ public class HttpRequestFilter extends Filter {
 		}
 		
 		return false;
+	}
+	
+	
+	private boolean uriMatchesExpression(String uri, String expression) {
+		if(expression.startsWith("http://")) {
+			expression = expression.substring(7);
+		}
+		
+		if(!expression.startsWith("www.")) {
+			expression = "www." + expression;
+		}
+		
+		expression = "http://" + expression;
+		
+		String regExp = expression;
+		if(uri.charAt(uri.length() - 1) == '/' && regExp.charAt(regExp.length() - 1) != '/') {
+			int index = expression.lastIndexOf('*');
+			
+			if(index != -1) {
+				char character = expression.charAt(index - 1);
+				
+				if(character != '/') {
+					regExp = regExp + "/";
+				}
+			} else {
+				regExp = regExp + "/";
+			}
+		}
+		
+		System.out.println("URI: " + uri);
+		System.out.println("Expresion regular: " + regExp);
+		regExp = regExp.replace("*", ".*");
+		
+		return uri.matches(regExp);
 	}
 
 

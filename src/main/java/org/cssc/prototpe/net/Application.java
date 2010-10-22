@@ -105,14 +105,13 @@ public class Application {
 		Application application = new Application();
 
 		List<InetAddress> ips = new LinkedList<InetAddress>();
-		ips.add(InetAddress.getByName("127.0.0.1"));
+		ips.add(InetAddress.getByName("0:0:0:0:0:0:0:1"));
 		
 		List<InetAddress> blockedIPs = new LinkedList<InetAddress>();
-		blockedIPs.add(InetAddress.getByName("www.google.com"));
+//		blockedIPs.add(InetAddress.getByName("www.google.com.ar"));
 		
 		List<String> blockedURIs = new LinkedList<String>();
-		blockedURIs.add("http://www.ole.com.ar/");
-		blockedURIs.add("http://www.infiernorojo.com/");
+		blockedURIs.add("clarin.com");
 
 		ApplicationFilter filter = new ApplicationFilter(
 				new FilterCondition(ips, null, null),

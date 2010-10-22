@@ -49,7 +49,6 @@ public class HttpRequest extends HttpPacket {
 	public String getEffectiveHost() throws MissingHostException {
 		if(hasAbsolutePath()) {
 			String temp = getPath().substring(7);
-			System.out.println("TEMP: " + temp);
 			return temp.substring(0, temp.indexOf("/"));
 		} else {
 			String headerHost = getHeader().getField("host");

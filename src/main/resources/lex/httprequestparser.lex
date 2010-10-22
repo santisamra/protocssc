@@ -87,7 +87,7 @@ NEWLINE =	\r\n
 	
 	([^\r\n]+{NEWLINE})*{NEWLINE}	{
 		remainingText = yytext().trim();
-		System.out.println("Remaining text: \"" + yytext() + "\"");
+		//System.out.println("Remaining text: \"" + yytext() + "\"");
 		return YYEOF; //PARCHEEE
 	}
 }
