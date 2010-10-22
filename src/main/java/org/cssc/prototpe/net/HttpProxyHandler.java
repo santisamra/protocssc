@@ -78,6 +78,16 @@ public class HttpProxyHandler implements ClientHandler{
 					System.out.println("Por parsear.");
 					try {
 						listenAndParseRequest();
+					} catch(InvalidPacketException e) {
+						e.printStackTrace();
+						clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_REQUEST).toString().getBytes());
+						closeClientSocket();
+						return;
+					} catch(InvalidPacketParsingException e) {
+						e.printStackTrace();
+						clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_REQUEST).toString().getBytes());
+						closeClientSocket();
+						return;
 					} catch(InvalidMethodStringException e) {
 						e.printStackTrace();
 						clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.NOT_IMPLEMENTED).toString().getBytes());
