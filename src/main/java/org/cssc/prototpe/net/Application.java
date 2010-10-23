@@ -9,6 +9,7 @@ import javax.swing.JOptionPane;
 
 import org.cssc.prototpe.configuration.filters.application.ApplicationFilter;
 import org.cssc.prototpe.configuration.filters.application.FilterCondition;
+import org.cssc.prototpe.httpserver.ApplicationConfigurationServer;
 import org.cssc.prototpe.net.interfaces.ServerManager;
 
 

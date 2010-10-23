@@ -1,4 +1,4 @@
-package org.cssc.prototpe.net;
+package org.cssc.prototpe.httpserver;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -11,6 +11,8 @@ import org.cssc.prototpe.http.HttpMethod;
 import org.cssc.prototpe.http.HttpRequest;
 import org.cssc.prototpe.http.HttpResponse;
 import org.cssc.prototpe.http.HttpResponseCode;
+import org.cssc.prototpe.net.Application;
+import org.cssc.prototpe.net.ApplicationConfiguration;
 import org.cssc.prototpe.net.exceptions.FatalException;
 import org.cssc.prototpe.parsers.HttpRequestParser;
 
@@ -61,6 +63,7 @@ public class ApplicationConfigurationServer implements Runnable{
 	}
 	
 	private void index(Socket socket, boolean writeContent) throws IOException{
+		//Already copied to servlet;
 		FileInputStream stream;
 		try{
 			stream = new FileInputStream(APP_CONFIG_SERVER_PAGE);
@@ -87,6 +90,7 @@ public class ApplicationConfigurationServer implements Runnable{
 		}
 		socket.getOutputStream().flush();
 		socket.close();
+		//End of copied to servlet;
 	}
 	
 	private void badRequest(Socket socket) throws IOException{
