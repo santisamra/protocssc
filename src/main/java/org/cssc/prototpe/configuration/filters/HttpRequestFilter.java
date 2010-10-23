@@ -22,8 +22,6 @@ public class HttpRequestFilter extends Filter {
 	public boolean filter() throws IOException {
 		ApplicationFilter filter = Application.getInstance().getApplicationConfiguration().getFilterForCondition(clientSocket.getInetAddress(), request.getHeader().getField("user-agent"));
 
-		System.out.println("Filter: " + filter);
-		
 		if(filter != null) {
 			return applyFilter(filter);
 		}
@@ -35,6 +33,13 @@ public class HttpRequestFilter extends Filter {
 		boolean allAccessesBlocked = filter.isAllAccessesBlocked();
 		List<InetAddress> blockedIPs = filter.getBlockedIPs();
 		List<String> blockedURIs = filter.getBlockedURIs();
+		
+		try {
+			System.out.println("Host resuelto: " + InetAddress.getByName(request.getEffectiveHost()));
+		} catch (MissingHostException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		
 		try {
 			if(allAccessesBlocked) {

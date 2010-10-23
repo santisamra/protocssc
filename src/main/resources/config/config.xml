@@ -4,12 +4,17 @@
 	<filters>
 		<filter>
 			<conditions>
-				<origin-IPs>
-					<IP>0:0:0:0:0:0:0:1</IP>
-				</origin-IPs>
+				<browser>Firefox/3.6</browser>
 			</conditions>
 			<actions>
-				<block-all-accesses>TRUE</block-all-accesses>
+				<blocked-IPs>
+					<IP>192.168.1.1</IP>
+					<IP>85.62.96.168</IP>
+				</blocked-IPs>
+				<blocked-URIs>
+					<URI>taringa.net</URI>
+				</blocked-URIs>
+				<block-all-accesses>FALSE</block-all-accesses>
 				<transform>
 					<l33t>FALSE</l33t>
 					<images180>FALSE</images180>
