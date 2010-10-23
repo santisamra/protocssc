@@ -1,41 +1,24 @@
 package org.cssc.prototpe.configuration;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
+import org.cssc.prototpe.configuration.exceptions.ConfigurationParserException;
 import org.cssc.prototpe.configuration.filters.application.ApplicationFilter;
 import org.cssc.prototpe.configuration.filters.application.FilterCondition;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 
-public class ConfigurationManager {
+public class ConfigurationParser {
 	
-	private static ConfigurationManager instance;
-	
-	private ConfigurationManager(){
-		try {
-			parse();
-		} catch (Exception e) {
-			//mal formado el XML que hacer ??
-		}
-	}
-	
-	public static ConfigurationManager getInstance(){
-		if(instance==null){
-			instance = new ConfigurationManager();
-		}
-		return instance;
-	}
-	private void parse() throws SAXException, IOException{
+	public List<ApplicationFilter> parse(String xmlPath) {
+		List<ApplicationFilter> ret = new LinkedList<ApplicationFilter>();
+		
 	    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		FilterCondition condition = null;
 		ApplicationFilter filter = null;
@@ -51,7 +34,7 @@ public class ConfigurationManager {
 		boolean rotateImages = false;
 	    try {
 	    	DocumentBuilder builder = factory.newDocumentBuilder();
-	    	Document document = builder.parse( System.getProperty("user.dir")+"\\config.xml");
+	    	Document document = builder.parse(xmlPath);
 	    	//for validating purposes only
 	    	factory.setValidating(true);
 	    	//for namespace awareness
@@ -171,23 +154,22 @@ public class ConfigurationManager {
 											l33tTransform,
 											rotateImages
 									);
+				    				
+				    				ret.add(filter);
 			    	    		}
 			    			}
 			    		}
 			    	}
 		    	}
 	    	}
-	    } catch (SAXParseException spe) {
-	    	throw new SAXException(":"+spe.getLineNumber()+":"+spe.getColumnNumber());
-	    } catch (SAXException se){
-	    	throw new SAXException(":parseError");
-	    } catch (ParserConfigurationException pce) {
-	    	// Parser with specified options can't be built
-	    	throw new SAXException(":unknownError");
-	    }catch (IOException ioe){
-	    	throw new IOException();
+	    	
+	    	return ret;
+	    	
+	    } catch (Exception e) {
+	    	throw new ConfigurationParserException("Could not parse the configuration file.");
 	    }
 	}
+	
 
 //	@Override
 //	public String toString() {

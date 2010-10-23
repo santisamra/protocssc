@@ -1,10 +1,13 @@
 package org.cssc.prototpe.net;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.cssc.prototpe.configuration.ConfigurationParser;
 import org.cssc.prototpe.configuration.filters.application.ApplicationFilter;
+import org.xml.sax.SAXException;
 
 public class ApplicationConfiguration {
 	
@@ -14,6 +17,12 @@ public class ApplicationConfiguration {
 	private InetAddress proxy;
 	private int proxyport;
 	private int clientKeepAliveTimeout;
+	private List<ApplicationFilter> filters;
+	
+	public void loadInitialValues(String xmlPath) {
+		ConfigurationParser parser = new ConfigurationParser();
+		filters = parser.parse(xmlPath);
+	}
 	
 	public int getClientKeepAliveTimeout() {
 		return clientKeepAliveTimeout;
@@ -23,8 +32,6 @@ public class ApplicationConfiguration {
 		this.clientKeepAliveTimeout = clientKeepAliveTimeout;
 	}
 
-	private List<ApplicationFilter> filters;
-	
 	public ApplicationConfiguration() {
 		this.filters = new LinkedList<ApplicationFilter>();
 	}
@@ -72,6 +79,10 @@ public class ApplicationConfiguration {
 	
 	public void addFilter(ApplicationFilter filter) {
 		filters.add(filter);
+	}
+	
+	public void removeFilter(ApplicationFilter filter) {
+		filters.remove(filter);
 	}
 	
 	public ApplicationFilter getFilterForCondition(InetAddress ip, String userAgent) {
