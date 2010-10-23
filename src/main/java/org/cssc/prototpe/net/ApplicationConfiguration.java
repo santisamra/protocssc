@@ -84,6 +84,14 @@ public class ApplicationConfiguration {
 	}
 	
 	public ApplicationFilter getFilterForCondition(InetAddress ip, String userAgent) {
+		if(ip == null) {
+			throw new IllegalArgumentException("IP cannot be null.");
+		}
+		
+		if(userAgent == null) {
+			throw new IllegalArgumentException("User agent cannot be null.");
+		}
+		
 		for(ApplicationFilter f: filters) {
 			List<InetAddress> ips = f.getCondition().getIps();
 			String browser = f.getCondition().getBrowser();

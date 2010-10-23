@@ -19,6 +19,9 @@
 					<l33t>FALSE</l33t>
 					<images180>FALSE</images180>
 				</transform>
+				<!--  <blocked-MediaTypes>
+					<MediaType>image/png</MediaType>
+				</blocked-MediaTypes> -->
 			</actions>
 		</filter>
 	</filters>

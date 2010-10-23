@@ -9,6 +9,7 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
 import org.cssc.prototpe.configuration.filters.HttpRequestFilter;
+import org.cssc.prototpe.configuration.filters.HttpResponseFilter;
 import org.cssc.prototpe.http.HttpMethod;
 import org.cssc.prototpe.http.HttpPacket;
 import org.cssc.prototpe.http.HttpRequest;
@@ -96,112 +97,120 @@ public class HttpProxyHandler implements ClientHandler{
 				if(requestFilter.filter()) {
 					closeClientSocket();
 					return;
-				} else {
-					// GENERATING CONNECTION
-					try {
-						System.out.println("Parsee request para " + request.getEffectiveHost());
-
-						//TODO: Should I resolve this host and filter banned IPs?
-
-						generateServerSocket();
-
-					} catch (MissingHostException e) {
-						e.printStackTrace();
-						clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_REQUEST).toString().getBytes());
-						closeClientSocket();
-						return;
-					} catch (UnknownHostException e) {
-						e.printStackTrace();
-						clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_REQUEST).toString().getBytes());
-						closeClientSocket();
-						return;
-					}
-
-
-					// WRITING REQUEST
-					try {
-						try {
-							System.out.println("About to write request");
-							writeHttpPacket(request, requestParser, serverSocket.getOutputStream(), false);
-						} catch(IOException e2) {
-							// Must retry only once
-							try {
-								serverSocket.close();
-								serverManager.finishedRequest(serverSocket);
-								generateServerSocket();
-								writeHttpPacket(request, requestParser, serverSocket.getOutputStream(), false);
-							} catch(Exception e1) {
-								e1.printStackTrace();
-								clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_GATEWAY).toString().getBytes());
-								closeClientSocket();
-								return;
-							}
-						}
-					} catch(InvalidPacketParsingException e) {
-						e.printStackTrace();
-						clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_REQUEST).toString().getBytes());
-						closeClientSocket();
-						return;
-					} catch(InvalidPacketException e) {
-						e.printStackTrace();
-						clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_REQUEST).toString().getBytes());
-						closeClientSocket();
-						return;
-					}
-
-					// READING RESPONSE
-					try {
-						System.out.println("Written request, awaiting response");
-						listenAndParseResponse();
-						System.out.println("Got response");
-					} catch(InvalidStatusCodeException e) {
-						e.printStackTrace();
-						clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_GATEWAY).toString().getBytes());
-						closeClientSocket();
-						return;
-					} catch(InvalidPacketParsingException e) {
-						e.printStackTrace();
-						clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_GATEWAY).toString().getBytes());
-						closeClientSocket();
-						return;
-					} catch(InvalidPacketException e) {
-						e.printStackTrace();
-						clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_GATEWAY).toString().getBytes());
-						closeClientSocket();
-						return;
-					}
-
-					boolean mustCloseServerConnection = response.mustCloseConnection();
-					response.getHeader().removeField("connection");
-					if(request.mustCloseConnection()) {
-						response.getHeader().setField("connection", "close");
-					}
-					//TODO: somebody help me if the request was 1.0
-					response.setVersion("1.1");
-
-					// WRITING RESPONSE
-
-					try {
-						boolean writeContent = !request.getMethod().equals(HttpMethod.HEAD) || response.getStatusCode().isPossibleContent();
-						writeHttpPacket(response, responseParser, clientSocket.getOutputStream(), writeContent);
-						//							if(!response.getHeader().containsField("transfer-encoding") &&
-						//									!response.getHeader().containsField("content-length")) {
-						//								closeClientSocket();
-						//								closedConnection = true;
-						//							}
-					} catch(IOException e) {
-						closeClientSocket();
-						closedConnection = true;
-						mustCloseServerConnection = true;
-					}
-
-					// FINISHED!
-					if(mustCloseServerConnection) {
-						serverSocket.close();
-					}
-
-
 				}
+				
+				// GENERATING CONNECTION
+				try {
+					System.out.println("Parsee request para " + request.getEffectiveHost());
+
+					//TODO: Should I resolve this host and filter banned IPs?
+
+					generateServerSocket();
+
+				} catch (MissingHostException e) {
+					e.printStackTrace();
+					clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_REQUEST).toString().getBytes());
+					closeClientSocket();
+					return;
+				} catch (UnknownHostException e) {
+					e.printStackTrace();
+					clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_REQUEST).toString().getBytes());
+					closeClientSocket();
+					return;
+				}
+
+
+				// WRITING REQUEST
+				try {
+					try {
+						System.out.println("About to write request");
+						writeHttpPacket(request, requestParser, serverSocket.getOutputStream(), false);
+					} catch(IOException e2) {
+						// Must retry only once
+						try {
+							serverSocket.close();
+							serverManager.finishedRequest(serverSocket);
+							generateServerSocket();
+							writeHttpPacket(request, requestParser, serverSocket.getOutputStream(), false);
+						} catch(Exception e1) {
+							e1.printStackTrace();
+							clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_GATEWAY).toString().getBytes());
+							closeClientSocket();
+							return;
+						}
+					}
+				} catch(InvalidPacketParsingException e) {
+					e.printStackTrace();
+					clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_REQUEST).toString().getBytes());
+					closeClientSocket();
+					return;
+				} catch(InvalidPacketException e) {
+					e.printStackTrace();
+					clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_REQUEST).toString().getBytes());
+					closeClientSocket();
+					return;
+				}
+
+				// READING RESPONSE
+				try {
+					System.out.println("Written request, awaiting response");
+					listenAndParseResponse();
+					System.out.println("Got response");
+				} catch(InvalidStatusCodeException e) {
+					e.printStackTrace();
+					clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_GATEWAY).toString().getBytes());
+					closeClientSocket();
+					return;
+				} catch(InvalidPacketParsingException e) {
+					e.printStackTrace();
+					clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_GATEWAY).toString().getBytes());
+					closeClientSocket();
+					return;
+				} catch(InvalidPacketException e) {
+					e.printStackTrace();
+					clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_GATEWAY).toString().getBytes());
+					closeClientSocket();
+					return;
+				}
+
+				boolean mustCloseServerConnection = response.mustCloseConnection();
+				response.getHeader().removeField("connection");
+				if(request.mustCloseConnection()) {
+					response.getHeader().setField("connection", "close");
+				}
+				//TODO: somebody help me if the request was 1.0
+				response.setVersion("1.1");
+
+				// FILTERING RESPONSE
+				HttpResponseFilter responseFilter = new HttpResponseFilter(clientSocket, request, response);
+
+				if(responseFilter.filter()) {
+					closeClientSocket();
+					return;
+				}
+
+				// WRITING RESPONSE
+
+				try {
+					boolean writeContent = !request.getMethod().equals(HttpMethod.HEAD) || response.getStatusCode().isPossibleContent();
+					writeHttpPacket(response, responseParser, clientSocket.getOutputStream(), writeContent);
+					//							if(!response.getHeader().containsField("transfer-encoding") &&
+					//									!response.getHeader().containsField("content-length")) {
+					//								closeClientSocket();
+					//								closedConnection = true;
+					//							}
+				} catch(IOException e) {
+					closeClientSocket();
+					closedConnection = true;
+					mustCloseServerConnection = true;
+				}
+
+				// FINISHED!
+				if(mustCloseServerConnection) {
+					serverSocket.close();
+				}
+
+
 
 				if(request.mustCloseConnection()) {
 					closedConnection = true;
