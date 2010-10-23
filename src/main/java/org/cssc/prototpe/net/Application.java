@@ -25,6 +25,7 @@ public class Application {
 	private Logger logger;
 	private ServerManager serverManager;
 
+	private static final String CONFIG_FILE = "src/main/resources/config/config.xml";
 	private static final int MAX_THREAD_COUNT = 50;
 	private static final int MAX_PERSISTANT_SERVER_CONNECTIONS = 20;
 	private static final int CLIENT_KEEP_ALIVE_TIMEOUT_MS = 30000;
@@ -37,6 +38,7 @@ public class Application {
 
 		// This MUST be second as other parts of the application require this configuration.
 		applicationConfiguration = new ApplicationConfiguration();
+		applicationConfiguration.loadInitialValues(CONFIG_FILE);
 		//TODO: this is a parche
 		applicationConfiguration.setThreadPoolSize(MAX_THREAD_COUNT);
 		applicationConfiguration.setLoggingFileName(LOGGING_FILE_NAME);
@@ -103,28 +105,6 @@ public class Application {
 
 	public static void main(String[] args) throws UnknownHostException {
 		Application application = new Application();
-
-		List<InetAddress> ips = new LinkedList<InetAddress>();
-		ips.add(InetAddress.getByName("0:0:0:0:0:0:0:1"));
-		
-		List<InetAddress> blockedIPs = new LinkedList<InetAddress>();
-//		blockedIPs.add(InetAddress.getByName("www.google.com.ar"));
-		
-		List<String> blockedURIs = new LinkedList<String>();
-		blockedURIs.add("clarin.com");
-
-		ApplicationFilter filter = new ApplicationFilter(
-				new FilterCondition(ips, null, null),
-				false,
-				blockedIPs,
-				blockedURIs,
-				null,
-				0,
-				false,
-				false
-		);
-		application.getApplicationConfiguration().addFilter(filter);
-
 		new ApplicationConfigurationServer(8082);
 		application.launch();
 	}

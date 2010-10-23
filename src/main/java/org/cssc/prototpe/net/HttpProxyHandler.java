@@ -53,17 +53,25 @@ public class HttpProxyHandler implements ClientHandler{
 	@Override
 	public void handle(Socket socket) {
 		this.clientSocket = socket;
+		boolean closedConnection = false;
+
 		SocketFilter socketFilter = new SocketFilter(socket);
 
 		boolean socketFiltering = false;
 		try {
 			socketFiltering = socketFilter.filter();
-		} catch (IOException e2) {
-			e2.printStackTrace();
+		} catch (IOException e) {
+			closeClientSocket();
+			closedConnection = true;
+			return;
 		}
 
-		if(!socketFiltering) {
-			boolean closedConnection = false;
+		if(socketFiltering) {
+			closeClientSocket();
+			closedConnection = true;
+			return;
+		} else {
+			
 			try {
 				this.clientSocket.setSoTimeout(configuration.getClientKeepAliveTimeout());
 			} catch(SocketException e) {
@@ -192,11 +200,11 @@ public class HttpProxyHandler implements ClientHandler{
 						try {
 							boolean writeContent = !request.getMethod().equals(HttpMethod.HEAD) || response.getStatusCode().isPossibleContent();
 							writeHttpPacket(response, responseParser, clientSocket.getOutputStream(), writeContent);
-//							if(!response.getHeader().containsField("transfer-encoding") &&
-//									!response.getHeader().containsField("content-length")) {
-//								closeClientSocket();
-//								closedConnection = true;
-//							}
+							//							if(!response.getHeader().containsField("transfer-encoding") &&
+							//									!response.getHeader().containsField("content-length")) {
+							//								closeClientSocket();
+							//								closedConnection = true;
+							//							}
 						} catch(IOException e) {
 							closeClientSocket();
 							closedConnection = true;

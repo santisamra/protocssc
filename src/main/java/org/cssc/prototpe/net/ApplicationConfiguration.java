@@ -1,13 +1,11 @@
 package org.cssc.prototpe.net;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.cssc.prototpe.configuration.ConfigurationParser;
 import org.cssc.prototpe.configuration.filters.application.ApplicationFilter;
-import org.xml.sax.SAXException;
 
 public class ApplicationConfiguration {
 	
@@ -91,10 +89,35 @@ public class ApplicationConfiguration {
 			String browser = f.getCondition().getBrowser();
 			String operatingSystem = f.getCondition().getOperatingSystem();
 			
-			if((ips != null && ips.contains(ip) ||
-			   (browser != null && userAgent != null && userAgent.contains(browser)) ||
-			   (operatingSystem != null && userAgent != null && userAgent.contains(operatingSystem)))) {
-				
+			boolean aux1 = false;
+			boolean aux2 = false;
+			boolean aux3 = false;
+			
+			if(ips != null && ips.size() > 0) {
+				if(ips.contains(ip)) {
+					aux1 = true;
+				}
+			} else {
+				aux1 = true;
+			}
+			
+			if(browser != null && !browser.equals("")) {
+				if(userAgent.contains(browser)) {
+					aux2 = true;
+				}
+			} else {
+				aux2 = true;
+			}
+			
+			if(operatingSystem != null && !operatingSystem.equals("")) {
+				if(userAgent.contains(operatingSystem)) {
+					aux3 = true;
+				}
+			} else {
+				aux3 = true;
+			}
+			
+			if(aux1 && aux2 && aux3) {
 				return f;
 			}
 		}

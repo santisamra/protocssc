@@ -32,6 +32,7 @@ public class ConfigurationParser {
 		double maxContentLength=0;
 		boolean l33tTransform = false;
 		boolean rotateImages = false;
+		
 	    try {
 	    	DocumentBuilder builder = factory.newDocumentBuilder();
 	    	Document document = builder.parse(xmlPath);
@@ -39,26 +40,26 @@ public class ConfigurationParser {
 	    	factory.setValidating(true);
 	    	//for namespace awareness
 	    	factory.setNamespaceAware(true);
-
-	    	for(int p=0; p<document.getChildNodes().getLength(); p++){
+	    	
+	    	for(int p = 0; p < document.getChildNodes().getLength(); p++){
 	    		if(document.getChildNodes().item(p).getNodeName().equals("config")){
 	    			NodeList configs = document.getChildNodes().item(p).getChildNodes();
 	
-			    	for(int l=0; l<configs.getLength(); l++){
-			    		if(configs.item(l).getNodeName().equals("filters")){
+			    	for(int l = 0; l < configs.getLength(); l++) {
+			    		if(configs.item(l).getNodeName().equals("filters")) {
 			    			NodeList filtersNodeList = configs.item(l).getChildNodes();
-			    			for(int n=0; n<filtersNodeList.getLength(); n++){
+			    			for(int n = 0; n < filtersNodeList.getLength(); n++){
 			    	    		if(filtersNodeList.item(n).getNodeName().equals("filter")){
 				    				NodeList filterConf = filtersNodeList.item(n).getChildNodes();
-				    				for(int conf=0; conf<filterConf.getLength(); conf++){
+				    				for(int conf = 0; conf < filterConf.getLength(); conf++) {
 				    					if(filterConf.item(conf).getNodeName().equals("conditions")){
 				    						NodeList conditions = filterConf.item(conf).getChildNodes();
-				    				    	for(int i=0; i<conditions.getLength(); i++){ //por cada condition
+				    				    	for(int i = 0; i < conditions.getLength(); i++) { //por cada condition
 				    				    		Node currNode = conditions.item(i);
 				    				    		if(currNode.getNodeName().equals("origin-IPs")){
 				    				    			originIPs = new LinkedList<InetAddress>();
 				    				    			 NodeList ips = currNode.getChildNodes();
-				    				    			 for(int j=0; j<ips.getLength(); j++){
+				    				    			 for(int j = 0; j < ips.getLength(); j++) {
 				    				    				 if(ips.item(j).getNodeName().equals("IP")){
 				    				    					 try {
 				    											IP ip = new IP(ips.item(j).getChildNodes().item(0).getTextContent());
@@ -124,12 +125,13 @@ public class ConfigurationParser {
 				    				    				maxContentLength=0;
 				    								}
 				    				    		}
-				    				    		else if(currNode.getNodeName().equals("transform")){
+				    				    		else if(currNode.getNodeName().equals("transform")) {
 				    				    			 NodeList transforms = currNode.getChildNodes();
-				    				    			 for(int j=0; j<transforms.getLength(); j++){
-				    				    				 if(transforms.item(j).getNodeName().equals("tl33t")){
+				    				    			 
+				    				    			 for(int j = 0; j < transforms.getLength(); j++) {
+				    				    				 if(transforms.item(j).getNodeName().equals("tl33t")) {
 				    				    					 l33tTransform=transforms.item(j).getChildNodes().item(0).getTextContent().equalsIgnoreCase("true")?true:false;
-				    				    				 }else if(transforms.item(j).getNodeName().equals("images180")){
+				    				    				 } else if(transforms.item(j).getNodeName().equals("images180")) {
 				    				    					 rotateImages=transforms.item(j).getChildNodes().item(0).getTextContent().equalsIgnoreCase("true")?true:false;
 				    				    				 }
 				    				    			 }
@@ -166,13 +168,8 @@ public class ConfigurationParser {
 	    	return ret;
 	    	
 	    } catch (Exception e) {
+	    	e.printStackTrace();
 	    	throw new ConfigurationParserException("Could not parse the configuration file.");
 	    }
 	}
-	
-
-//	@Override
-//	public String toString() {
-//		return "ConfigurationManager [users=" + filters + "]";
-//	}
 }

@@ -26,7 +26,6 @@ public class SocketFilter extends Filter {
 	private boolean applyFilter(ApplicationFilter filter) throws IOException {
 		if(filter.isAllAccessesBlocked()) {
 			writeResponse("src/main/resources/html/errors/accessDenied.html");
-			clientSocket.close();
 			return true;
 		}
 		
