@@ -23,8 +23,7 @@ import org.cssc.prototpe.net.interfaces.ServerManager;
 import org.cssc.prototpe.parsers.HttpParser;
 import org.cssc.prototpe.parsers.HttpRequestParser;
 import org.cssc.prototpe.parsers.HttpResponseParser;
-import org.cssc.prototpe.parsers.exceptions.InvalidPacketException;
-import org.cssc.prototpe.parsers.exceptions.InvalidPacketParsingException;
+import org.cssc.prototpe.parsers.exceptions.HttpParserException;
 
 //TODO GENERAL: el control de errores ES MALISIMO
 
@@ -71,12 +70,7 @@ public class HttpProxyHandler implements ClientHandler{
 				System.out.println("Por parsear.");
 				try {
 					listenAndParseRequest();
-				} catch(InvalidPacketException e) {
-					e.printStackTrace();
-					clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_REQUEST).toString().getBytes());
-					closeClientSocket();
-					return;
-				} catch(InvalidPacketParsingException e) {
+				} catch(HttpParserException e) {
 					e.printStackTrace();
 					clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_REQUEST).toString().getBytes());
 					closeClientSocket();
@@ -139,12 +133,7 @@ public class HttpProxyHandler implements ClientHandler{
 							return;
 						}
 					}
-				} catch(InvalidPacketParsingException e) {
-					e.printStackTrace();
-					clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_REQUEST).toString().getBytes());
-					closeClientSocket();
-					return;
-				} catch(InvalidPacketException e) {
+				} catch(HttpParserException e) {
 					e.printStackTrace();
 					clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_REQUEST).toString().getBytes());
 					closeClientSocket();
@@ -161,12 +150,7 @@ public class HttpProxyHandler implements ClientHandler{
 					clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_GATEWAY).toString().getBytes());
 					closeClientSocket();
 					return;
-				} catch(InvalidPacketParsingException e) {
-					e.printStackTrace();
-					clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_GATEWAY).toString().getBytes());
-					closeClientSocket();
-					return;
-				} catch(InvalidPacketException e) {
+				} catch(HttpParserException e) {
 					e.printStackTrace();
 					clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_GATEWAY).toString().getBytes());
 					closeClientSocket();

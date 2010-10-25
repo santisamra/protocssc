@@ -3,7 +3,7 @@ package org.cssc.prototpe.parsers.lex;
 import org.cssc.prototpe.http.HttpResponse;
 import org.cssc.prototpe.http.HttpHeader;
 import org.cssc.prototpe.http.HttpResponseCode;
-import org.cssc.prototpe.parsers.exceptions.InvalidPacketParsingException;
+import org.cssc.prototpe.parsers.exceptions.HttpParserException;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.Reader;
@@ -119,5 +119,5 @@ NEWLINE =		\r\n
 	System.out.println("Reason phrase: " + reasonPhrase);
 	System.out.println("Remaining text:");
 	System.out.println(remainingText);
-	throw new InvalidPacketParsingException("Invalid packet.");
+	throw new HttpParserException("Invalid packet.");
 }

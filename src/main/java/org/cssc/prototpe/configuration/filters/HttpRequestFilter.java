@@ -35,13 +35,6 @@ public class HttpRequestFilter extends Filter {
 		List<String> blockedURIs = filter.getBlockedURIs();
 		
 		try {
-			System.out.println("Host resuelto: " + InetAddress.getByName(request.getEffectiveHost()));
-		} catch (MissingHostException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		
-		try {
 			if(allAccessesBlocked) {
 				writeResponse("src/main/resources/html/errors/accessDenied.html");
 				return true;
@@ -92,8 +85,6 @@ public class HttpRequestFilter extends Filter {
 			}
 		}
 		
-		System.out.println("URI: " + uri);
-		System.out.println("Expresion regular: " + regExp);
 		regExp = regExp.replace("*", ".*");
 		
 		return uri.matches(regExp);

@@ -5,7 +5,6 @@ import java.io.InputStream;
 
 import org.cssc.prototpe.http.HttpPacket;
 import org.cssc.prototpe.parsers.exceptions.HttpParserException;
-import org.cssc.prototpe.parsers.exceptions.InvalidPacketException;
 
 public abstract class HttpParser {
 
@@ -189,7 +188,7 @@ public abstract class HttpParser {
 		try {
 			chunkSize = Integer.parseInt(buffer.toString().trim(), 16);
 		} catch(NumberFormatException e) {
-			throw new InvalidPacketException("Chunk size must be hexadecimal.");
+			throw new HttpParserException("Chunk size must be hexadecimal.");
 		}
 
 		if(chunkSize > 0) {

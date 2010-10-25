@@ -1,7 +1,7 @@
 package org.cssc.prototpe.parsers.lex;
 
 import org.cssc.prototpe.http.HttpHeader;
-import org.cssc.prototpe.parsers.exceptions.InvalidPacketParsingException;
+import org.cssc.prototpe.parsers.exceptions.HttpParserException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -63,5 +63,5 @@ NEWLINE = \r\n
 
 . {
 	//System.out.println("Found error: \"" + yytext() + "\"");
-	throw new InvalidPacketParsingException("Invalid package.");
+	throw new HttpParserException("Invalid package.");
 }
