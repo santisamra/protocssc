@@ -114,6 +114,7 @@ NEWLINE =		\r\n
 
 (.|\n) {
 	System.out.println("----- ERROR PARSING RESPONSE -----");
+	System.out.println("yytext: " + yytext());
 	System.out.println("Version: " + version);
 	System.out.println("Status code: " + statusCode);
 	System.out.println("Reason phrase: " + reasonPhrase);

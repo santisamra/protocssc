@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
 
+import org.cssc.prototpe.configuration.filters.application.ApplicationFilter;
 import org.cssc.prototpe.configuration.filters.exceptions.FilterException;
 import org.cssc.prototpe.http.HttpHeader;
 import org.cssc.prototpe.http.HttpResponse;
@@ -14,9 +15,19 @@ import org.cssc.prototpe.http.HttpResponseCode;
 public abstract class Filter {
 
 	protected Socket clientSocket;
+	protected ApplicationFilter filter;
 
-	public Filter(Socket clientSocket) {
+	public Filter(Socket clientSocket, ApplicationFilter filter) {
+		if(clientSocket == null) {
+			throw new IllegalArgumentException("Client socket cannot be null.");
+		}
+		
+		if(filter == null) {
+			throw new IllegalArgumentException("Application filter cannot be null.");
+		}
+		
 		this.clientSocket = clientSocket;
+		this.filter = filter;
 	}
 	
 	public abstract boolean filter() throws IOException;

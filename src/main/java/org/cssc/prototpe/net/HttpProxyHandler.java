@@ -117,8 +117,9 @@ public class HttpProxyHandler implements ClientHandler{
 				// WRITING REQUEST
 				try {
 					try {
-						System.out.println("About to write request");
 						writeHttpPacket(request, requestParser, serverSocket.getOutputStream(), false);
+						System.out.println("Escribi request:");
+						System.out.println(request);
 					} catch(IOException e2) {
 						// Must retry only once
 						try {
@@ -170,6 +171,7 @@ public class HttpProxyHandler implements ClientHandler{
 
 				if(responseFilter.filter()) {
 					closeClientSocket();
+					closeServerSocket();
 					return;
 				}
 
@@ -265,7 +267,6 @@ public class HttpProxyHandler implements ClientHandler{
 				byte[] temp;
 
 				while((temp = parser.readNextChunk()) != null) {
-
 					outputStream.write(temp);
 				}
 			}
@@ -287,6 +288,17 @@ public class HttpProxyHandler implements ClientHandler{
 		if(clientSocket != null) {
 			try {
 				clientSocket.close();
+			} catch (IOException e) {
+				//TODO: what to do here?
+				e.printStackTrace(); 
+			}
+		}
+	}
+	
+	private void closeServerSocket() {
+		if(serverSocket != null && !serverSocket.isClosed()) {
+			try {
+				serverSocket.close();
 			} catch (IOException e) {
 				//TODO: what to do here?
 				e.printStackTrace(); 
