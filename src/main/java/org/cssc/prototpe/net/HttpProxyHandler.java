@@ -180,6 +180,9 @@ public class HttpProxyHandler implements ClientHandler{
 				try {
 					boolean writeContent = !request.getMethod().equals(HttpMethod.HEAD) || response.getStatusCode().isPossibleContent();
 					writeHttpPacket(response, responseParser, clientSocket.getOutputStream(), writeContent);
+//					if(!request.getMethod().equals(HttpMethod.HEAD) || response.getStatusCode().isPossibleContent()) {
+//						responseFilter.filterAndWriteContent(responseParser, clientSocket.getOutputStream());
+//					}
 					//							if(!response.getHeader().containsField("transfer-encoding") &&
 					//									!response.getHeader().containsField("content-length")) {
 					//								closeClientSocket();

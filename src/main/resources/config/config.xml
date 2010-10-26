@@ -16,13 +16,13 @@
 				</blocked-URIs>
 				<block-all-accesses>FALSE</block-all-accesses>
 				<transform>
-					<l33t>FALSE</l33t>
+					<l33t>TRUE</l33t>
 					<images180>FALSE</images180>
 				</transform>
-				<max-content-length>102400</max-content-length>
-				<blocked-MediaTypes>
+				<!-- <max-content-length>102400</max-content-length>  -->
+				<!-- <blocked-MediaTypes>
 					<MediaType>image/png</MediaType>
-				</blocked-MediaTypes>
+				</blocked-MediaTypes> -->
 			</actions>
 		</filter>
 	</filters>

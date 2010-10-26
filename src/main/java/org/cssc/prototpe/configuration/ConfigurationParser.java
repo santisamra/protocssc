@@ -129,7 +129,7 @@ public class ConfigurationParser {
 				    				    			 NodeList transforms = currNode.getChildNodes();
 				    				    			 
 				    				    			 for(int j = 0; j < transforms.getLength(); j++) {
-				    				    				 if(transforms.item(j).getNodeName().equals("tl33t")) {
+				    				    				 if(transforms.item(j).getNodeName().equals("l33t")) {
 				    				    					 l33tTransform=transforms.item(j).getChildNodes().item(0).getTextContent().equalsIgnoreCase("true")?true:false;
 				    				    				 } else if(transforms.item(j).getNodeName().equals("images180")) {
 				    				    					 rotateImages=transforms.item(j).getChildNodes().item(0).getTextContent().equalsIgnoreCase("true")?true:false;
