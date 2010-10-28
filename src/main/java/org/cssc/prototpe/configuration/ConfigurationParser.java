@@ -29,7 +29,7 @@ public class ConfigurationParser {
 		List<InetAddress> blockedIPs = null;
 		List<String> blockedURIs = null;
 		List<String> blockedMediaTypes = null;
-		double maxContentLength=0;
+		int maxContentLength = -1;
 		boolean l33tTransform = false;
 		boolean rotateImages = false;
 		
@@ -118,11 +118,14 @@ public class ConfigurationParser {
 				    				    			 }
 				    				    		}
 				    				    		else if(currNode.getNodeName().equals("max-content-length")){
-				    				    			try{
-				    				    				maxContentLength=Double.parseDouble(currNode.getChildNodes().item(0).getTextContent());
+				    				    			try {
+				    				    				maxContentLength = Integer.parseInt(currNode.getChildNodes().item(0).getTextContent());
+				    				    				
+				    				    				if(maxContentLength < 0) {
+				    				    					throw new ConfigurationParserException("Max content length cannot be less than 0.");
+				    				    				}
 				    				    			}catch (NumberFormatException e) {
-				    				    				//si no es un numero (double), lo salteo y lo pongo en 0 (default)
-				    				    				maxContentLength=0;
+				    				    				throw new ConfigurationParserException("Invalid max content length.");
 				    								}
 				    				    		}
 				    				    		else if(currNode.getNodeName().equals("transform")) {

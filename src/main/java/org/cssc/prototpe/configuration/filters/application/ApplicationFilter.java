@@ -12,13 +12,13 @@ public class ApplicationFilter {
 	private List<InetAddress> blockedIPs;
 	private List<String> blockedURIs;
 	private List<String> blockedMediaTypes;
-	private double maxContentLength;
+	private int maxContentLength;
 	private boolean l33tTransform;
 	private boolean rotateImages;
 	
 	public ApplicationFilter(FilterCondition condition, boolean allAccessesAreBlocked,
 			List<InetAddress> blockedIPs, List<String> blockedURIs,
-			List<String> blockedMediaTypes, double maxContentLength,
+			List<String> blockedMediaTypes, int maxContentLength,
 			boolean l33tTransform, boolean rotateImages) {
 		super();
 		this.condition = condition;
@@ -71,7 +71,7 @@ public class ApplicationFilter {
 		this.blockedMediaTypes = blockedMediaTypes;
 	}
 	
-	public double getMaxContentLength() {
+	public int getMaxContentLength() {
 		return maxContentLength;
 	}
 	

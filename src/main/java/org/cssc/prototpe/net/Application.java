@@ -106,6 +106,7 @@ public class Application {
 
 	public static void main(String[] args) throws UnknownHostException {
 		Application application = new Application();
+		System.out.println("Max content length: " + Application.getInstance().getApplicationConfiguration().getFilterForCondition(InetAddress.getByName("127.0.0.1"), "Firefox/3.6").getMaxContentLength());
 		new ApplicationConfigurationServer(8082);
 		application.launch();
 	}
