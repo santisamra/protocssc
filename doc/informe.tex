@@ -63,11 +63,37 @@
 
 \clearpage
 
+\section{Introducción}
+
+Se propuso como Trabajo Práctico Especial de la materia Protocolos de
+Comunicación el desarrollo de un servidor proxy para el protocolo \textit{HTTP
+(Hypertext transfer protocol)} en su versión 1.1, que pueda ser utilizado
+para navegar en Internet y que sea compatible con los navegadores
+\textit{Mozilla Firefox}, \textit{Google Chrome} e \textit{Internet Explorer}.\\
+
+El objetivo de este informe es dar a conocer las funcionalidades implementadas y
+describir el desarrollo de las mismas. Además, se presentan pruebas de carga
+realizadas al servidor, así como posibles extensiones de la implementación.
+
+\clearpage
+
+
 \section{Protocolos desarrollados}
 
-El proyecto se realizó completa y únicamente sobre el protocolo HTTP 1.1
-especificado por la RFC 2616\footnote{http://tools.ietf.org/html/rfc2616}. Por
-lo tanto, no se desarrollaron ni implementaron protocolos propios.
+El proyecto se realizó completa y únicamente sobre el protocolo \textit{HTTP}
+1.1 especificado por la RFC 2616\footnote{http://tools.ietf.org/html/rfc2616}. Por
+lo tanto, no se desarrollaron ni implementaron protocolos propios.\\
+
+El servidor ofrece la posibilidad de ser configurado y monitoreado remotamente
+y, aunque esto pudo haber sido implementado mediante protocolos propios, se
+decidió que no sea así. Una de las razones de ello fue la posibilidad
+de utilizar un protocolo ya existente como \textit{HTTP}, con lo que se evitó la
+dificultad de diseñar uno propio teniendo en cuenta las dificultades que
+implica. La otra razón fue el hecho de que, al usar \textit{HTTP}, es posible
+ofrecer usabilidad web para estos servicios.
+
+\clearpage
+
 
 \section{Problemas encontrados}
 
@@ -75,9 +101,99 @@ Durante el desarrollo se encontraron gran cantidad de problemas, que debieron
 ser solucionados para lograr un producto sólido. Se mencionan a continuación
 algunos de ellos:
 
-\subsection{Decisión sobre el uso de threads o E/S asincrónica}
+\subsection{Decisión sobre el uso de \textit{threads} o E/S asincrónica}
 
-\subsection{Interpretación y parseo de mensajes HTTP}
+En un principio, para ponerse en contacto con las funcionalidades que ofrece
+Java para programar servidores concurrentes y manejo de \textit{threads}, se
+procedió a implementar pequeños servidores que ofrezcan servicios básicos (como
+por ejemplo, \textit{echo}). Estas implementaciones se hicieron utilizando las
+dos alternativas analizadas en la materia:
+
+\begin{enumerate}
+  \item Teniendo un servidor que, por cada pedido de un cliente, lance un nuevo
+  \textit{thread} que lo atienda.
+  \item Mediante entrada/salida asincrónica (utilizando el mecanismo
+  \textit{select}), en el cual los pedidos entrantes de los clientes se
+  mantienen inactivos hasta que el servidor los tome y los atienda.
+\end{enumerate}
+
+Analizando el funcionamiento de cada una de las dos alternativas, se observó que
+la primera tenía un funcionamiento más acorde a lo que se esperaba del servidor
+ya que, básicamente, la segunda opción tenía un modo de trabajar iterativo, lo
+que impedía la concurrencia del proxy.\\
+
+Sin embargo, se pensó en una tercera alternativa que consistía en una
+combinación de las dos anteriormente mencionadas. Consistía en que el servidor
+conste de dos \textit{threads}. El primero aceptaba pedidos de clientes y los
+colocaba en una cola, y el segundo utilizaba el mecanismo de entrada/salida
+asincrónica para atender las conexiones que estaban en dicha cola. Con esto, se
+lograba un funcionamiento no iterativo del mecanismo \textit{select}, porque no
+era necesario que el servidor esté desocupado para atender una conexión
+entrante; asimismo, se evitaba el lanzamiento de un nuevo \textit{thread} por
+cada conexión, algo que implicaba un gran consumo de memoria y procesamiento.\\
+
+No obstante, la tercera opción no fue llevada a la práctica, debido a que se
+intentó programar un servidor \textit{echo} implementándola y se observó que el
+funcionamiento ideal implicaba un gran control de sincronización entre los
+\textit{threads}, algo que difícilmente fue logrado en el servidor \textit{echo}
+luego de muchos intentos. Por lo tanto, intentar aplicarlo en el proxy llevaría
+a grandes complicaciones.\\
+
+Finalmente, se decidió implementar una variante de la primera opción mencionada,
+en la cual en vez de disparar un nuevo \textit{thread} por cada pedido de un
+cliente, se tome uno entre varios disponibles de un \textit{pool}. De esta
+manera, se limitó la cantidad de \textit{threads} existentes al mismo tiempo en
+el servidor. Aunque esta limitación implica una menor cantidad de
+\textit{threads} funcionando simultáneamente en el servidor, hace que el consumo
+de memoria sea moderado y que no se requiera tanta capacidad de procesamiento.
+De todos modos, la cantidad de \textit{threads} presentes en el \textit{pool}
+puede ser configurada remotamente o en el archivo de configuración del proxy,
+con lo cual estas limitaciones pueden aplicarse en función de las
+características de la máquina que sirva el proxy y así aprovecharlas para un
+funcionamiento óptimo.
+
+\clearpage
+
+
+\subsection{Interpretación y parseo de mensajes \textit{HTTP}}
+
+Luego de la decisión tomada acerca de cómo atender clientes, se llevó a cabo el
+parseo de mensajes \textit{HTTP}.\\
+
+Antes de diseñar los \textit{parsers}, se pensó una jerarquía de clases que
+modele los paquetes \textit{HTTP}\footnote{Puede encontrarse en el paquete
+\textbf{org.cssc.prototpe.http}}. A grandes rasgos, consistió en una clase
+padre \verb+HttpPacket+ de la cual heredan \verb+HttpRequest+ y
+\verb+HttpResponse+, y que contienen un método
+(\textit{GET}, \textit{POST} o \textit{HEAD}, si se trata de un
+\textit{request}), un \textit{status code} (si se trata de un
+\textit{response}) y un \textit{header} con entradas campo-valor. En un
+principio se pensó en que las clases tengan también un \textit{body}
+asociado, ya que tanto los
+\textit{requests} como los \textit{responses} podrían ocasionalmente tener un
+cuerpo. Sin embargo esto no se realizó, y la razón es mencionada
+luego.\\
+
+Utilizando la herramienta
+\textit{jFlex}\footnote{http://jflex.de/}, se programaron los parsers que, en
+base al \verb+InputStream+ de un \textit{socket}, construyan el
+\verb+HttpRequest+ o \verb+HttpResponse+ correspondiente. En este punto fue
+cuando se notó que incluir el cuerpo del mensaje dentro de esas clases no era conveniente,
+debido a que ello implicaba parsearlo por completo y asociárselo a la clase, y
+no se tenían en cuenta los siguiente factores:
+\begin{enumerate}
+  \item Es conveniente devolverle al cliente la información del cuerpo dividida
+  en partes, para que el navegador pueda construir lo que dicha información
+  represente a medida que le va llegando, y no que tenga la obligación de
+  recibir todo el cuerpo para recién visualizar el contenido.
+  \item El mensaje puede tener el campo \verb+Transfer-encoding: chunked+, con
+  lo cual, si se parsea todo el contenido del cuerpo y una vez hecho esto se lo
+  envía, se pierde la funcionalidad que un paquete \verb+chunked+ ofrece (por
+  ejemplo, la generación de páginas dinámicas).
+\end{enumerate}
+Por lo tanto, se decidió que los parsers tengan métodos para leer el paquete sin
+cuerpo, y otros para leer el próximo \verb+chunk+ del cuerpo si el contenido es
+\verb+chunked+, o leer los próximos \textit{n} bytes del mismo si no lo es.
 
 \subsection{Compatibilidad con HTTP 1.0}
 
@@ -86,6 +202,7 @@ algunos de ellos:
 \subsection{Proxy transparente}
 
 
+\clearpage
 
 \section{Limitaciones}
 
@@ -94,26 +211,26 @@ El proxy desarrollado tiene las siguientes limitaciones:
 \begin{itemize}
   \item No soporta \emph{pipelining} de requests al servidor. Por ello, si bien
   se reusan las conexiones a los servidores cuando llegan distintos requests, la
-  eficiencia de ello deja mucho que desear. De hecho, funciona más rápidamente
-  si las conexiones a los servidores no se reusan, creándose una nueva cada vez
+  eficiencia de ello deja mucho que desear. De hecho, funciona mï¿½s rï¿½pidamente
+  si las conexiones a los servidores no se reusan, creï¿½ndose una nueva cada vez
   que se realiza un request.
-  \item No soporta todos los métodos HTTP, solo GET, HEAD y POST; con lo cual
-  hay ciertas páginas que no funcionan del todo bien porque usan otros métodos 
+  \item No soporta todos los mï¿½todos HTTP, solo GET, HEAD y POST; con lo cual
+  hay ciertas pï¿½ginas que no funcionan del todo bien porque usan otros mï¿½todos 
   (por ejemplo, el chat de GMail, que usa CONNECT).
 \end{itemize}
 
 \section{Posibles extensiones}
 
-\section{Conclusión}
+\section{Conclusiï¿½n}
 
 \section{Ejemplos de testeo}
 
-\section{Guía de instalación}
+\section{Guï¿½a de instalaciï¿½n}
 
-\section{Guía de configuración}
+\section{Guï¿½a de configuraciï¿½n}
 
-\section{Ejemplos de configuración}
+\section{Ejemplos de configuraciï¿½n}
 
-\section{Documento de diseño}
+\section{Documento de diseï¿½o}
 
 \end{document}

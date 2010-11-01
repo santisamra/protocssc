@@ -172,12 +172,4 @@ public class HttpResponseFilter extends Filter {
 	private boolean isText(String contentTypeString) {
 		return contentTypeString != null && contentTypeString.equalsIgnoreCase("text/plain");
 	}
-
-	private void print(byte[] buffer){
-		System.out.print("\"");
-		for( int i = 0; i < buffer.length; i++){
-			System.out.print((char)buffer[i]);
-		}
-		System.out.print("\"");
-	}
 }
