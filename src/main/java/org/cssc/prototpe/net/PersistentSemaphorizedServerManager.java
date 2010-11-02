@@ -101,10 +101,12 @@ public class PersistentSemaphorizedServerManager implements ServerManager {
 	public void finishedRequest(Socket socket) {
 		InetAddress addr = socket.getInetAddress();
 		Semaphore semaphore = getSemaphore(addr);
-		if(!socket.isClosed()) {
-			synchronized(freeSockets) {
+		synchronized(freeSockets) {
+			if(!socket.isClosed()) {
 				Queue<Socket> freeSocketQueue = freeSockets.get(addr);
 				freeSocketQueue.offer(socket);
+			} else {
+				usedSockets--;
 			}
 		}
 		totalSockets.release();
