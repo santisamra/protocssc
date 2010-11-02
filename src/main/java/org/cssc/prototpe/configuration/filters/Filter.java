@@ -22,10 +22,6 @@ public abstract class Filter {
 			throw new IllegalArgumentException("Client socket cannot be null.");
 		}
 		
-		if(filter == null) {
-			throw new IllegalArgumentException("Application filter cannot be null.");
-		}
-		
 		this.clientSocket = clientSocket;
 		this.filter = filter;
 	}

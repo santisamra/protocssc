@@ -6,6 +6,7 @@
 \usepackage{mathrsfs}
 \usepackage{graphicx}
 \usepackage{fancyvrb}
+\usepackage{color}
 \addtolength{\textwidth}{2cm}
 \addtolength{\marginparwidth}{-10cm}
 \addtolength{\oddsidemargin}{-1cm}
@@ -165,7 +166,7 @@ modele los paquetes \textit{HTTP}\footnote{Puede encontrarse en el paquete
 \textbf{org.cssc.prototpe.http}}. A grandes rasgos, consistió en una clase
 padre \verb+HttpPacket+ de la cual heredan \verb+HttpRequest+ y
 \verb+HttpResponse+, y que contienen un método
-(\textit{GET}, \textit{POST} o \textit{HEAD}, si se trata de un
+(\verb+GET+, \verb+POST+ o \verb+HEAD+, si se trata de un
 \textit{request}), un \textit{status code} (si se trata de un
 \textit{response}) y un \textit{header} con entradas campo-valor. En un
 principio se pensó en que las clases tengan también un \textit{body}
@@ -197,12 +198,59 @@ cuerpo, y otros para leer el próximo \verb+chunk+ del cuerpo si el contenido es
 
 \subsection{Compatibilidad con HTTP 1.0}
 
+Si bien el proxy funciona con el protocolo \textit{HTTP} en su versión 1.1, debe
+ser compatible hacia atrás con la versión 1.0.\\
+
+En principio no se encontraron grandes dificultades, debido a que se testeaba
+con sitios que devolvían \textit{responses} versión 1.1. Sin embargo, al probar
+con el proxy transparente utilizado en el ITBA, se descubrió que el
+funcionamiento no era del todo correcto.\\
+
+\textbf{\color{red}{\large{Agregar acá una descripción del problema que se
+tenía al usar el proxy del ITBA, y mencionar cuál fue la solución.}}}
+
 \subsection{Conexiones persistentes}
+
+Una de las funcionalidades requeridas para el proxy fue la de implementar
+conexiones persistentes; es decir, que no se cree una nueva conexión con el
+servidor \textit{origin} cada vez que se hace un \textit{request}, sino mantener
+abiertas las conexiones. De esta manera, ante un \textit{request} a un servidor
+con una conexión ya abierta, se evita tener que abrir uno nuevo.\\
+
+En principio, se mantenía abierta una conexión para cada servidor
+\textit{origin}. Pero esto generaba un funcionamiento ineficiente, ya que no
+podían haber dos conexiones al mismo servidor simultáneamente, con lo cual las conexiones
+persistentes reducían la capacidad del proxy. Por lo tanto, se optó por tener,
+para un mismo servidor \textit{origin}, $n$ conexiones (donde $n$
+es configurable).\\
+
+\textbf{\color{red}{\large{Seguir con la descripción. Comentar cómo es la
+implementación final de conexiones persistentes (usando el mapa InetAddress
+a Semaphore), y decir por qué se decidió que sea así.}}}
 
 \subsection{Proxy transparente}
 
+\textbf{\color{red}{\large{Describir una vez que lo testeemos.}}}
 
 \clearpage
+
+
+\section{Más funcionalidades}
+
+A continuación se describen más funcionalidades del proxy, en cuyas
+implementaciones no se tuvieron problemas mayores.
+
+\textbf{\color{red}{\large{Si alguna de las cosas que está acá trajo
+problemas, tiene que moverse a la sección anterior.}}}
+
+\subsection{Encadenamiento de proxies}
+
+El proxy admite funcionar redirigiendo sus requests hacia otro proxy.
+
+\textbf{\color{red}{\large{Seguir con la descripción de esta funcionalidad.}}}
+
+\clearpage
+
 
 \section{Limitaciones}
 
@@ -211,26 +259,33 @@ El proxy desarrollado tiene las siguientes limitaciones:
 \begin{itemize}
   \item No soporta \emph{pipelining} de requests al servidor. Por ello, si bien
   se reusan las conexiones a los servidores cuando llegan distintos requests, la
-  eficiencia de ello deja mucho que desear. De hecho, funciona mï¿½s rï¿½pidamente
-  si las conexiones a los servidores no se reusan, creï¿½ndose una nueva cada vez
+  eficiencia de ello deja mucho que desear. De hecho, funciona más rápidamente
+  si las conexiones a los servidores no se reusan, creándose una nueva cada vez
   que se realiza un request.
-  \item No soporta todos los mï¿½todos HTTP, solo GET, HEAD y POST; con lo cual
-  hay ciertas pï¿½ginas que no funcionan del todo bien porque usan otros mï¿½todos 
-  (por ejemplo, el chat de GMail, que usa CONNECT).
+  \item El número de conexiones simultáneas a un servidor \textit{origin} está
+  limitado, debido a la implementación de conexiones persistentes.
+  \item No soporta todos los métodos \textit{HTTP}, solo \verb+GET+, \verb+HEAD+
+  y \verb+POST+; con lo cual hay ciertas páginas que no funcionan del todo
+  bien porque usan otros métodos (por ejemplo, el chat de \textit{GMail}, que
+  usa \verb+CONNECT+).
+  \item Para realizar filtrado de páginas por \textit{Content-length}, es
+  necesario parsear el contenido completo de un paquete. Por lo tanto, si es
+  \textit{chunked}, puede perderse la funcionalidad esperada para estos tipos de
+  \textit{responses}.
 \end{itemize}
 
 \section{Posibles extensiones}
 
-\section{Conclusiï¿½n}
+\section{Conclusión}
 
 \section{Ejemplos de testeo}
 
-\section{Guï¿½a de instalaciï¿½n}
+\section{Guía de instalación}
 
-\section{Guï¿½a de configuraciï¿½n}
+\section{Guía de configuración}
 
-\section{Ejemplos de configuraciï¿½n}
+\section{Ejemplos de configuración}
 
-\section{Documento de diseï¿½o}
+\section{Documento de diseño}
 
 \end{document}

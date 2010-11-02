@@ -14,7 +14,7 @@ import org.cssc.prototpe.transformations.TransformationUtilities;
 public class HttpResponseFilter extends Filter {
 
 	private HttpResponse response;
-	
+
 	public HttpResponseFilter(Socket clientSocket, HttpRequest request, HttpResponse response) {
 		super(clientSocket, Application.getInstance().getApplicationConfiguration().getFilterForCondition(clientSocket.getInetAddress(), request.getHeader().getField("user-agent")));
 		this.response = response;
@@ -54,20 +54,27 @@ public class HttpResponseFilter extends Filter {
 		String contentTypeString = response.getHeader().getField("content-type");
 		boolean hasContentLength = response.getHeader().containsField("content-length");
 		boolean isContentEncoded = response.getHeader().containsField("content-encoding");
-		int maxContentLength = filter.getMaxContentLength();
-		
-		boolean checkContentLength = maxContentLength != -1 && !hasContentLength;
-		boolean l33tTransform = filter.isL33tTransform() && isText(contentTypeString) && !isContentEncoded;
-		boolean rotateImages = filter.isRotateImages() && isImage(contentTypeString) && !isContentEncoded;
+
+		int maxContentLength = -1;
+		boolean checkContentLength = false;
+		boolean l33tTransform = false;
+		boolean rotateImages = false;
+
+		if(filter != null) {
+			maxContentLength = filter.getMaxContentLength();
+			checkContentLength = maxContentLength != -1 && !hasContentLength;
+			l33tTransform = filter.isL33tTransform() && isText(contentTypeString) && !isContentEncoded;
+			rotateImages = filter.isRotateImages() && isImage(contentTypeString) && !isContentEncoded;
+		}
 
 		if(filter != null && (checkContentLength || l33tTransform || rotateImages)) {
 			/* The response content has to be filtered. */
-			
+
 			String transferEncoding = response.getHeader().getField("transfer-encoding");
 
 			byte[] content = new byte[0];
 			int contentLength = 0;
-			
+
 			/* Content length is filtered. */
 			if(checkContentLength && contentLength > contentLength) {
 				writeResponse("src/main/resources/html/errors/bigContentLength.html");
@@ -80,13 +87,13 @@ public class HttpResponseFilter extends Filter {
 
 					while((temp = parser.readNextChunk()) != null) {
 						contentLength += temp.length;
-						
+
 						/* Content length is filtered. */
 						if(checkContentLength && contentLength > contentLength) {
 							writeResponse("src/main/resources/html/errors/bigContentLength.html");
 							return;
 						}
-						
+
 						byte[] aux = new byte[contentLength];
 
 						System.arraycopy(content, 0, aux, 0, content.length);
@@ -102,13 +109,13 @@ public class HttpResponseFilter extends Filter {
 
 				while((readBytes = parser.readNextNBodyBytes(temp, 0, 1024)) != -1) {
 					contentLength += readBytes;
-					
+
 					/* Content length is filtered. */
 					if(checkContentLength && contentLength > contentLength) {
 						writeResponse("src/main/resources/html/errors/bigContentLength.html");
 						return;
 					}
-					
+
 					byte[] aux = new byte[contentLength];
 
 					System.arraycopy(content, 0, aux, 0, content.length);
@@ -120,22 +127,22 @@ public class HttpResponseFilter extends Filter {
 
 			if(l33tTransform || rotateImages) {
 				byte[] transformed = null;
-				
+
 				if(l33tTransform) {
 					transformed = TransformationUtilities.transforml33t(content);
 				} else if(rotateImages) {
 					transformed = TransformationUtilities.transform180Image(content);
 				}
-				
+
 				response.getHeader().setField("content-length", Integer.toString(transformed.length));
 				response.getHeader().removeField("transfer-encoding");
 				outputStream.write(response.toString().getBytes());
 				outputStream.write(transformed);
 			}
-			
+
 		} else {
 			/* There are not filters to apply. */
-			
+
 			outputStream.write(response.toString().getBytes());
 			String transferEncoding = response.getHeader().getField("transfer-encoding");
 
@@ -161,7 +168,7 @@ public class HttpResponseFilter extends Filter {
 		}
 	}
 
-	
+
 	private boolean isImage(String contentTypeString) {
 		return contentTypeString != null && (
 				contentTypeString.equalsIgnoreCase("image/jpeg") ||
