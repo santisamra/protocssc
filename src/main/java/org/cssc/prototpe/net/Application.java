@@ -2,17 +2,11 @@ package org.cssc.prototpe.net;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.LinkedList;
-import java.util.List;
 
 import javax.swing.JOptionPane;
 
-import org.cssc.prototpe.configuration.filters.application.ApplicationFilter;
-import org.cssc.prototpe.configuration.filters.application.FilterCondition;
 import org.cssc.prototpe.httpserver.ApplicationConfigurationServer;
 import org.cssc.prototpe.net.interfaces.ServerManager;
-
-
 
 
 /**
@@ -27,9 +21,10 @@ public class Application {
 	private ServerManager serverManager;
 
 	private static final String CONFIG_FILE = "src/main/resources/config/config.xml";
-	private static final int MAX_THREAD_COUNT = 50;
-	private static final int MAX_PERSISTANT_SERVER_CONNECTIONS = 20;
+	private static final int MAX_THREAD_COUNT = 10;
+	private static final int MAX_PERSISTANT_SERVER_CONNECTIONS = 10;
 	private static final int CLIENT_KEEP_ALIVE_TIMEOUT_MS = 30000;
+	private static final int MAX_PERSISTANT_SERVER_CONNECTIONS_PER_SERVER = 2;
 	private static final String LOGGING_FILE_NAME = "log.txt";
 
 	private Application() {
@@ -45,12 +40,14 @@ public class Application {
 		applicationConfiguration.setLoggingFileName(LOGGING_FILE_NAME);
 		applicationConfiguration.setMaxPersistantServerConnections(MAX_PERSISTANT_SERVER_CONNECTIONS);
 		applicationConfiguration.setClientKeepAliveTimeout(CLIENT_KEEP_ALIVE_TIMEOUT_MS);
+		applicationConfiguration.setMaxPersistantServerConnectionsPerServer(MAX_PERSISTANT_SERVER_CONNECTIONS_PER_SERVER);
 
 
 		// TODO: Place here any parts of the application that are needed by other parts.
 		logger = new Logger(applicationConfiguration.getLoggingFileName());
 //		serverManager = new SimpleServerManager();
-		serverManager = new PersistentServerManager(applicationConfiguration.getMaxPersistantServerConnections());
+		serverManager = new PersistentSemaphorizedServerManager(applicationConfiguration.getMaxPersistantServerConnections(),
+				applicationConfiguration.getMaxPersistantServerConnectionsPerServer());
 
 		//TODO: Nada validado obviamente.. TESTING PURO
 		int port; 

@@ -11,6 +11,7 @@ public class ApplicationConfiguration {
 	
 	private int threadPoolSize;
 	private int maxPersistantServerConnections;
+	private int maxPersistantServerConnectionsPerServer;
 	private String loggingFileName;
 	private InetAddress proxy;
 	private int proxyport;
@@ -131,6 +132,15 @@ public class ApplicationConfiguration {
 		}
 		
 		return null;
+	}
+	
+	public int getMaxPersistantServerConnectionsPerServer() {
+		return maxPersistantServerConnectionsPerServer;
+	}
+
+	public void setMaxPersistantServerConnectionsPerServer(
+			int maxPersistantServerConnectionsPerServer) {
+		this.maxPersistantServerConnectionsPerServer = maxPersistantServerConnectionsPerServer;
 	}
 	
 }
