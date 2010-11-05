@@ -89,10 +89,6 @@ public class ApplicationConfiguration {
 			throw new IllegalArgumentException("IP cannot be null.");
 		}
 		
-		if(userAgent == null) {
-			throw new IllegalArgumentException("User agent cannot be null.");
-		}
-		
 		for(ApplicationFilter f: filters) {
 			List<InetAddress> ips = f.getCondition().getIps();
 			String browser = f.getCondition().getBrowser();
@@ -111,7 +107,7 @@ public class ApplicationConfiguration {
 			}
 			
 			if(browser != null && !browser.equals("")) {
-				if(userAgent.contains(browser)) {
+				if(userAgent == null || userAgent.contains(browser)) {
 					aux2 = true;
 				}
 			} else {
@@ -119,7 +115,7 @@ public class ApplicationConfiguration {
 			}
 			
 			if(operatingSystem != null && !operatingSystem.equals("")) {
-				if(userAgent.contains(operatingSystem)) {
+				if(userAgent == null || userAgent.contains(operatingSystem)) {
 					aux3 = true;
 				}
 			} else {
