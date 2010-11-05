@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.util.List;
 
+import org.cssc.prototpe.http.HttpMethod;
 import org.cssc.prototpe.http.HttpRequest;
 import org.cssc.prototpe.http.HttpResponse;
 import org.cssc.prototpe.net.Application;
@@ -13,10 +14,12 @@ import org.cssc.prototpe.transformations.TransformationUtilities;
 
 public class HttpResponseFilter extends Filter {
 
+	private HttpRequest request;
 	private HttpResponse response;
 
 	public HttpResponseFilter(Socket clientSocket, HttpRequest request, HttpResponse response) {
 		super(clientSocket, Application.getInstance().getApplicationConfiguration().getFilterForCondition(clientSocket.getInetAddress(), request.getHeader().getField("user-agent")));
+		this.request = request;
 		this.response = response;
 	}
 
@@ -54,6 +57,7 @@ public class HttpResponseFilter extends Filter {
 		String contentTypeString = response.getHeader().getField("content-type");
 		boolean hasContentLength = response.getHeader().containsField("content-length");
 		boolean isContentEncoded = response.getHeader().containsField("content-encoding");
+		boolean contentIsWritable = !request.getMethod().equals(HttpMethod.HEAD) && response.getStatusCode().isPossibleContent();
 
 		int maxContentLength = -1;
 		boolean checkContentLength = false;
@@ -67,7 +71,7 @@ public class HttpResponseFilter extends Filter {
 			rotateImages = filter.isRotateImages() && isImage(contentTypeString) && !isContentEncoded;
 		}
 
-		if(filter != null && (checkContentLength || l33tTransform || rotateImages)) {
+		if(filter != null && contentIsWritable && (checkContentLength || l33tTransform || rotateImages)) {
 			/* The response content has to be filtered. */
 
 			String transferEncoding = response.getHeader().getField("transfer-encoding");
@@ -144,26 +148,30 @@ public class HttpResponseFilter extends Filter {
 			/* There are not filters to apply. */
 
 			outputStream.write(response.toString().getBytes());
-			String transferEncoding = response.getHeader().getField("transfer-encoding");
 
-			if(transferEncoding != null) {
-				if(transferEncoding.toLowerCase().equals("chunked")) {
-					byte[] temp;
+			if(contentIsWritable) {
 
-					while((temp = parser.readNextChunk()) != null) {
-						outputStream.write(temp);
+				String transferEncoding = response.getHeader().getField("transfer-encoding");
+
+				if(transferEncoding != null) {
+					if(transferEncoding.toLowerCase().equals("chunked")) {
+						byte[] temp;
+
+						while((temp = parser.readNextChunk()) != null) {
+							outputStream.write(temp);
+						}
 					}
+
+				} else {
+
+					byte[] temp = new byte[1024];
+					int readBytes;
+
+					while((readBytes = parser.readNextNBodyBytes(temp, 0, 1024)) != -1) {
+						outputStream.write(temp, 0, readBytes);
+					}
+
 				}
-
-			} else {
-
-				byte[] temp = new byte[1024];
-				int readBytes;
-
-				while((readBytes = parser.readNextNBodyBytes(temp, 0, 1024)) != -1) {
-					outputStream.write(temp, 0, readBytes);
-				}
-
 			}
 		}
 	}

@@ -92,7 +92,7 @@ public class HttpProxyHandler implements ClientHandler{
 					closeClientSocket();
 					return;
 				}
-				
+
 				// GENERATING CONNECTION
 				try {
 					System.out.println("Parsee request para " + request.getEffectiveHost());
@@ -178,11 +178,9 @@ public class HttpProxyHandler implements ClientHandler{
 				// WRITING RESPONSE
 
 				try {
-//					boolean writeContent = !request.getMethod().equals(HttpMethod.HEAD) || response.getStatusCode().isPossibleContent();
-//					writeHttpPacket(response, responseParser, clientSocket.getOutputStream(), writeContent);
-					if(!request.getMethod().equals(HttpMethod.HEAD) || response.getStatusCode().isPossibleContent()) {
-						responseFilter.filterAndWriteContent(responseParser, clientSocket.getOutputStream());
-					}
+					//					boolean writeContent = !request.getMethod().equals(HttpMethod.HEAD) || response.getStatusCode().isPossibleContent();
+					//					writeHttpPacket(response, responseParser, clientSocket.getOutputStream(), writeContent);
+					responseFilter.filterAndWriteContent(responseParser, clientSocket.getOutputStream());
 					//							if(!response.getHeader().containsField("transfer-encoding") &&
 					//									!response.getHeader().containsField("content-length")) {
 					//								closeClientSocket();
@@ -297,7 +295,7 @@ public class HttpProxyHandler implements ClientHandler{
 			}
 		}
 	}
-	
+
 	private void closeServerSocket() {
 		if(serverSocket != null && !serverSocket.isClosed()) {
 			try {
