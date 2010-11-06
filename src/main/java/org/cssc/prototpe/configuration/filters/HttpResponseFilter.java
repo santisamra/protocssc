@@ -80,7 +80,7 @@ public class HttpResponseFilter extends Filter {
 			int contentLength = 0;
 
 			/* Content length is filtered. */
-			if(checkContentLength && contentLength > contentLength) {
+			if(checkContentLength && contentLength > maxContentLength) {
 				writeResponse("src/main/resources/html/errors/bigContentLength.html");
 				return;
 			}
@@ -93,7 +93,7 @@ public class HttpResponseFilter extends Filter {
 						contentLength += temp.length;
 
 						/* Content length is filtered. */
-						if(checkContentLength && contentLength > contentLength) {
+						if(checkContentLength && contentLength > maxContentLength) {
 							writeResponse("src/main/resources/html/errors/bigContentLength.html");
 							return;
 						}
@@ -115,7 +115,7 @@ public class HttpResponseFilter extends Filter {
 					contentLength += readBytes;
 
 					/* Content length is filtered. */
-					if(checkContentLength && contentLength > contentLength) {
+					if(checkContentLength && contentLength > maxContentLength) {
 						writeResponse("src/main/resources/html/errors/bigContentLength.html");
 						return;
 					}
