@@ -55,19 +55,26 @@ public abstract class MyHttpServlet {
 	}
 	
 	public void setResponse() throws IOException{
-		StringBuffer buffer = response.getBuffer();
-		if( buffer == null || buffer.length() == 0){
-			buffer = getResource();
+		if( response.isRedirected() ){
+			HttpHeader header = new HttpHeader();
+			header.setField("Location", response.getRedirect());
+			response.setHttpResponse(new HttpResponse("1.1", header, HttpResponseCode.FOUND, "OK", new byte[0]));
 		} else {
-			response.setContentLength(buffer.toString().getBytes(Charset.forName("US-ASCII")).length);
+			StringBuffer buffer = response.getBuffer();
+			if( buffer == null || buffer.length() == 0){
+				buffer = getResource();
+			} else {
+				response.setContentLength(buffer.toString().getBytes(Charset.forName("US-ASCII")).length);
+			}
+			response.setBuffer(buffer);
+			HttpHeader header = new HttpHeader();
+			header.setField("content-length", String.valueOf(response.getContentLength()));
+			header.setField("connection", "close");
+			HttpResponse resp = new HttpResponse("1.1", header, HttpResponseCode.OK, "OK", new byte[0]);
+			response.setHttpResponse(resp);
 		}
-		response.setBuffer(buffer);
-		HttpHeader header = new HttpHeader();
-		header.setField("content-length", String.valueOf(response.getContentLength()));
-		header.setField("connection", "close");
-		HttpResponse resp = new HttpResponse("1.1", header, HttpResponseCode.OK, "OK", new byte[0]);
-		response.setHttpResponse(resp);
 	}
+	
 	
 	
 	

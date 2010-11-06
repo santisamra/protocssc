@@ -15,7 +15,7 @@ public class IndexServlet extends MyHttpServlet {
 	@Override
 	public void doGet(HttpRequest request, HttpServletResponse response)
 			throws IOException {
-
+		response.sendRedirect("http://www.google.com");
 	}
 
 	@Override

@@ -7,6 +7,7 @@ public class HttpServletResponse {
 	private HttpResponse response;
 	private StringBuffer buffer;
 	private int contentLength;
+	private String redirect;
 	
 	public HttpServletResponse(){
 		buffer = new StringBuffer();
@@ -33,6 +34,18 @@ public class HttpServletResponse {
 	}
 	public void setContentLength(int contentLength){
 		this.contentLength = contentLength;
+	}
+	
+	public void sendRedirect(String URL){
+		this.redirect = URL;
+	}
+	
+	public String getRedirect(){
+		return redirect;
+	}
+	
+	public boolean isRedirected(){
+		return redirect != null;
 	}
 
 }
