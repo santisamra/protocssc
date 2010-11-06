@@ -90,7 +90,7 @@ public class HttpResponseFilter extends Filter {
 				if(transferEncoding.toLowerCase().equals("chunked")) {
 					byte[] temp;
 
-					while((temp = parser.readNextChunk()) != null) {
+					while((temp = parser.readNextChunk(true)) != null) {
 						contentLength += temp.length;
 
 						/* Content length is filtered. */

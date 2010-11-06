@@ -118,13 +118,17 @@ public abstract class HttpParser {
 		}
 	}
 
+	public byte[] readNextChunk() throws IOException {
+		return readNextChunk(false);
+	}
+	
 
 	/**
 	 * Reads the next chunk of a chunked response body.
 	 * This method only works if the response has a transfer-encoding field
 	 * within its header, and its value is "chunked".
 	 */
-	public byte[] readNextChunk() throws IOException {
+	public byte[] readNextChunk(boolean dechunkize) throws IOException {
 		if(parsedPacket == null) {
 			parsedPacket = parse();
 		}
@@ -192,9 +196,17 @@ public abstract class HttpParser {
 		}
 
 		if(chunkSize > 0) {
-			int tempLength = i;
+			int tempLength;
+			byte[] temp;
+			if(dechunkize) {
+				tempLength = 0;
+				i = 0;
+				temp = new byte[chunkSize];
+			} else {
+				tempLength = i;
+				temp = new byte[tempLength + chunkSize + 2];
+			}
 
-			byte[] temp = new byte[tempLength + chunkSize + 2];
 			System.arraycopy(ret, 0, temp, 0, tempLength);
 			ret = temp;
 
@@ -215,8 +227,10 @@ public abstract class HttpParser {
 				throw new HttpParserException("Invalid chunked data.");
 			}
 
-			ret[i] = (byte)cr;
-			ret[i + 1] = (byte)lf;
+			if(!dechunkize) {
+				ret[i] = (byte)cr;
+				ret[i + 1] = (byte)lf;
+			}
 
 		} else {
 
@@ -235,9 +249,11 @@ public abstract class HttpParser {
 			byte[] temp = new byte[i + 2];
 			System.arraycopy(ret, 0, temp, 0, i + 2);
 
-
-
 			ret = temp;
+			
+			if(dechunkize) {
+				ret = new byte[0];
+			}
 		}
 
 		return ret;
