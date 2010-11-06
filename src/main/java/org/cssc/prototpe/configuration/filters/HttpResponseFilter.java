@@ -187,6 +187,6 @@ public class HttpResponseFilter extends Filter {
 	}
 
 	private boolean isText(String contentTypeString) {
-		return contentTypeString != null && contentTypeString.equalsIgnoreCase("text/plain");
+		return contentTypeString != null && contentTypeString.toLowerCase().contains("text/plain");
 	}
 }
