@@ -17,7 +17,7 @@
 				<block-all-accesses>FALSE</block-all-accesses>
 				<transform>
 					<l33t>TRUE</l33t>
-					<images180>FALSE</images180>
+					<images180>TRUE</images180>
 				</transform>
 				<!-- <max-content-length>102400</max-content-length>  -->
 				<!-- <blocked-MediaTypes>

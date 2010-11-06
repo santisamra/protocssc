@@ -137,6 +137,7 @@ public class HttpResponseFilter extends Filter {
 					transformed = TransformationUtilities.transforml33t(content);
 				} else if(rotateImages) {
 					transformed = TransformationUtilities.transform180Image(content);
+					response.getHeader().setField("content-type", "image/png");
 				}
 
 				response.getHeader().setField("content-length", Integer.toString(transformed.length));

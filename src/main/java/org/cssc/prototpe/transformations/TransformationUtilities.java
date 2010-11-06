@@ -47,7 +47,7 @@ public class TransformationUtilities {
 		double angleOfRotation=180.0;
 		BufferedImage processedImage=rotateMyImage(image, angleOfRotation);
 		ByteArrayOutputStream baos = new ByteArrayOutputStream( 1000 );
-		ImageIO.write( processedImage, "jpeg" , baos );
+		ImageIO.write( processedImage, "png" , baos );
 		baos.flush();
 		byte[] result = baos.toByteArray();
 		baos.close();
