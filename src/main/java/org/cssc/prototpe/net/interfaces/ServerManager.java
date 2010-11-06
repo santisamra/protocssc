@@ -8,6 +8,8 @@ public interface ServerManager {
 
 	public Socket getSocket(InetAddress addr, int port) throws IOException;
 	
+	public Socket getEmergencySocket(InetAddress addr, int port) throws IOException;
+	
 	public void finishedRequest(Socket socket);
 	
 }

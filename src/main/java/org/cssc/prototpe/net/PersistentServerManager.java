@@ -102,4 +102,10 @@ public class PersistentServerManager implements ServerManager {
 			}
 		}
 	}
+
+	@Override
+	public Socket getEmergencySocket(InetAddress addr, int port)
+			throws IOException {
+		return new Socket(addr, port);
+	}
 }

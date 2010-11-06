@@ -113,5 +113,11 @@ public class PersistentSemaphorizedServerManager implements ServerManager {
 		semaphore.release();
 	}
 
+	@Override
+	public Socket getEmergencySocket(InetAddress addr, int port)
+			throws IOException {
+		return new Socket(addr, port);
+	}
+
 
 }

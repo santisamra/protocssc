@@ -19,4 +19,10 @@ public class SimpleServerManager implements ServerManager {
 		return new Socket(addr, port);
 	}
 
+	@Override
+	public Socket getEmergencySocket(InetAddress addr, int port)
+			throws IOException {
+		return getSocket(addr, port);
+	}
+
 }
