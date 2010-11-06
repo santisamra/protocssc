@@ -13,14 +13,15 @@ public class ApplicationConfiguration {
 	private int maxPersistantServerConnections;
 	private int maxPersistantServerConnectionsPerServer;
 	private String loggingFileName;
-	private InetAddress proxy;
-	private int proxyport;
+	private InetAddress chainingProxyAddress;
+	private int chainingProxyPort;
 	private int clientKeepAliveTimeout;
+	private int serverConnectionPersistentTimeout;
 	private List<ApplicationFilter> filters;
 	
 	public void loadInitialValues(String xmlPath) {
-		ConfigurationParser parser = new ConfigurationParser();
-		filters = parser.parse(xmlPath);
+		ConfigurationParser parser = new ConfigurationParser(xmlPath);
+		filters = parser.getFilters();
 	}
 	
 	public int getClientKeepAliveTimeout() {
@@ -29,6 +30,14 @@ public class ApplicationConfiguration {
 
 	public void setClientKeepAliveTimeout(int clientKeepAliveTimeout) {
 		this.clientKeepAliveTimeout = clientKeepAliveTimeout;
+	}
+	
+	public int getServerConnectionPersistentTimeout() {
+		return serverConnectionPersistentTimeout;
+	}
+	
+	public void setServerConnectionPersistentTimeout(int serverConnectionPersistentTimeout) {
+		this.serverConnectionPersistentTimeout = serverConnectionPersistentTimeout;
 	}
 
 	public ApplicationConfiguration() {
@@ -59,21 +68,21 @@ public class ApplicationConfiguration {
 		this.threadPoolSize = threadPoolSize;
 	}
 	
-	public void setProxy(InetAddress proxy, int proxyport){
-		this.proxy = proxy;
-		this.proxyport = proxyport;
+	public void setChainingProxy(InetAddress address, int port){
+		this.chainingProxyAddress = address;
+		this.chainingProxyPort = port;
 	}
 	
-	public InetAddress getProxy(){
-		return proxy;
+	public InetAddress getChainingProxyAddress(){
+		return chainingProxyAddress;
 	}
 	
 	public int getProxyPort(){
-		return proxyport;
+		return chainingProxyPort;
 	}
 	
 	public boolean isProxied(){
-		return proxy != null && proxyport != 0;
+		return chainingProxyAddress != null && chainingProxyPort != 0;
 	}
 	
 	public void addFilter(ApplicationFilter filter) {

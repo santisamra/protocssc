@@ -69,7 +69,7 @@ public class Application {
 		try {
 			if( proxyIP != null && proxyport != 0){
 				System.out.println("Setting proxy chain at: " + proxyIP + ":" + proxyport);
-				applicationConfiguration.setProxy(InetAddress.getByName(proxyIP), proxyport);
+				applicationConfiguration.setChainingProxy(InetAddress.getByName(proxyIP), proxyport);
 			}
 		} catch (UnknownHostException e) {
 			//TODO: SOMEBODY HELP

@@ -16,8 +16,10 @@ import org.w3c.dom.NodeList;
 
 public class ConfigurationParser {
 	
-	public List<ApplicationFilter> parse(String xmlPath) {
-		List<ApplicationFilter> ret = new LinkedList<ApplicationFilter>();
+	private List<ApplicationFilter> filters;
+	
+	public ConfigurationParser(String xmlPath) {
+		filters = new LinkedList<ApplicationFilter>();
 		
 	    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		FilterCondition condition = null;
@@ -160,7 +162,7 @@ public class ConfigurationParser {
 											rotateImages
 									);
 				    				
-				    				ret.add(filter);
+				    				filters.add(filter);
 			    	    		}
 			    			}
 			    		}
@@ -168,11 +170,13 @@ public class ConfigurationParser {
 		    	}
 	    	}
 	    	
-	    	return ret;
-	    	
 	    } catch (Exception e) {
 	    	e.printStackTrace();
 	    	throw new ConfigurationParserException("Could not parse the configuration file.");
 	    }
+	}
+	
+	public List<ApplicationFilter> getFilters() {
+		return filters;
 	}
 }
