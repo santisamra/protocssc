@@ -233,6 +233,7 @@ public class HttpProxyHandler implements ClientHandler{
 	private void listenAndParseResponse() throws IOException {
 		responseParser = new HttpResponseParser(serverSocket.getInputStream());
 		response = responseParser.parse();
+		logger.logResponse(clientSocket.getInetAddress(), response, request);
 	}
 
 

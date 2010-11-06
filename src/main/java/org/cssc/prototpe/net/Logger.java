@@ -49,7 +49,7 @@ public class Logger {
 		synchronized(output) {
 			try {
 				try {
-					output.write(associatedRequest.getEffectiveHost() + " - " + " Replied " + response.getStatusCode().getCode() + " " + response.getReasonPhrase() + " to " + addr.toString() + ", requested path: " + associatedRequest.getPath() + "\n");
+					output.write(associatedRequest.getEffectiveHost() + " - " + "Replied " + response.getStatusCode().getCode() + " " + response.getReasonPhrase() + " to " + addr.toString() + ", requested path: " + associatedRequest.getPath() + "\n");
 				} catch (MissingHostException e) {
 					throw new FatalException("Should never be here", e);
 				}
