@@ -14,12 +14,15 @@ public class IndexServlet extends MyHttpServlet {
 	public void doGet(HttpRequest request, HttpServletResponse response)
 			throws IOException {
 		//Must implement a way of getting url GET parameters
-//		String authToken = null;
-//		if( authToken == null ){
-//			response.sendRedirect("login");
-//		}
-		
 		ApplicationConfiguration configuration = Application.getInstance().getApplicationConfiguration();
+		
+		String authToken = null;
+		if( authToken == null ){
+			response.unauthorize();
+			System.out.println(request.getHeader().getField("authorization"));
+			return;
+		}
+		
 		StringBuffer buf = response.getBuffer();
 		buf.append("<html><body>");
 		

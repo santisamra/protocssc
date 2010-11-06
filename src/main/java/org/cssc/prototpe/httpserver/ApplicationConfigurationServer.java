@@ -64,9 +64,9 @@ public class ApplicationConfigurationServer implements Runnable{
 				
 				servlet.setResponse(new HttpServletResponse());
 				
-				if( request.getMethod().equals(HttpMethod.GET) || request.getMethod().equals(HttpMethod.HEAD)){
+				if( HttpMethod.GET.equals(request.getMethod()) || HttpMethod.HEAD.equals(request.getMethod())){
 					servlet.doGet(request, servlet.getResponse());
-				} else if( request.getMethod().equals(HttpMethod.POST)){
+				} else if( HttpMethod.POST.equals(request.getMethod())){
 					servlet.doPost(request, servlet.getResponse());
 				} else {
 					methodNotAllowed(socket);
@@ -74,7 +74,10 @@ public class ApplicationConfigurationServer implements Runnable{
 				}
 				
 				HttpServletResponse response = servlet.getResponse();
-				servlet.setResponse();
+				if( !servlet.setResponse()){
+					unAuthorized(socket);
+					continue;
+				}
 				
 				socket.getOutputStream().write(response.getActualResponse().toString().getBytes(Charset.forName("US-ASCII")));
 				if( !request.getMethod().equals(HttpMethod.HEAD)){
@@ -92,6 +95,16 @@ public class ApplicationConfigurationServer implements Runnable{
 			}
 		}
 		
+	}
+	
+	private void unAuthorized(Socket socket) throws IOException{
+		HttpHeader header = new HttpHeader();
+		header.setField("connection", "close");
+		header.setField("WWW-Authenticate", "Basic realm=\"Secure area\"");
+		HttpResponse response = new HttpResponse("1.1", header, HttpResponseCode.UNAUTHORIZED, "Authorization Required", new byte[0]);
+		socket.getOutputStream().write(response.toString().getBytes(Charset.forName("US-ASCII")));
+		socket.getOutputStream().flush();
+		socket.close();
 	}
 	
 	private void notFound(Socket socket) throws IOException{

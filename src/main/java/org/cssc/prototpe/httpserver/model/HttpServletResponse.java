@@ -9,6 +9,7 @@ public class HttpServletResponse {
 	private int contentLength;
 	private String redirect;
 	private String forward;
+	private boolean unauthorized;
 	
 	public HttpServletResponse(){
 		buffer = new StringBuffer();
@@ -59,6 +60,13 @@ public class HttpServletResponse {
 	
 	public boolean isForwarded(){
 		return forward != null;
+	}
+	public void unauthorize(){
+		this.unauthorized = true;
+	}
+	
+	public boolean isUnauthorized(){
+		return unauthorized;
 	}
 
 }

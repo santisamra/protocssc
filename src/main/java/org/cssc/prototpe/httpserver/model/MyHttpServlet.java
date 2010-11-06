@@ -11,6 +11,8 @@ import org.cssc.prototpe.http.HttpResponse;
 import org.cssc.prototpe.http.HttpResponseCode;
 import org.cssc.prototpe.net.exceptions.FatalException;
 
+
+
 public abstract class MyHttpServlet {
 	
 	private HttpServletResponse response;
@@ -49,7 +51,10 @@ public abstract class MyHttpServlet {
 		return buffer;
 	}
 	
-	public void setResponse() throws IOException{
+	public boolean setResponse() throws IOException{
+		if( response.isUnauthorized() ){
+			return false;
+		}
 		if( response.isRedirected() ){
 			HttpHeader header = new HttpHeader();
 			header.setField("Location", response.getRedirect());
@@ -68,9 +73,18 @@ public abstract class MyHttpServlet {
 			HttpResponse resp = new HttpResponse("1.1", header, HttpResponseCode.OK, "OK", new byte[0]);
 			response.setHttpResponse(resp);
 		}
+		return true;
 	}
 	
-	
+	protected String getAuthorization(HttpRequest request){
+		String encodedAuth = request.getHeader().getField("authorization");
+		if( encodedAuth == null ){
+			return null;
+		}
+		
+		return null;
+		
+	}
 	
 	
 	
