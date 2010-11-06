@@ -3,7 +3,7 @@ package org.cssc.prototpe.httpserver.model;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.Socket;
+import java.nio.charset.Charset;
 
 import org.cssc.prototpe.http.HttpHeader;
 import org.cssc.prototpe.http.HttpRequest;
@@ -13,16 +13,29 @@ import org.cssc.prototpe.net.exceptions.FatalException;
 
 public abstract class MyHttpServlet {
 	
-	private Socket socket;
+	private String mapping;
+	private HttpServletResponse response;
 	
-	public abstract void doGet(HttpRequest request, HttpResponse response);
+	public MyHttpServlet(String mapping){
+		this.mapping = mapping;
+	}
 	
-	public abstract void doPost(HttpRequest request, HttpResponse response);
+	public void setResponse(HttpServletResponse response){
+		this.response = response;
+	}
 	
-	protected StringBuffer getHTMLFromFile(String file) throws IOException{
+	public HttpServletResponse getResponse(){
+		return response;
+	}
+	
+	public abstract void doGet(HttpRequest request, HttpServletResponse response) throws IOException;
+	
+	public abstract void doPost(HttpRequest request, HttpServletResponse response) throws IOException;
+	
+	private StringBuffer getResource() throws IOException{
 		FileInputStream stream;
 		try{
-			stream = new FileInputStream(file);
+			stream = new FileInputStream(mapping);
 		} catch (FileNotFoundException e){
 			throw new FatalException(e);
 		}
@@ -36,24 +49,24 @@ public abstract class MyHttpServlet {
 			contentLength++;
 		}
 		
+		response.setContentLength(contentLength);
+		
 		return buffer;
 	}
 	
-	public void setSocket(Socket socket){
-		this.socket = socket;
-	}
-	
-	public void sendResponse(StringBuffer buffer, int contentLength, boolean writeContent) throws IOException{
-		HttpHeader header = new HttpHeader();
-		header.setField("content-length", String.valueOf(contentLength));
-		header.setField("connection", "close");
-		HttpResponse response = new HttpResponse("1.1", header, HttpResponseCode.OK, "OK", new byte[0]);
-		socket.getOutputStream().write(response.toString().getBytes());
-		if( writeContent ){
-			socket.getOutputStream().write(buffer.toString().getBytes());
+	public void setResponse() throws IOException{
+		StringBuffer buffer = response.getBuffer();
+		if( buffer == null || buffer.length() == 0){
+			buffer = getResource();
+		} else {
+			response.setContentLength(buffer.toString().getBytes(Charset.forName("US-ASCII")).length);
 		}
-		socket.getOutputStream().flush();
-		socket.close();
+		response.setBuffer(buffer);
+		HttpHeader header = new HttpHeader();
+		header.setField("content-length", String.valueOf(response.getContentLength()));
+		header.setField("connection", "close");
+		HttpResponse resp = new HttpResponse("1.1", header, HttpResponseCode.OK, "OK", new byte[0]);
+		response.setHttpResponse(resp);
 	}
 	
 	

@@ -3,6 +3,7 @@ package org.cssc.prototpe.configuration.filters;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.nio.charset.Charset;
 import java.util.List;
 
 import org.cssc.prototpe.http.HttpMethod;
@@ -140,14 +141,14 @@ public class HttpResponseFilter extends Filter {
 
 				response.getHeader().setField("content-length", Integer.toString(transformed.length));
 				response.getHeader().removeField("transfer-encoding");
-				outputStream.write(response.toString().getBytes());
+				outputStream.write(response.toString().getBytes(Charset.forName("US-ASCII")));
 				outputStream.write(transformed);
 			}
 
 		} else {
 			/* There are not filters to apply. */
 
-			outputStream.write(response.toString().getBytes());
+			outputStream.write(response.toString().getBytes(Charset.forName("US-ASCII")));
 
 			if(contentIsWritable) {
 

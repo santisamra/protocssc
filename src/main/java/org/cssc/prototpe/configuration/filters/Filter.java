@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
+import java.nio.charset.Charset;
 
 import org.cssc.prototpe.configuration.filters.application.ApplicationFilter;
 import org.cssc.prototpe.configuration.filters.exceptions.FilterException;
@@ -51,8 +52,8 @@ public abstract class Filter {
 			HttpHeader header = new HttpHeader();
 			header.setField("content-length", Integer.toString(contentLength));
 			HttpResponse response = new HttpResponse("1.1", header, HttpResponseCode.FORBIDDEN, "FORBIDDEN", new byte[0]);
-			clientSocket.getOutputStream().write(response.toString().getBytes());
-			clientSocket.getOutputStream().write(buffer.toString().getBytes());
+			clientSocket.getOutputStream().write(response.toString().getBytes(Charset.forName("US-ASCII")));
+			clientSocket.getOutputStream().write(buffer.toString().getBytes(Charset.forName("US-ASCII")));
 
 		} catch (IOException e) {
 			throw new FilterException(e);

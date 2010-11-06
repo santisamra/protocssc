@@ -7,10 +7,10 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.nio.charset.Charset;
 
 import org.cssc.prototpe.configuration.filters.HttpRequestFilter;
 import org.cssc.prototpe.configuration.filters.HttpResponseFilter;
-import org.cssc.prototpe.http.HttpMethod;
 import org.cssc.prototpe.http.HttpPacket;
 import org.cssc.prototpe.http.HttpRequest;
 import org.cssc.prototpe.http.HttpResponse;
@@ -72,12 +72,12 @@ public class HttpProxyHandler implements ClientHandler{
 					listenAndParseRequest();
 				} catch(HttpParserException e) {
 					e.printStackTrace();
-					clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_REQUEST).toString().getBytes());
+					clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_REQUEST).toString().getBytes(Charset.forName("US-ASCII")));
 					closeClientSocket();
 					return;
 				} catch(InvalidMethodStringException e) {
 					e.printStackTrace();
-					clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.NOT_IMPLEMENTED).toString().getBytes());
+					clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.NOT_IMPLEMENTED).toString().getBytes(Charset.forName("US-ASCII")));
 					closeClientSocket();
 					return;
 				} catch(SocketTimeoutException e) {
@@ -103,12 +103,12 @@ public class HttpProxyHandler implements ClientHandler{
 
 				} catch (MissingHostException e) {
 					e.printStackTrace();
-					clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_REQUEST).toString().getBytes());
+					clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_REQUEST).toString().getBytes(Charset.forName("US-ASCII")));
 					closeClientSocket();
 					return;
 				} catch (UnknownHostException e) {
 					e.printStackTrace();
-					clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_REQUEST).toString().getBytes());
+					clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_REQUEST).toString().getBytes(Charset.forName("US-ASCII")));
 					closeClientSocket();
 					return;
 				}
@@ -126,13 +126,13 @@ public class HttpProxyHandler implements ClientHandler{
 					} catch(InvalidStatusCodeException e) {
 						// Invalid status code for the HTTP response.
 						e.printStackTrace();
-						clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_GATEWAY).toString().getBytes());
+						clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_GATEWAY).toString().getBytes(Charset.forName("US-ASCII")));
 						closeClientSocket();
 						return;
 					} catch(HttpParserException e) {
 						// Invalid response format.
 						e.printStackTrace();
-						clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_GATEWAY).toString().getBytes());
+						clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_GATEWAY).toString().getBytes(Charset.forName("US-ASCII")));
 						closeClientSocket();
 						return;
 					}
@@ -152,20 +152,20 @@ public class HttpProxyHandler implements ClientHandler{
 						} catch(InvalidStatusCodeException e) {
 							// Invalid status code for the HTTP response.
 							e.printStackTrace();
-							clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_GATEWAY).toString().getBytes());
+							clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_GATEWAY).toString().getBytes(Charset.forName("US-ASCII")));
 							closeClientSocket();
 							return;
 						} catch(HttpParserException e) {
 							// Invalid response format.
 							e.printStackTrace();
-							clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_GATEWAY).toString().getBytes());
+							clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_GATEWAY).toString().getBytes(Charset.forName("US-ASCII")));
 							closeClientSocket();
 							return;
 						}
 					} catch(Exception e1) {
 						// Unidentified error when trying to write request or read response from server.
 						e1.printStackTrace();
-						clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_GATEWAY).toString().getBytes());
+						clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.BAD_GATEWAY).toString().getBytes(Charset.forName("US-ASCII")));
 						closeClientSocket();
 						return;
 					}
