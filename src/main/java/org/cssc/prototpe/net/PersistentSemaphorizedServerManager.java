@@ -14,7 +14,7 @@ import org.cssc.prototpe.net.interfaces.ServerManager;
 
 public class PersistentSemaphorizedServerManager implements ServerManager {
 	
-	private static final int SERVER_TIMEOUT = 3000;
+	private static final int SERVER_TIMEOUT = 30000;
 	
 	private Map<InetAddress, Semaphore> semaphoreMap;
 	private Map<InetAddress, Queue<Socket>> freeSockets;
