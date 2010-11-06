@@ -15,13 +15,15 @@ import org.cssc.prototpe.transformations.TransformationUtilities;
 
 public class HttpResponseFilter extends Filter {
 
+	private Socket serverSocket;
 	private HttpRequest request;
 	private HttpResponse response;
 
-	public HttpResponseFilter(Socket clientSocket, HttpRequest request, HttpResponse response) {
+	public HttpResponseFilter(Socket clientSocket, Socket serverSocket, HttpRequest request, HttpResponse response) {
 		super(clientSocket, Application.getInstance().getApplicationConfiguration().getFilterForCondition(clientSocket.getInetAddress(), request.getHeader().getField("user-agent")));
 		this.request = request;
 		this.response = response;
+		this.serverSocket = serverSocket;
 	}
 
 	public boolean filter() throws IOException {
@@ -34,6 +36,7 @@ public class HttpResponseFilter extends Filter {
 
 		if(blockedMediaTypes != null && blockedMediaTypes.contains(contentTypeString)) {
 			writeResponse("src/main/resources/html/errors/mediaTypeBlocked.html");
+			serverSocket.close();
 			return true;
 		}
 
@@ -46,6 +49,7 @@ public class HttpResponseFilter extends Filter {
 
 				if(contentLength > maxContentLength && maxContentLength != 0) {
 					writeResponse("src/main/resources/html/errors/bigContentLength.html");
+					serverSocket.close();
 					return true;
 				}
 			}
@@ -83,6 +87,7 @@ public class HttpResponseFilter extends Filter {
 			/* Content length is filtered. */
 			if(checkContentLength && contentLength > maxContentLength) {
 				writeResponse("src/main/resources/html/errors/bigContentLength.html");
+				serverSocket.close();
 				return;
 			}
 
@@ -96,6 +101,7 @@ public class HttpResponseFilter extends Filter {
 						/* Content length is filtered. */
 						if(checkContentLength && contentLength > maxContentLength) {
 							writeResponse("src/main/resources/html/errors/bigContentLength.html");
+							serverSocket.close();
 							return;
 						}
 
@@ -118,6 +124,7 @@ public class HttpResponseFilter extends Filter {
 					/* Content length is filtered. */
 					if(checkContentLength && contentLength > maxContentLength) {
 						writeResponse("src/main/resources/html/errors/bigContentLength.html");
+						serverSocket.close();
 						return;
 					}
 
@@ -130,21 +137,21 @@ public class HttpResponseFilter extends Filter {
 
 			}
 
-			if(l33tTransform || rotateImages) {
-				byte[] transformed = null;
+			byte[] transformed = null;
 
-				if(l33tTransform) {
-					transformed = TransformationUtilities.transforml33t(content);
-				} else if(rotateImages) {
-					transformed = TransformationUtilities.transform180Image(content);
-					response.getHeader().setField("content-type", "image/png");
-				}
-
-				response.getHeader().setField("content-length", Integer.toString(transformed.length));
-				response.getHeader().removeField("transfer-encoding");
-				outputStream.write(response.toString().getBytes(Charset.forName("US-ASCII")));
-				outputStream.write(transformed);
+			if(l33tTransform) {
+				transformed = TransformationUtilities.transforml33t(content);
+			} else if(rotateImages) {
+				transformed = TransformationUtilities.transform180Image(content);
+				response.getHeader().setField("content-type", "image/png");
+			} else {
+				transformed = content;
 			}
+
+			response.getHeader().setField("content-length", Integer.toString(transformed.length));
+			response.getHeader().removeField("transfer-encoding");
+			outputStream.write(response.toString().getBytes(Charset.forName("US-ASCII")));
+			outputStream.write(transformed);
 
 		} else {
 			/* There are not filters to apply. */

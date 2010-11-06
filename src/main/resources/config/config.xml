@@ -12,16 +12,14 @@
 					<IP>85.62.96.168</IP>
 				</blocked-IPs>
 				<blocked-URIs>
-					<URI>taringa.net</URI>
 				</blocked-URIs>
 				<block-all-accesses>FALSE</block-all-accesses>
 				<transform>
-					<l33t>TRUE</l33t>
+					<l33t>FALSE</l33t>
 					<images180>TRUE</images180>
 				</transform>
-				<!-- <max-content-length>102400</max-content-length>  -->
 				<!-- <blocked-MediaTypes>
-					<MediaType>image/png</MediaType>
+					<MediaType>text/html</MediaType>
 				</blocked-MediaTypes> -->
 			</actions>
 		</filter>

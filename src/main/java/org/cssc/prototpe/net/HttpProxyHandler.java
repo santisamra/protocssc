@@ -182,11 +182,10 @@ public class HttpProxyHandler implements ClientHandler{
 				response.setVersion("1.1");
 
 				// FILTERING RESPONSE
-				HttpResponseFilter responseFilter = new HttpResponseFilter(clientSocket, request, response);
+				HttpResponseFilter responseFilter = new HttpResponseFilter(clientSocket, serverSocket, request, response);
 
 				if(responseFilter.filter()) {
 					closeClientSocket();
-					closeServerSocket();
 					return;
 				}
 
@@ -322,16 +321,4 @@ public class HttpProxyHandler implements ClientHandler{
 			}
 		}
 	}
-
-	private void closeServerSocket() {
-		if(serverSocket != null && !serverSocket.isClosed()) {
-			try {
-				serverSocket.close();
-			} catch (IOException e) {
-				//TODO: what to do here?
-				e.printStackTrace(); 
-			}
-		}
-	}
-
 }
