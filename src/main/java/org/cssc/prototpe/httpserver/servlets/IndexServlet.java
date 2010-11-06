@@ -80,8 +80,26 @@ public class IndexServlet extends MyHttpServlet {
 		buf.append("<td>Logging file name</td>");
 		buf.append("<td>" + configuration.getLoggingFileName() + "</td>");
 		buf.append("</tr>");
+		
+		
+		buf.append("<form action=\"configure\" method=\"post\" enctype=\"multipart/form-data\">");
+		
+		buf.append("<tr>");
+		buf.append("<td>New configuration:</td>");
+		buf.append("<td> <input type=\"file\" name=\"configuration\"/></td>");
+		buf.append("</tr>");
+		
+		buf.append("<tr>");
+		buf.append("<td></td>");
+		buf.append("<td><input type=\"submit\" value=\"Upload configuration\" /></td>");
+		buf.append("</tr>");
+		
+		buf.append("</form>");
 
 		buf.append("</table>");
+		
+		buf.append("<br/>");
+		
 
 		buf.append("</body></html>");
 
