@@ -16,28 +16,22 @@ import org.cssc.prototpe.httpserver.model.HttpServletResponse;
 import org.cssc.prototpe.httpserver.model.MyHttpServlet;
 import org.cssc.prototpe.httpserver.servlets.IndexServlet;
 import org.cssc.prototpe.httpserver.servlets.LoginServlet;
-import org.cssc.prototpe.net.Application;
-import org.cssc.prototpe.net.ApplicationConfiguration;
 import org.cssc.prototpe.net.exceptions.FatalException;
 import org.cssc.prototpe.parsers.HttpRequestParser;
 
 public class ApplicationConfigurationServer implements Runnable{
 
-	public static final String APP_CONFIG_SERVER_PAGE = "src/main/resources/html/manager/index.html";
-	public static final String APP_CONFIG_SERVER_LOGIN_PAGE = "src/main/resources/html/manager/login.html";
-
 	private void mapURLs(){
-		urlMapping.put("/", new IndexServlet(APP_CONFIG_SERVER_PAGE));
-		urlMapping.put("/login", new LoginServlet(APP_CONFIG_SERVER_LOGIN_PAGE));
+		urlMapping.put("/", IndexServlet.class);
+		urlMapping.put("/login", LoginServlet.class);
 	}
 	
 	
 	ServerSocket serverSocket;
-	ApplicationConfiguration configuration;
-	Map<String, MyHttpServlet> urlMapping;
+	Map<String, Class<? extends MyHttpServlet>> urlMapping;
 
 	public ApplicationConfigurationServer(int port){
-		urlMapping = new HashMap<String, MyHttpServlet>();
+		urlMapping = new HashMap<String, Class<? extends MyHttpServlet>>();
 		
 		mapURLs();
 		
@@ -46,7 +40,6 @@ public class ApplicationConfigurationServer implements Runnable{
 		} catch (IOException e) {
 			throw new FatalException(e);
 		}
-		configuration = Application.getInstance().getApplicationConfiguration();
 		
 		new Thread(this).start();
 	}
@@ -62,11 +55,12 @@ public class ApplicationConfigurationServer implements Runnable{
 				HttpRequestParser reqparser = new HttpRequestParser(socket.getInputStream());
 				HttpRequest request = reqparser.parse();
 				
-				MyHttpServlet servlet = urlMapping.get(request.getEffectivePath());
-				if( servlet == null ){
+				Class<? extends MyHttpServlet> servletClass = urlMapping.get(request.getEffectivePath());
+				if( servletClass == null ){
 					notFound(socket);
 					return;
 				}
+				MyHttpServlet servlet = servletClass.newInstance();
 				
 				servlet.setResponse(new HttpServletResponse());
 				
@@ -88,6 +82,11 @@ public class ApplicationConfigurationServer implements Runnable{
 				socket.close();
 					
 			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (InstantiationException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

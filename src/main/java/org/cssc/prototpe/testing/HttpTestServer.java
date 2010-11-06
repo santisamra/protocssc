@@ -27,7 +27,7 @@ public class HttpTestServer {
 //				socket.read(buffer);
 //				print(buffer.array());
 				
-				char[] buf = new char[999];
+//				char[] buf = new char[999];
 				
 //				Reader reader = new InputStreamReader(socket.getInputStream());
 //				reader.read(buf);
@@ -56,15 +56,15 @@ public class HttpTestServer {
 		}
 	}
 	
-	private void print(byte[] buffer){
-		byte last = 0;
-		
-		System.out.print("\"");
-		for( int i = 0; i < buffer.length && buffer[i] != 0; i++){
-			System.out.print((char)buffer[i]);
-		}
-		System.out.print("\"");
-	}
+//	private void print(byte[] buffer){
+//		byte last = 0;
+//		
+//		System.out.print("\"");
+//		for( int i = 0; i < buffer.length && buffer[i] != 0; i++){
+//			System.out.print((char)buffer[i]);
+//		}
+//		System.out.print("\"");
+//	}
 
 	public static void main(String[] args) {
 		System.out.println("Started HTTP test server...");

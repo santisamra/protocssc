@@ -8,6 +8,7 @@ public class HttpServletResponse {
 	private StringBuffer buffer;
 	private int contentLength;
 	private String redirect;
+	private String forward;
 	
 	public HttpServletResponse(){
 		buffer = new StringBuffer();
@@ -46,6 +47,18 @@ public class HttpServletResponse {
 	
 	public boolean isRedirected(){
 		return redirect != null;
+	}
+
+	public void forward(String forward) {
+		this.forward = forward;
+	}
+
+	public String getForward() {
+		return forward;
+	}
+	
+	public boolean isForwarded(){
+		return forward != null;
 	}
 
 }

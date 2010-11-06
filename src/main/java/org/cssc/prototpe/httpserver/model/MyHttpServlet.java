@@ -13,12 +13,7 @@ import org.cssc.prototpe.net.exceptions.FatalException;
 
 public abstract class MyHttpServlet {
 	
-	private String mapping;
 	private HttpServletResponse response;
-	
-	public MyHttpServlet(String mapping){
-		this.mapping = mapping;
-	}
 	
 	public void setResponse(HttpServletResponse response){
 		this.response = response;
@@ -32,10 +27,10 @@ public abstract class MyHttpServlet {
 	
 	public abstract void doPost(HttpRequest request, HttpServletResponse response) throws IOException;
 	
-	private StringBuffer getResource() throws IOException{
+	private StringBuffer getResource(String file) throws IOException{
 		FileInputStream stream;
 		try{
-			stream = new FileInputStream(mapping);
+			stream = new FileInputStream(file);
 		} catch (FileNotFoundException e){
 			throw new FatalException(e);
 		}
@@ -62,7 +57,7 @@ public abstract class MyHttpServlet {
 		} else {
 			StringBuffer buffer = response.getBuffer();
 			if( buffer == null || buffer.length() == 0){
-				buffer = getResource();
+				buffer = getResource(response.getForward());
 			} else {
 				response.setContentLength(buffer.toString().getBytes(Charset.forName("US-ASCII")).length);
 			}

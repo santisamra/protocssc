@@ -277,17 +277,17 @@ public class HttpProxyHandler implements ClientHandler{
 	}
 
 
-	private void print(byte[] buffer){
-		System.out.print("\"");
-		for( int i = 0; i < buffer.length && buffer[i] != 0; i++){
-			System.out.print((char)buffer[i]);
-		}
-		System.out.print("\"");
-	}
+//	private void print(byte[] buffer){
+//		System.out.print("\"");
+//		for( int i = 0; i < buffer.length && buffer[i] != 0; i++){
+//			System.out.print((char)buffer[i]);
+//		}
+//		System.out.print("\"");
+//	}
 
 
 	private void writeHttpPacket(HttpPacket packet, HttpParser parser, OutputStream outputStream, boolean writeContent) throws IOException {
-		outputStream.write(packet.toString().getBytes());
+		outputStream.write(packet.toString().getBytes(Charset.forName("US-ASCII")));
 		String transferEncoding = packet.getHeader().getField("transfer-encoding");
 
 		if(transferEncoding != null) {

@@ -8,14 +8,10 @@ import org.cssc.prototpe.httpserver.model.MyHttpServlet;
 
 public class LoginServlet extends MyHttpServlet {
 
-	public LoginServlet(String mapping) {
-		super(mapping);
-	}
-
 	@Override
 	public void doGet(HttpRequest request, HttpServletResponse response)
 			throws IOException {
-		//Responds to it's mapping.
+		response.forward("src/main/resources/html/manager/login.html");
 	}
 
 	@Override
