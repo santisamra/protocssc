@@ -3,6 +3,7 @@ package org.cssc.prototpe.httpserver.servlets;
 import java.io.IOException;
 
 import org.cssc.prototpe.http.HttpRequest;
+import org.cssc.prototpe.httpserver.model.Authorization;
 import org.cssc.prototpe.httpserver.model.HttpServletResponse;
 import org.cssc.prototpe.httpserver.model.MyHttpServlet;
 import org.cssc.prototpe.net.Application;
@@ -15,18 +16,21 @@ public class IndexServlet extends MyHttpServlet {
 	throws IOException {
 		//Must implement a way of getting url GET parameters
 		ApplicationConfiguration configuration = Application.getInstance().getApplicationConfiguration();
-
-		//		String authToken = null;
-		//		if( authToken == null ){
-		//			response.unauthorize();
-		//			System.out.println(request.getHeader().getField("authorization"));
-		//			return;
-		//		}
+		
+		Authorization auth = getAuthorization(request);;
+		if( auth == null ){
+			response.unauthorize();
+			return;
+		}
+		
+		System.out.println(auth);
 
 		StringBuffer buf = response.getBuffer();
 		buf.append("<html><body>");
 
 		buf.append("<h1>CSSC Proxy Server Configuration</h1>");
+		
+		buf.append("Welcome, " + auth.getUsername());
 		buf.append("<hr/>");
 
 		buf.append("<h2>Configuration parameters</h2>");

@@ -34,19 +34,26 @@ public class MyBase64Decoder {
 		return result.toString();
 	}
 
-	public static byte[] decode(String input){
+	public static byte[] decode(char[] input){
 		if( input == null){
 			throw new IllegalArgumentException("Can't decode the empty string");
 		}
 		
-		int aux = 0;
+		int length = input.length;
 		
-		byte[] decoded = new byte[input.length()];
+		if( length%4 != 0){
+			throw new IllegalArgumentException("Input length must be multiple of 4");
+		}
+		
+		while( length > 0 && input[length - 1] == '=' ){
+			length--;
+		}
+		
+		int outputLength = (length*3)/4;
+		byte[] result = new byte[outputLength];
 		
 		
 		
-		
-		
-		return decoded;
+		return result;
 	}
 }

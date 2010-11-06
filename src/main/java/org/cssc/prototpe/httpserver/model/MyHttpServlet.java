@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 
 import org.cssc.prototpe.http.HttpHeader;
 import org.cssc.prototpe.http.HttpRequest;
@@ -76,13 +77,28 @@ public abstract class MyHttpServlet {
 		return true;
 	}
 	
-	protected String getAuthorization(HttpRequest request){
+	protected Authorization getAuthorization(HttpRequest request){
 		String encodedAuth = request.getHeader().getField("authorization");
 		if( encodedAuth == null ){
 			return null;
 		}
 		
-		return null;
+		if( !encodedAuth.startsWith("Basic ")){
+			return null;
+		}
+		encodedAuth = encodedAuth.substring(encodedAuth.indexOf(' ') + 1);
+		
+		char[] encodedAuthChars = encodedAuth.toCharArray();
+		byte[] decodedAuth = Base64Decoder.decode(encodedAuthChars, 0, encodedAuthChars.length);
+		StringBuffer decodedAuthString = new StringBuffer();
+		for(byte b: decodedAuth){
+			decodedAuthString.append((char)b);
+		}
+		
+		String username = decodedAuthString.substring(0, decodedAuthString.indexOf(":"));
+		String password = decodedAuthString.substring(decodedAuthString.indexOf(":") + 1);
+		
+		return new Authorization(username, password);
 		
 	}
 	
