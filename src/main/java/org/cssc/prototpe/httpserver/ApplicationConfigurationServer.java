@@ -58,7 +58,7 @@ public class ApplicationConfigurationServer implements Runnable{
 				Class<? extends MyHttpServlet> servletClass = urlMapping.get(request.getEffectivePath());
 				if( servletClass == null ){
 					notFound(socket);
-					return;
+					continue;
 				}
 				MyHttpServlet servlet = servletClass.newInstance();
 				
@@ -70,7 +70,7 @@ public class ApplicationConfigurationServer implements Runnable{
 					servlet.doPost(request, servlet.getResponse());
 				} else {
 					methodNotAllowed(socket);
-					return;
+					continue;
 				}
 				
 				HttpServletResponse response = servlet.getResponse();
