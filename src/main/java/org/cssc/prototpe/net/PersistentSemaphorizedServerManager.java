@@ -14,6 +14,8 @@ import org.cssc.prototpe.net.interfaces.ServerManager;
 
 public class PersistentSemaphorizedServerManager implements ServerManager {
 	
+	private static final int SERVER_TIMEOUT = 3000;
+	
 	private Map<InetAddress, Semaphore> semaphoreMap;
 	private Map<InetAddress, Queue<Socket>> freeSockets;
 	private List<Queue<Socket>> oldestUsedQueues;
@@ -65,6 +67,8 @@ public class PersistentSemaphorizedServerManager implements ServerManager {
 				}
 				s = new Socket(addr, port);
 				usedSockets++;
+				// Security measures, in case a naughty server doesn't answer
+				s.setSoTimeout(SERVER_TIMEOUT);
 			}
 		}
 		return s;
