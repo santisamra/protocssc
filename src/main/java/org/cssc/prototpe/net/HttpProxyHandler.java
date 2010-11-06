@@ -255,9 +255,9 @@ public class HttpProxyHandler implements ClientHandler{
 	MissingHostException, UnknownHostException {
 		if( configuration.isProxied()){
 			if(!emergency) {
-				serverSocket = serverManager.getSocket(configuration.getChainingProxyAddress(), configuration.getProxyPort());
+				serverSocket = serverManager.getSocket(configuration.getChainingProxyAddress(), configuration.getChainingProxyPort());
 			} else {
-				serverSocket = serverManager.getEmergencySocket(configuration.getChainingProxyAddress(), configuration.getProxyPort());
+				serverSocket = serverManager.getEmergencySocket(configuration.getChainingProxyAddress(), configuration.getChainingProxyPort());
 			}
 			System.out.println(request.getEffectivePath());
 			System.out.println(request.getEffectiveHost());

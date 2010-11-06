@@ -77,7 +77,7 @@ public class ApplicationConfiguration {
 		return chainingProxyAddress;
 	}
 	
-	public int getProxyPort(){
+	public int getChainingProxyPort(){
 		return chainingProxyPort;
 	}
 	
@@ -91,6 +91,10 @@ public class ApplicationConfiguration {
 	
 	public void removeFilter(ApplicationFilter filter) {
 		filters.remove(filter);
+	}
+	
+	public List<ApplicationFilter> getFilters() {
+		return filters;
 	}
 	
 	public ApplicationFilter getFilterForCondition(InetAddress ip, String userAgent) {
