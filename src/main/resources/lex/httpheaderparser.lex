@@ -2,8 +2,8 @@ package org.cssc.prototpe.parsers.lex;
 
 import org.cssc.prototpe.http.HttpHeader;
 import org.cssc.prototpe.parsers.exceptions.HttpParserException;
-import java.util.HashMap;
-import java.util.Map;
+
+@SuppressWarnings("all")
 
 %%
 %class HttpHeaderParser

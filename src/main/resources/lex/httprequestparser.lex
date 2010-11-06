@@ -7,6 +7,8 @@ import org.cssc.prototpe.parsers.exceptions.HttpParserException;
 import java.io.IOException;
 import java.io.StringReader;
 
+@SuppressWarnings("all")
+
 %%
 %class HttpRequestLexParser
 %public

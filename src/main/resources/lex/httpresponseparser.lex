@@ -9,6 +9,8 @@ import java.io.StringReader;
 import java.io.Reader;
 import java.io.InputStream;
 
+@SuppressWarnings("all")
+
 %%
 %class HttpResponseLexParser
 %public
