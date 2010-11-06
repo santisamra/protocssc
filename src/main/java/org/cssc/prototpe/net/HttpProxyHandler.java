@@ -88,10 +88,6 @@ public class HttpProxyHandler implements ClientHandler{
 				// FILTERING REQUEST
 				HttpRequestFilter requestFilter = new HttpRequestFilter(clientSocket, request);
 
-				if(requestFilter.filter()) {
-					closeClientSocket();
-					return;
-				}
 
 				// GENERATING CONNECTION
 				try {
@@ -100,6 +96,12 @@ public class HttpProxyHandler implements ClientHandler{
 					//TODO: Should I resolve this host and filter banned IPs?
 
 					generateServerSocket();
+					
+					if(requestFilter.filter()) {
+						clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.FORBIDDEN).toString().getBytes(Charset.forName("US-ASCII")));
+						closeClientSocket();
+						return;
+					}
 
 				} catch (MissingHostException e) {
 					e.printStackTrace();
@@ -185,6 +187,7 @@ public class HttpProxyHandler implements ClientHandler{
 				HttpResponseFilter responseFilter = new HttpResponseFilter(clientSocket, serverSocket, request, response);
 
 				if(responseFilter.filter()) {
+					clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.FORBIDDEN).toString().getBytes(Charset.forName("US-ASCII")));
 					closeClientSocket();
 					return;
 				}
