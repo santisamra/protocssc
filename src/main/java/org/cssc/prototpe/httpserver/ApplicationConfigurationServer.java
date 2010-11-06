@@ -64,7 +64,7 @@ public class ApplicationConfigurationServer implements Runnable{
 				
 				servlet.setResponse(new HttpServletResponse());
 				
-				if( request.getMethod().equals(HttpMethod.GET)){
+				if( request.getMethod().equals(HttpMethod.GET) || request.getMethod().equals(HttpMethod.HEAD)){
 					servlet.doGet(request, servlet.getResponse());
 				} else if( request.getMethod().equals(HttpMethod.POST)){
 					servlet.doPost(request, servlet.getResponse());
@@ -77,7 +77,9 @@ public class ApplicationConfigurationServer implements Runnable{
 				servlet.setResponse();
 				
 				socket.getOutputStream().write(response.getActualResponse().toString().getBytes(Charset.forName("US-ASCII")));
-				socket.getOutputStream().write(response.getBuffer().toString().getBytes(Charset.forName("US-ASCII")));
+				if( !request.getMethod().equals(HttpMethod.HEAD)){
+					socket.getOutputStream().write(response.getBuffer().toString().getBytes(Charset.forName("US-ASCII")));
+				}
 				socket.getOutputStream().flush();
 				socket.close();
 					
@@ -86,7 +88,6 @@ public class ApplicationConfigurationServer implements Runnable{
 			} catch (InstantiationException e) {
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
