@@ -10,6 +10,7 @@ import org.cssc.prototpe.http.HttpMethod;
 import org.cssc.prototpe.http.HttpRequest;
 import org.cssc.prototpe.http.HttpResponse;
 import org.cssc.prototpe.net.Application;
+import org.cssc.prototpe.net.Logger;
 import org.cssc.prototpe.parsers.HttpResponseParser;
 import org.cssc.prototpe.transformations.TransformationUtilities;
 
@@ -19,8 +20,8 @@ public class HttpResponseFilter extends Filter {
 	private HttpRequest request;
 	private HttpResponse response;
 
-	public HttpResponseFilter(Socket clientSocket, Socket serverSocket, HttpRequest request, HttpResponse response) {
-		super(clientSocket, Application.getInstance().getApplicationConfiguration().getFilterForCondition(clientSocket.getInetAddress(), request.getHeader().getField("user-agent")));
+	public HttpResponseFilter(Socket clientSocket, Socket serverSocket, HttpRequest request, HttpResponse response, Logger logger) {
+		super(clientSocket, Application.getInstance().getApplicationConfiguration().getFilterForCondition(clientSocket.getInetAddress(), request.getHeader().getField("user-agent")), logger);
 		this.request = request;
 		this.response = response;
 		this.serverSocket = serverSocket;

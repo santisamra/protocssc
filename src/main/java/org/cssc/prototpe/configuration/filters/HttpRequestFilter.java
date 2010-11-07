@@ -8,13 +8,14 @@ import java.util.List;
 import org.cssc.prototpe.http.HttpRequest;
 import org.cssc.prototpe.http.exceptions.MissingHostException;
 import org.cssc.prototpe.net.Application;
+import org.cssc.prototpe.net.Logger;
 
 public class HttpRequestFilter extends Filter {
 
 	private HttpRequest request;
 
-	public HttpRequestFilter(Socket clientSocket, HttpRequest request) {
-		super(clientSocket, Application.getInstance().getApplicationConfiguration().getFilterForCondition(clientSocket.getInetAddress(), request.getHeader().getField("user-agent")));
+	public HttpRequestFilter(Socket clientSocket, HttpRequest request, Logger logger) {
+		super(clientSocket, Application.getInstance().getApplicationConfiguration().getFilterForCondition(clientSocket.getInetAddress(), request.getHeader().getField("user-agent")), logger);
 		this.request = request;
 	}
 

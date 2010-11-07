@@ -18,7 +18,7 @@ public class Logger {
 	public Logger(String filename) {
 		try {
 			FileWriter f = new FileWriter(filename);
-//			BufferedWriter buf = new BufferedWriter(f);
+			//			BufferedWriter buf = new BufferedWriter(f);
 			output = f;
 		} catch (IOException e) {
 			System.err.println("Unable to initialize logger: cause is " + e.getMessage());
@@ -45,13 +45,44 @@ public class Logger {
 		}
 	}
 
+	public void logFilterResponse(InetAddress addr, HttpResponse response) {
+		try {
+			output.write("CSSC Proxy - Replied " + response.getStatusCode().getCode() + " " + response.getReasonPhrase() + " to " + addr.toString() + ". Filtered.\n");
+			output.flush();
+		} catch (IOException e) {
+			throw new FatalException("Unable to log.", e);
+		}
+	}
+
 	public void logResponse(InetAddress addr, HttpResponse response, HttpRequest associatedRequest) {
 		synchronized(output) {
 			try {
 				try {
 					output.write(associatedRequest.getEffectiveHost() + " - " + "Replied " + response.getStatusCode().getCode() + " " + response.getReasonPhrase() + " to " + addr.toString() + ", requested path: " + associatedRequest.getPath() + "\n");
 				} catch (MissingHostException e) {
-					throw new FatalException("Should never be here", e);
+					//					throw new FatalException("Should never be here", e);
+					output.write("CSSC Proxy - Replied " + response.getStatusCode().getCode() + " " + response.getReasonPhrase() + " to " + addr.toString() + ", couldn't resolve host.\n");
+				}
+				//TODO: Try to avoid flushing here...?
+				output.flush();
+			} catch (IOException e) {
+				throw new FatalException("Unable to log.", e);
+			}
+		}
+	}
+
+	public void logErrorResponse(InetAddress addr, HttpResponse response, HttpRequest associatedRequest) {
+		synchronized(output) {
+			try {
+				if(associatedRequest != null) {
+					try {
+						output.write("CSSC Proxy" + " - " + "Replied " + response.getStatusCode().getCode() + " " + response.getReasonPhrase() + " to " + addr.toString() + ", requested path: " + associatedRequest.getEffectiveHost() + associatedRequest.getEffectivePath() + "\n");
+					} catch (MissingHostException e) {
+						//					throw new FatalException("Should never be here", e);
+						output.write("CSSC Proxy - Replied " + response.getStatusCode().getCode() + " " + response.getReasonPhrase() + " to " + addr.toString() + ", couldn't resolve host/path.\n");
+					}
+				} else {
+					output.write("CSSC Proxy - Replied " + response.getStatusCode().getCode() + " " + response.getReasonPhrase() + " to " + addr.toString() + "\n");
 				}
 				//TODO: Try to avoid flushing here...?
 				output.flush();

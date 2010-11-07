@@ -12,19 +12,22 @@ import org.cssc.prototpe.configuration.filters.exceptions.FilterException;
 import org.cssc.prototpe.http.HttpHeader;
 import org.cssc.prototpe.http.HttpResponse;
 import org.cssc.prototpe.http.HttpResponseCode;
+import org.cssc.prototpe.net.Logger;
 
 public abstract class Filter {
 
 	protected Socket clientSocket;
 	protected ApplicationFilter filter;
+	private Logger logger;
 
-	public Filter(Socket clientSocket, ApplicationFilter filter) {
+	public Filter(Socket clientSocket, ApplicationFilter filter, Logger logger) {
 		if(clientSocket == null) {
 			throw new IllegalArgumentException("Client socket cannot be null.");
 		}
 		
 		this.clientSocket = clientSocket;
 		this.filter = filter;
+		this.logger = logger;
 	}
 	
 	public abstract boolean filter() throws IOException;
@@ -54,6 +57,8 @@ public abstract class Filter {
 			HttpResponse response = new HttpResponse("1.1", header, HttpResponseCode.FORBIDDEN, "FORBIDDEN", new byte[0]);
 			clientSocket.getOutputStream().write(response.toString().getBytes(Charset.forName("US-ASCII")));
 			clientSocket.getOutputStream().write(buffer.toString().getBytes(Charset.forName("US-ASCII")));
+
+			logger.logFilterResponse(clientSocket.getInetAddress(), response);
 
 		} catch (IOException e) {
 			throw new FilterException(e);
