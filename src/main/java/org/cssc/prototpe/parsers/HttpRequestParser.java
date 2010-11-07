@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.StringReader;
 
 import org.cssc.prototpe.http.HttpRequest;
+import org.cssc.prototpe.net.Application;
 import org.cssc.prototpe.parsers.lex.HttpRequestLexParser;
 
 public class HttpRequestParser extends HttpParser {
@@ -14,7 +15,8 @@ public class HttpRequestParser extends HttpParser {
 	}
 	
 	public HttpRequest parse() throws IOException {
-		HttpRequestLexParser parser = new HttpRequestLexParser(new StringReader(parseFirstPart()));
+		String str = parseFirstPart();
+		HttpRequestLexParser parser = new HttpRequestLexParser(new StringReader(str));
 		parser.parse();
 
 		parsedPacket = parser.getParsedRequest();

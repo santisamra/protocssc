@@ -109,6 +109,8 @@ public class IndexServlet extends MyHttpServlet {
 		buf.append("</table>");
 		
 		buf.append("<br/>");
+		buf.append("Test value, amount of bytes transferred to clients: Sent " + Application.getInstance().getMonitoringService().getClientSentTransferredBytes() + ", received " + Application.getInstance().getMonitoringService().getClientReceivedTransferredBytes() + "<br/>");
+		buf.append("Test value, amount of bytes transferred to origin servers: Sent " + Application.getInstance().getMonitoringService().getServerSentTransferredBytes() + ", received " + Application.getInstance().getMonitoringService().getServerReceivedTransferredBytes() + "<br/>");
 		
 
 		buf.append("</body></html>");

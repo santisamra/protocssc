@@ -118,7 +118,7 @@ public class HttpProxyHandler implements ClientHandler{
 
 				try {
 					// WRITING REQUEST
-					writeHttpPacket(request, requestParser, serverSocket.getOutputStream(), false, false);
+					writeHttpPacket(request, requestParser, new MonitoredOutputStream(serverSocket.getOutputStream(), false), false, false);
 					System.out.println("Escribi request:");
 					System.out.println(request);
 					try {
@@ -146,7 +146,7 @@ public class HttpProxyHandler implements ClientHandler{
 						serverSocket.close();
 						generateServerSocket(true); // EMERGENCY SOCKET: always unused before
 						// REWRITING REQUEST
-						writeHttpPacket(request, requestParser, serverSocket.getOutputStream(), false, false);
+						writeHttpPacket(request, requestParser, new MonitoredOutputStream(serverSocket.getOutputStream(), false), false, false);
 						try {
 							// READING RESPONSE
 							System.out.println("Written request, awaiting response");
@@ -196,7 +196,7 @@ public class HttpProxyHandler implements ClientHandler{
 
 				try {
 					System.out.println("Calling filter and write content");
-					responseFilter.filterAndWriteContent(responseParser, clientSocket.getOutputStream());
+					responseFilter.filterAndWriteContent(responseParser, new MonitoredOutputStream(clientSocket.getOutputStream(), true));
 				} catch(IOException e) {
 					closeClientSocket();
 					closedConnection = true;
@@ -235,22 +235,21 @@ public class HttpProxyHandler implements ClientHandler{
 	private void sendErrorResponse() throws IOException {
 		byte[] bytes;
 		bytes = response.toString().getBytes(Charset.forName("US-ASCII"));
-		clientSocket.getOutputStream().write(bytes);
+		new MonitoredOutputStream(clientSocket.getOutputStream(), true).write(bytes);
 		logger.logErrorResponse(clientSocket.getInetAddress(), response, request);
-		monitor.addClientSentTransferredBytes(bytes.length);
 		closeClientSocket();
 	}
 
 
 	private void listenAndParseResponse() throws IOException {
-		responseParser = new HttpResponseParser(serverSocket.getInputStream());
+		responseParser = new HttpResponseParser(new MonitoredInputStream(serverSocket.getInputStream(), false));
 		response = responseParser.parse();
 		logger.logResponse(clientSocket.getInetAddress(), response, request);
 	}
 
 
 	private void listenAndParseRequest() throws IOException {
-		requestParser = new HttpRequestParser(clientSocket.getInputStream());
+		requestParser = new HttpRequestParser(new MonitoredInputStream(clientSocket.getInputStream(), true));
 		request = requestParser.parse();
 		logger.logRequest(clientSocket.getInetAddress(), request);
 
@@ -299,7 +298,6 @@ public class HttpProxyHandler implements ClientHandler{
 	private void writeHttpPacket(HttpPacket packet, HttpParser parser, OutputStream outputStream, boolean writeContent, boolean isClient) throws IOException {
 		byte[] bytes = packet.toString().getBytes(Charset.forName("US-ASCII"));
 		outputStream.write(bytes);
-		registerWriteBytes(isClient, bytes.length);
 		String transferEncoding = packet.getHeader().getField("transfer-encoding");
 
 		if(transferEncoding != null) {
@@ -308,7 +306,6 @@ public class HttpProxyHandler implements ClientHandler{
 
 				while((temp = parser.readNextChunk()) != null) {
 					outputStream.write(temp);
-					registerWriteBytes(isClient, temp.length);
 				}
 			}
 
@@ -319,18 +316,8 @@ public class HttpProxyHandler implements ClientHandler{
 
 			while((readBytes = parser.readNextNBodyBytes(temp, 0, 1024)) != -1) {
 				outputStream.write(temp, 0, readBytes);
-				registerWriteBytes(isClient, readBytes);
 			}
 
-		}
-	}
-
-
-	private void registerWriteBytes(boolean isClient, int readBytes) {
-		if(isClient) {
-			monitor.addClientSentTransferredBytes(readBytes);
-		} else {
-			monitor.addServerSentTransferredBytes(readBytes);
 		}
 	}
 

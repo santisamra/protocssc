@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.charset.Charset;
 
@@ -12,8 +13,8 @@ import org.cssc.prototpe.configuration.filters.exceptions.FilterException;
 import org.cssc.prototpe.http.HttpHeader;
 import org.cssc.prototpe.http.HttpResponse;
 import org.cssc.prototpe.http.HttpResponseCode;
-import org.cssc.prototpe.net.Application;
 import org.cssc.prototpe.net.Logger;
+import org.cssc.prototpe.net.MonitoredOutputStream;
 
 public abstract class Filter {
 
@@ -52,16 +53,15 @@ public abstract class Filter {
 				buffer.append((char)readInt);
 				contentLength++;
 			}
-
+			
 			HttpHeader header = new HttpHeader();
 			header.setField("content-length", Integer.toString(contentLength));
 			HttpResponse response = new HttpResponse("1.1", header, HttpResponseCode.FORBIDDEN, "FORBIDDEN", new byte[0]);
 			byte[] bytes = response.toString().getBytes(Charset.forName("US-ASCII"));
-			clientSocket.getOutputStream().write(bytes);
-			Application.getInstance().getMonitoringService().addClientSentTransferredBytes(bytes.length);
+			OutputStream os = new MonitoredOutputStream(clientSocket.getOutputStream(), true);
+			os.write(bytes);
 			bytes = buffer.toString().getBytes(Charset.forName("US-ASCII"));
-			clientSocket.getOutputStream().write(bytes);
-			Application.getInstance().getMonitoringService().addClientSentTransferredBytes(bytes.length);
+			os.write(bytes);
 
 			logger.logFilterResponse(clientSocket.getInetAddress(), response);
 
