@@ -44,6 +44,9 @@ public class TransformationUtilities {
 	public static byte[] transform180Image(byte[] byteArray) throws IOException{
 		InputStream in = new ByteArrayInputStream(byteArray);
 		BufferedImage image = javax.imageio.ImageIO.read(in);
+		if(image == null) {
+			return null;
+		}
 		double angleOfRotation=180.0;
 		BufferedImage processedImage=rotateMyImage(image, angleOfRotation);
 		ByteArrayOutputStream baos = new ByteArrayOutputStream( 1000 );
