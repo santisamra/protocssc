@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.cssc.prototpe.http.HttpRequest;
 import org.cssc.prototpe.httpserver.model.Authorization;
+import org.cssc.prototpe.httpserver.model.Authorizer;
 import org.cssc.prototpe.httpserver.model.HttpServletResponse;
 import org.cssc.prototpe.httpserver.model.MyHttpServlet;
 import org.cssc.prototpe.net.Application;
@@ -17,14 +18,13 @@ public class IndexServlet extends MyHttpServlet {
 		//Must implement a way of getting url GET parameters
 		ApplicationConfiguration configuration = Application.getInstance().getApplicationConfiguration();
 		
-		Authorization auth = getAuthorization(request);;
-		if( auth == null ){
+		Authorization auth = getAuthorization(request);
+		Authorizer authorizer = Authorizer.getInstance();
+		if( auth == null || !authorizer.authorize(auth)){
 			response.unauthorize();
 			return;
 		}
 		
-		System.out.println(auth);
-
 		StringBuffer buf = response.getBuffer();
 		buf.append("<html><body>");
 

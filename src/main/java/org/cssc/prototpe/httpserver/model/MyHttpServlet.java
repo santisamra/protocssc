@@ -4,7 +4,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.Arrays;
 
 import org.cssc.prototpe.http.HttpHeader;
 import org.cssc.prototpe.http.HttpRequest;

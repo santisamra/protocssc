@@ -24,4 +24,10 @@
 			</actions>
 		</filter>
 	</filters>
+	<admin-users>
+		<user>
+			<name>ssamra</name>
+			<pass>1234</pass>
+		</user>
+	</admin-users>
 </config>

@@ -3,6 +3,7 @@ package org.cssc.prototpe.net;
 import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.cssc.prototpe.configuration.ConfigurationParser;
 import org.cssc.prototpe.configuration.filters.application.ApplicationFilter;
@@ -18,10 +19,12 @@ public class ApplicationConfiguration {
 	private int clientKeepAliveTimeout;
 	private int serverConnectionPersistentTimeout;
 	private List<ApplicationFilter> filters;
+	private Map<String, String> adminUsers;
 	
 	public void loadInitialValues(String xmlPath) {
 		ConfigurationParser parser = new ConfigurationParser(xmlPath);
 		filters = parser.getFilters();
+		adminUsers = parser.getAdminUsers();
 	}
 	
 	public int getClientKeepAliveTimeout() {
@@ -150,6 +153,10 @@ public class ApplicationConfiguration {
 	public void setMaxPersistantServerConnectionsPerServer(
 			int maxPersistantServerConnectionsPerServer) {
 		this.maxPersistantServerConnectionsPerServer = maxPersistantServerConnectionsPerServer;
+	}
+	
+	public Map<String, String> getAdminUsers(){
+		return adminUsers;
 	}
 	
 }
