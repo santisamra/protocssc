@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 
 import org.cssc.prototpe.http.HttpHeader;
-import org.cssc.prototpe.http.HttpRequest;
 import org.cssc.prototpe.http.HttpResponse;
 import org.cssc.prototpe.http.HttpResponseCode;
 import org.cssc.prototpe.net.exceptions.FatalException;
@@ -15,6 +14,7 @@ import org.cssc.prototpe.net.exceptions.FatalException;
 
 public abstract class MyHttpServlet {
 	
+	private HttpServletRequest request;
 	private HttpServletResponse response;
 	
 	public void setResponse(HttpServletResponse response){
@@ -25,9 +25,17 @@ public abstract class MyHttpServlet {
 		return response;
 	}
 	
-	public abstract void doGet(HttpRequest request, HttpServletResponse response) throws IOException;
+	public void setRequest(HttpServletRequest request){
+		this.request = request;
+	}
 	
-	public abstract void doPost(HttpRequest request, HttpServletResponse response) throws IOException;
+	public HttpServletRequest getRequest(){
+		return request;
+	}
+	
+	public abstract void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException;
+	
+	public abstract void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException;
 	
 	private StringBuffer getResource(String file) throws IOException{
 		FileInputStream stream;
@@ -84,13 +92,15 @@ public abstract class MyHttpServlet {
 		return true;
 	}
 	
-	protected Authorization getAuthorization(HttpRequest request){
-		String encodedAuth = request.getHeader().getField("authorization");
+	private static final int MIN_AUTH_LENGTH = 7;
+	
+	protected Authorization getAuthorization(){
+		String encodedAuth = request.getActualRequest().getHeader().getField("authorization");
 		if( encodedAuth == null ){
 			return null;
 		}
 		
-		if( !encodedAuth.startsWith("Basic ")){
+		if( !encodedAuth.startsWith("Basic ") || encodedAuth.length() < MIN_AUTH_LENGTH){
 			return null;
 		}
 		encodedAuth = encodedAuth.substring(encodedAuth.indexOf(' ') + 1);
@@ -109,6 +119,15 @@ public abstract class MyHttpServlet {
 		
 	}
 	
+	protected boolean validateAuth(){
+		Authorization auth = getAuthorization();
+		Authorizer authorizer = Authorizer.getInstance();
+		if( auth == null || !authorizer.authorize(auth)){
+			response.unauthorize();
+			return false;
+		}
+		return true;
+	}
 	
 	
 }

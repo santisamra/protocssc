@@ -57,6 +57,9 @@ public class Application {
 		}catch(NumberFormatException e){
 			port = 8080;
 		}
+		if( port <= 0 || port >= 65536){
+			port = 8080;
+		}
 
 		System.out.println("Starting server at port " + port);
 		String proxyIP = JOptionPane.showInputDialog("Proxy Chaining IP? Otherwise leave empty");
