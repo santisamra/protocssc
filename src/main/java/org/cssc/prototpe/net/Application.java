@@ -15,6 +15,7 @@ public class Application {
 	private ClientListener httpListener;
 	private Logger logger;
 	private ServerManager serverManager;
+	private MonitoringService monitoringService;
 
 	private static final String CONFIG_FILE = "src/main/resources/config/config.xml";
 
@@ -31,6 +32,7 @@ public class Application {
 		serverManager = new PersistentSemaphorizedServerManager(
 				applicationConfiguration.getMaxPersistantServerConnections(),
 				applicationConfiguration.getMaxPersistantServerConnectionsPerServer());
+		monitoringService = new MonitoringService();
 
 		//TODO: Cargar del XML cuando el parser este listo. 
 		int port = 8080; 
@@ -82,6 +84,10 @@ public class Application {
 
 	public ServerManager getServerManager() {
 		return serverManager;
+	}
+	
+	public MonitoringService getMonitoringService() {
+		return monitoringService;
 	}
 
 	/**

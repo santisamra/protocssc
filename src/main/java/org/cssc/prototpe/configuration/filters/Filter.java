@@ -12,6 +12,7 @@ import org.cssc.prototpe.configuration.filters.exceptions.FilterException;
 import org.cssc.prototpe.http.HttpHeader;
 import org.cssc.prototpe.http.HttpResponse;
 import org.cssc.prototpe.http.HttpResponseCode;
+import org.cssc.prototpe.net.Application;
 import org.cssc.prototpe.net.Logger;
 
 public abstract class Filter {
@@ -55,8 +56,12 @@ public abstract class Filter {
 			HttpHeader header = new HttpHeader();
 			header.setField("content-length", Integer.toString(contentLength));
 			HttpResponse response = new HttpResponse("1.1", header, HttpResponseCode.FORBIDDEN, "FORBIDDEN", new byte[0]);
-			clientSocket.getOutputStream().write(response.toString().getBytes(Charset.forName("US-ASCII")));
-			clientSocket.getOutputStream().write(buffer.toString().getBytes(Charset.forName("US-ASCII")));
+			byte[] bytes = response.toString().getBytes(Charset.forName("US-ASCII"));
+			clientSocket.getOutputStream().write(bytes);
+			Application.getInstance().getMonitoringService().addClientSentTransferredBytes(bytes.length);
+			bytes = buffer.toString().getBytes(Charset.forName("US-ASCII"));
+			clientSocket.getOutputStream().write(bytes);
+			Application.getInstance().getMonitoringService().addClientSentTransferredBytes(bytes.length);
 
 			logger.logFilterResponse(clientSocket.getInetAddress(), response);
 

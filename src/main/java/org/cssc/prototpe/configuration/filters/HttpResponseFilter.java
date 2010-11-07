@@ -155,13 +155,18 @@ public class HttpResponseFilter extends Filter {
 
 			response.getHeader().setField("content-length", Integer.toString(transformed.length));
 			response.getHeader().removeField("transfer-encoding");
-			outputStream.write(response.toString().getBytes(Charset.forName("US-ASCII")));
+			byte[] bytes = response.toString().getBytes(Charset.forName("US-ASCII"));
+			outputStream.write(bytes);
+			Application.getInstance().getMonitoringService().addClientSentTransferredBytes(bytes.length);
 			outputStream.write(transformed);
+			Application.getInstance().getMonitoringService().addClientSentTransferredBytes(transformed.length);
 
 		} else {
 			/* There are not filters to apply. */
 
-			outputStream.write(response.toString().getBytes(Charset.forName("US-ASCII")));
+			byte[] bytes = response.toString().getBytes(Charset.forName("US-ASCII"));
+			outputStream.write(bytes);
+			Application.getInstance().getMonitoringService().addClientSentTransferredBytes(bytes.length);
 
 			if(contentIsWritable) {
 
@@ -173,6 +178,7 @@ public class HttpResponseFilter extends Filter {
 
 						while((temp = parser.readNextChunk()) != null) {
 							outputStream.write(temp);
+							Application.getInstance().getMonitoringService().addClientSentTransferredBytes(temp.length);
 						}
 					}
 
@@ -183,6 +189,7 @@ public class HttpResponseFilter extends Filter {
 
 					while((readBytes = parser.readNextNBodyBytes(temp, 0, 1024)) != -1) {
 						outputStream.write(temp, 0, readBytes);
+						Application.getInstance().getMonitoringService().addClientSentTransferredBytes(readBytes);
 					}
 
 				}

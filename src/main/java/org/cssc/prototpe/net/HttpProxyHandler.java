@@ -38,6 +38,7 @@ public class HttpProxyHandler implements ClientHandler{
 	private HttpRequest request;
 	private HttpResponse response;
 	private ApplicationConfiguration configuration;
+	private MonitoringService monitor;
 
 	private Logger logger;
 	private ServerManager serverManager;
@@ -46,6 +47,7 @@ public class HttpProxyHandler implements ClientHandler{
 		this.logger = Application.getInstance().getLogger();
 		this.serverManager = Application.getInstance().getServerManager();
 		this.configuration = Application.getInstance().getApplicationConfiguration();
+		this.monitor = Application.getInstance().getMonitoringService();
 	}
 
 
@@ -73,16 +75,12 @@ public class HttpProxyHandler implements ClientHandler{
 				} catch(HttpParserException e) {
 					e.printStackTrace();
 					response = HttpResponse.emptyResponse(HttpResponseCode.BAD_REQUEST);
-					clientSocket.getOutputStream().write(response.toString().getBytes(Charset.forName("US-ASCII")));
-					logger.logErrorResponse(clientSocket.getInetAddress(), response, request);
-					closeClientSocket();
+					sendErrorResponse();
 					return;
 				} catch(InvalidMethodStringException e) {
 					e.printStackTrace();
 					response = HttpResponse.emptyResponse(HttpResponseCode.NOT_IMPLEMENTED);
-					clientSocket.getOutputStream().write(response.toString().getBytes(Charset.forName("US-ASCII")));
-					logger.logErrorResponse(clientSocket.getInetAddress(), response, request);
-					closeClientSocket();
+					sendErrorResponse();
 					return;
 				} catch(SocketTimeoutException e) {
 					closeClientSocket();
@@ -109,22 +107,18 @@ public class HttpProxyHandler implements ClientHandler{
 				} catch (MissingHostException e) {
 					e.printStackTrace();
 					response = HttpResponse.emptyResponse(HttpResponseCode.BAD_REQUEST);
-					clientSocket.getOutputStream().write(response.toString().getBytes(Charset.forName("US-ASCII")));
-					logger.logErrorResponse(clientSocket.getInetAddress(), response, request);
-					closeClientSocket();
+					sendErrorResponse();
 					return;
 				} catch (UnknownHostException e) {
 					e.printStackTrace();
 					response = HttpResponse.emptyResponse(HttpResponseCode.BAD_REQUEST);
-					clientSocket.getOutputStream().write(response.toString().getBytes(Charset.forName("US-ASCII")));
-					logger.logErrorResponse(clientSocket.getInetAddress(), response, request);
-					closeClientSocket();
+					sendErrorResponse();
 					return;
 				}
 
 				try {
 					// WRITING REQUEST
-					writeHttpPacket(request, requestParser, serverSocket.getOutputStream(), false);
+					writeHttpPacket(request, requestParser, serverSocket.getOutputStream(), false, false);
 					System.out.println("Escribi request:");
 					System.out.println(request);
 					try {
@@ -136,17 +130,13 @@ public class HttpProxyHandler implements ClientHandler{
 						// Invalid status code for the HTTP response.
 						e.printStackTrace();
 						response = HttpResponse.emptyResponse(HttpResponseCode.BAD_GATEWAY);
-						clientSocket.getOutputStream().write(response.toString().getBytes(Charset.forName("US-ASCII")));
-						logger.logErrorResponse(clientSocket.getInetAddress(), response, request);
-						closeClientSocket();
+						sendErrorResponse();
 						return;
 					} catch(HttpParserException e) {
 						// Invalid response format.
 						e.printStackTrace();
 						response = HttpResponse.emptyResponse(HttpResponseCode.BAD_GATEWAY);
-						clientSocket.getOutputStream().write(response.toString().getBytes(Charset.forName("US-ASCII")));
-						logger.logErrorResponse(clientSocket.getInetAddress(), response, request);
-						closeClientSocket();
+						sendErrorResponse();
 						return;
 					}
 				} catch(IOException e2) {
@@ -156,7 +146,7 @@ public class HttpProxyHandler implements ClientHandler{
 						serverSocket.close();
 						generateServerSocket(true); // EMERGENCY SOCKET: always unused before
 						// REWRITING REQUEST
-						writeHttpPacket(request, requestParser, serverSocket.getOutputStream(), false);
+						writeHttpPacket(request, requestParser, serverSocket.getOutputStream(), false, false);
 						try {
 							// READING RESPONSE
 							System.out.println("Written request, awaiting response");
@@ -166,26 +156,20 @@ public class HttpProxyHandler implements ClientHandler{
 							// Invalid status code for the HTTP response.
 							e.printStackTrace();
 							response = HttpResponse.emptyResponse(HttpResponseCode.BAD_GATEWAY);
-							clientSocket.getOutputStream().write(response.toString().getBytes(Charset.forName("US-ASCII")));
-							logger.logErrorResponse(clientSocket.getInetAddress(), response, request);
-							closeClientSocket();
+							sendErrorResponse();
 							return;
 						} catch(HttpParserException e) {
 							// Invalid response format.
 							e.printStackTrace();
 							response = HttpResponse.emptyResponse(HttpResponseCode.BAD_GATEWAY);
-							clientSocket.getOutputStream().write(response.toString().getBytes(Charset.forName("US-ASCII")));
-							logger.logErrorResponse(clientSocket.getInetAddress(), response, request);
-							closeClientSocket();
+							sendErrorResponse();
 							return;
 						}
 					} catch(Exception e1) {
 						// Unidentified error when trying to write request or read response from server.
 						e1.printStackTrace();
 						response = HttpResponse.emptyResponse(HttpResponseCode.BAD_GATEWAY);
-						clientSocket.getOutputStream().write(response.toString().getBytes(Charset.forName("US-ASCII")));
-						logger.logErrorResponse(clientSocket.getInetAddress(), response, request);
-						closeClientSocket();
+						sendErrorResponse();
 						return;
 					}
 				}
@@ -248,6 +232,16 @@ public class HttpProxyHandler implements ClientHandler{
 	}
 
 
+	private void sendErrorResponse() throws IOException {
+		byte[] bytes;
+		bytes = response.toString().getBytes(Charset.forName("US-ASCII"));
+		clientSocket.getOutputStream().write(bytes);
+		logger.logErrorResponse(clientSocket.getInetAddress(), response, request);
+		monitor.addClientSentTransferredBytes(bytes.length);
+		closeClientSocket();
+	}
+
+
 	private void listenAndParseResponse() throws IOException {
 		responseParser = new HttpResponseParser(serverSocket.getInputStream());
 		response = responseParser.parse();
@@ -289,8 +283,6 @@ public class HttpProxyHandler implements ClientHandler{
 			} else {
 				serverSocket = serverManager.getEmergencySocket(InetAddress.getByName(host), HTTP_PORT);
 			}
-			//TODO: HAY QUE SACAR ESTOOOO
-			//						serverSocket.setSoTimeout(3000);
 		}
 	}
 
@@ -304,8 +296,10 @@ public class HttpProxyHandler implements ClientHandler{
 //	}
 
 
-	private void writeHttpPacket(HttpPacket packet, HttpParser parser, OutputStream outputStream, boolean writeContent) throws IOException {
-		outputStream.write(packet.toString().getBytes(Charset.forName("US-ASCII")));
+	private void writeHttpPacket(HttpPacket packet, HttpParser parser, OutputStream outputStream, boolean writeContent, boolean isClient) throws IOException {
+		byte[] bytes = packet.toString().getBytes(Charset.forName("US-ASCII"));
+		outputStream.write(bytes);
+		registerWriteBytes(isClient, bytes.length);
 		String transferEncoding = packet.getHeader().getField("transfer-encoding");
 
 		if(transferEncoding != null) {
@@ -314,6 +308,7 @@ public class HttpProxyHandler implements ClientHandler{
 
 				while((temp = parser.readNextChunk()) != null) {
 					outputStream.write(temp);
+					registerWriteBytes(isClient, temp.length);
 				}
 			}
 
@@ -324,8 +319,18 @@ public class HttpProxyHandler implements ClientHandler{
 
 			while((readBytes = parser.readNextNBodyBytes(temp, 0, 1024)) != -1) {
 				outputStream.write(temp, 0, readBytes);
+				registerWriteBytes(isClient, readBytes);
 			}
 
+		}
+	}
+
+
+	private void registerWriteBytes(boolean isClient, int readBytes) {
+		if(isClient) {
+			monitor.addClientSentTransferredBytes(readBytes);
+		} else {
+			monitor.addServerSentTransferredBytes(readBytes);
 		}
 	}
 
