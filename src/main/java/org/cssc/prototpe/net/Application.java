@@ -70,7 +70,8 @@ public class Application {
 	public static void main(String[] args) throws UnknownHostException {
 		Application application = new Application();
 		new ApplicationConfigurationServer(Application.getInstance().getApplicationConfiguration().getRemoteServicesPort());
-		System.out.println("HTTP Proxy Server started.");
+		System.out.println("HTTP Proxy Server started at port " + Application.getInstance().getApplicationConfiguration().getProxyPort() + ".");
+		System.out.println("Remote services started at port " + Application.getInstance().getApplicationConfiguration().getRemoteServicesPort() + ".");
 		application.launch();
 	}
 
