@@ -98,7 +98,6 @@ public class HttpProxyHandler implements ClientHandler{
 					generateServerSocket();
 					
 					if(requestFilter.filter()) {
-						clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.FORBIDDEN).toString().getBytes(Charset.forName("US-ASCII")));
 						closeClientSocket();
 						return;
 					}
@@ -187,7 +186,6 @@ public class HttpProxyHandler implements ClientHandler{
 				HttpResponseFilter responseFilter = new HttpResponseFilter(clientSocket, serverSocket, request, response);
 
 				if(responseFilter.filter()) {
-					clientSocket.getOutputStream().write(HttpResponse.emptyResponse(HttpResponseCode.FORBIDDEN).toString().getBytes(Charset.forName("US-ASCII")));
 					closeClientSocket();
 					return;
 				}
