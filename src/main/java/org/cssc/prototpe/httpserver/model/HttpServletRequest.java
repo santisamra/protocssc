@@ -18,6 +18,7 @@ public class HttpServletRequest {
 	public HttpRequest getActualRequest(){
 		return request;
 	}
+	
 	public String getContent() throws IOException{
 		String contentType = request.getHeader().getField("content-type");
 		if( contentType == null ){
@@ -30,8 +31,8 @@ public class HttpServletRequest {
 		
 		String boundary;
 		try{
-		//TODO: check if every browser does this parche
-		boundary = "--" + contentType.substring(contentType.indexOf("boundary=")+"boundary=".length());
+			//TODO: check if every browser does this parche
+			boundary = "--" + contentType.substring(contentType.indexOf("boundary=")+"boundary=".length());
 		} catch(IndexOutOfBoundsException e){
 			return null;
 		}
@@ -59,13 +60,29 @@ public class HttpServletRequest {
 			for(int i = 0; i < 1024; charbuf[i] = (char) buf[i++]);
 			rawContent.append(charbuf);
 		}
-		int start = rawContent.indexOf(boundary);
-		int end = rawContent.lastIndexOf(boundary);
-		String content = rawContent.substring(start + boundary.length(), end);
-		System.out.println(content);
 		
-		
-		
-		return null;
+		String content;
+		try{
+			//Empty file verification: filename=""
+			int fileNameStart = rawContent.indexOf("filename=") + "filename=".length();
+			if( rawContent.charAt(fileNameStart) == '"' 
+				&& rawContent.charAt(fileNameStart + 1) == '"'){
+				System.out.println("No file was selected");
+				return null;
+			}
+			
+			int start = rawContent.indexOf(boundary);
+			int end = rawContent.lastIndexOf(boundary);
+			String fullContent = rawContent.substring(start + boundary.length(), end);
+			
+			int offset = fullContent.indexOf("Content-Type");
+			content = fullContent.substring(fullContent.indexOf("\n", offset) + 1);
+			System.out.println(":delimitfile:" + content + ":delimitfile:");
+		} catch (Exception e){
+			//TODO: Parche
+			//The file parsing failed.
+			return null;
+		}
+		return content;
 	}
 }

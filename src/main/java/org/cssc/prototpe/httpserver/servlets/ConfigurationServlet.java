@@ -21,8 +21,19 @@ public class ConfigurationServlet extends MyHttpServlet {
 		if( !validateAuth()){
 			return;
 		}
-		request.getContent();
-		response.getBuffer().append("Hello world! Appended file successfuly");
+		
+		String content = request.getContent();
+		
+		StringBuffer buf = response.getBuffer();
+		buf.append("<html><body>");
+		
+		buf.append("<h2>File uploaded successfuly</h2>");
+		
+		buf.append("<h4>This is the file content:</h4>");
+		
+		buf.append("<textarea rows=\"20\" cols=\"60\">" + content + "</textarea>");
+		
+		buf.append("</body></html>");
 	}
 
 }
