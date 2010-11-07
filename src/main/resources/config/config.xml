@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <config>
+	<proxyPort>8080</proxyPort>
+	<remoteServicesPort>8082</remoteServicesPort>
 	<threadPoolSize>10</threadPoolSize>
 	<maxPersistantServerConnections>10</maxPersistantServerConnections>
 	<maxPersistantServerConnectionsPerServer>2</maxPersistantServerConnectionsPerServer>

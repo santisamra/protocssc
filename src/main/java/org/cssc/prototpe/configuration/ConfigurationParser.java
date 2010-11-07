@@ -29,8 +29,7 @@ public class ConfigurationParser {
 	private int serverConnectionPersistentTimeout;
 	private Map<String, String> adminUsers;
 	private int proxyPort;
-	private int remoteConfigurationPort;
-	private int monitoringPort;
+	private int remoteServicesPort;
 	
 	public ConfigurationParser(String xmlPath) {
 		filters = new LinkedList<ApplicationFilter>();
@@ -217,23 +216,17 @@ public class ConfigurationParser {
 			    			}catch(NumberFormatException e){
 			    				throw new ConfigurationParserException("Invalid server connection persistent timeout.");
 			    			}
-			    		}else if(configs.item(l).getNodeName().equals("monitoringPort")){
-			    			try{
-			    				monitoringPort=Integer.parseInt(configs.item(l).getChildNodes().item(0).getTextContent());
-			    			}catch(NumberFormatException e){
-			    				throw new ConfigurationParserException("Invalid monitoring port.");
-			    			}
 			    		}else if(configs.item(l).getNodeName().equals("proxyPort")){
 			    			try{
 			    				proxyPort=Integer.parseInt(configs.item(l).getChildNodes().item(0).getTextContent());
 			    			}catch(NumberFormatException e){
 			    				throw new ConfigurationParserException("Invalid proxy port.");
 			    			}
-			    		}else if(configs.item(l).getNodeName().equals("remoteConfigurationPort")){
+			    		}else if(configs.item(l).getNodeName().equals("remoteServicesPort")){
 			    			try{
-			    				remoteConfigurationPort=Integer.parseInt(configs.item(l).getChildNodes().item(0).getTextContent());
+			    				remoteServicesPort = Integer.parseInt(configs.item(l).getChildNodes().item(0).getTextContent());
 			    			}catch(NumberFormatException e){
-			    				throw new ConfigurationParserException("Invalid remote configuration port.");
+			    				throw new ConfigurationParserException("Invalid remote services port.");
 			    			}
 			    		}else if(configs.item(l).getNodeName().equals("admin-users")){
 			    			NodeList users = configs.item(l).getChildNodes();
@@ -325,11 +318,7 @@ public class ConfigurationParser {
 		return proxyPort;
 	}
 
-	public int getRemoteConfigurationPort() {
-		return remoteConfigurationPort;
-	}
-
-	public int getMonitoringPort() {
-		return monitoringPort;
+	public int getRemoteServicesPort() {
+		return remoteServicesPort;
 	}
 }

@@ -34,39 +34,8 @@ public class Application {
 				applicationConfiguration.getMaxPersistantServerConnectionsPerServer());
 		monitoringService = new MonitoringService();
 
-		//TODO: Cargar del XML cuando el parser este listo. 
-		int port = 8080; 
-
-//		try{
-//			port = Integer.valueOf(JOptionPane.showInputDialog("Port?"));
-//		}catch(NumberFormatException e){
-//			port = 8080;
-//		}
-//		if( port <= 0 || port >= 65536){
-//			port = 8080;
-//		}
-//
-//		System.out.println("Starting server at port " + port);
-//		String proxyIP = JOptionPane.showInputDialog("Proxy Chaining IP? Otherwise leave empty");
-//		int proxyport;
-//		try{
-//			proxyport = Integer.valueOf(JOptionPane.showInputDialog("Proxy Chaining Port? Otherwise leave empty"));
-//		} catch (NumberFormatException e){
-//			proxyport = 0;
-//		}
-//		try {
-//			if( proxyIP != null && proxyport != 0){
-//				System.out.println("Setting proxy chain at: " + proxyIP + ":" + proxyport);
-//				applicationConfiguration.setChainingProxy(InetAddress.getByName(proxyIP), proxyport);
-//			}
-//		} catch (UnknownHostException e) {
-//			//TODO: SOMEBODY HELP
-//			e.printStackTrace();
-//			return;
-//		}
-
 		// This must be last, as it requires a configuration.
-		httpListener = new HttpProxyClientListener(port);
+		httpListener = new HttpProxyClientListener(getApplicationConfiguration().getProxyPort());
 	}
 	
 	public void setApplicationConfiguration(
@@ -100,7 +69,7 @@ public class Application {
 
 	public static void main(String[] args) throws UnknownHostException {
 		Application application = new Application();
-		new ApplicationConfigurationServer(8082);
+		new ApplicationConfigurationServer(Application.getInstance().getApplicationConfiguration().getRemoteServicesPort());
 		System.out.println("HTTP Proxy Server started.");
 		application.launch();
 	}

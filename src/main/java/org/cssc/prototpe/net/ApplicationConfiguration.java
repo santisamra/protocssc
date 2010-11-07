@@ -11,8 +11,7 @@ import org.cssc.prototpe.configuration.filters.application.ApplicationFilter;
 public class ApplicationConfiguration {
 	
 	private int proxyPort;
-	private int remoteConfigurationPort;
-	private int monitoringPort;
+	private int remoteServicesPort;
 	private int threadPoolSize;
 	private int maxPersistantServerConnections;
 	private int maxPersistantServerConnectionsPerServer;
@@ -26,6 +25,8 @@ public class ApplicationConfiguration {
 	
 	public ApplicationConfiguration(String xmlPath) {
 		ConfigurationParser parser = new ConfigurationParser(xmlPath);
+		proxyPort = parser.getProxyPort();
+		remoteServicesPort = parser.getRemoteServicesPort();
 		threadPoolSize = parser.getThreadPoolSize();
 		maxPersistantServerConnections = parser.getMaxPersistantServerConnections();
 		maxPersistantServerConnectionsPerServer = parser.getMaxPersistantServerConnectionsPerServer();
@@ -42,12 +43,8 @@ public class ApplicationConfiguration {
 		return proxyPort;
 	}
 	
-	public int getRemoteConfigurationPort() {
-		return remoteConfigurationPort;
-	}
-	
-	public int getMonitoringPort() {
-		return monitoringPort;
+	public int getRemoteServicesPort() {
+		return remoteServicesPort;
 	}
 	
 	public int getClientKeepAliveTimeout() {
