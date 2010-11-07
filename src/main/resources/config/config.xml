@@ -29,7 +29,8 @@
 				</transform>
 				<!-- <blocked-MediaTypes>
 					<MediaType>text/html</MediaType>
-				</blocked-MediaTypes> -->
+				</blocked-MediaTypes> 
+				<max-content-length>0</max-content-length> -->
 			</actions>
 		</filter>
 	</filters>

@@ -74,7 +74,7 @@ public class HttpResponseFilter extends Filter {
 
 		if(filter != null) {
 			maxContentLength = filter.getMaxContentLength();
-			checkContentLength = maxContentLength != -1 && !hasContentLength;
+			checkContentLength = maxContentLength != -1 && hasContentLength;
 			l33tTransform = filter.isL33tTransform() && isText(contentTypeString) && !isContentEncoded;
 			rotateImages = filter.isRotateImages() && isImage(contentTypeString) && !isContentEncoded;
 		}
@@ -168,6 +168,18 @@ public class HttpResponseFilter extends Filter {
 
 		} else {
 			/* There are not filters to apply. */
+			
+			System.out.println("-----");
+			System.out.println("-----");
+			System.out.println("-----");
+			System.out.println("-----");
+			System.out.println("-----");
+			System.out.println("NO ESTOY APLICANDO FILTROS");
+			System.out.println("-----");
+			System.out.println("-----");
+			System.out.println("-----");
+			System.out.println("-----");
+			System.out.println("-----");
 
 			byte[] bytes = response.toString().getBytes(Charset.forName("US-ASCII"));
 			outputStream.write(bytes);
