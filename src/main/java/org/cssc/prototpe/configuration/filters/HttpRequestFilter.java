@@ -31,9 +31,11 @@ public class HttpRequestFilter extends Filter {
 		try {
 			if(allAccessesBlocked) {
 				writeResponse("src/main/resources/html/errors/accessDenied.html");
+				Application.getInstance().getMonitoringService().registerWholeBlock();
 				return true;
 			} else if(blockedIPs != null && blockedIPs.contains(InetAddress.getByName(request.getEffectiveHost()))) {
 				writeResponse("src/main/resources/html/errors/ipAccessDenied.html");
+				Application.getInstance().getMonitoringService().registerIpBlock();
 				return true;
 			} else if(blockedURIs != null) {
 				String requestUri = "http://" + request.getEffectiveHost() + request.getEffectivePath();
@@ -41,6 +43,7 @@ public class HttpRequestFilter extends Filter {
 				for(String s: filter.getBlockedURIs()) {
 					if(uriMatchesExpression(requestUri, s)) {
 						writeResponse("src/main/resources/html/errors/uriAccessDenied.html");
+						Application.getInstance().getMonitoringService().registerUriBlock();
 						return true;
 					}
 				}

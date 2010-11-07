@@ -38,6 +38,7 @@ public class HttpResponseFilter extends Filter {
 		if(blockedMediaTypes != null && blockedMediaTypes.contains(contentTypeString)) {
 			writeResponse("src/main/resources/html/errors/mediaTypeBlocked.html");
 			serverSocket.close();
+			Application.getInstance().getMonitoringService().registerMediaTypeBlock();
 			return true;
 		}
 
@@ -51,6 +52,7 @@ public class HttpResponseFilter extends Filter {
 				if(contentLength > maxContentLength && maxContentLength != 0) {
 					writeResponse("src/main/resources/html/errors/bigContentLength.html");
 					serverSocket.close();
+					Application.getInstance().getMonitoringService().registerSizeBlock();
 					return true;
 				}
 			}
@@ -89,6 +91,7 @@ public class HttpResponseFilter extends Filter {
 			if(checkContentLength && contentLength > maxContentLength) {
 				writeResponse("src/main/resources/html/errors/bigContentLength.html");
 				serverSocket.close();
+				Application.getInstance().getMonitoringService().registerSizeBlock();
 				return;
 			}
 
@@ -103,6 +106,7 @@ public class HttpResponseFilter extends Filter {
 						if(checkContentLength && contentLength > maxContentLength) {
 							writeResponse("src/main/resources/html/errors/bigContentLength.html");
 							serverSocket.close();
+							Application.getInstance().getMonitoringService().registerSizeBlock();
 							return;
 						}
 
@@ -126,6 +130,7 @@ public class HttpResponseFilter extends Filter {
 					if(checkContentLength && contentLength > maxContentLength) {
 						writeResponse("src/main/resources/html/errors/bigContentLength.html");
 						serverSocket.close();
+						Application.getInstance().getMonitoringService().registerSizeBlock();
 						return;
 					}
 
@@ -142,12 +147,14 @@ public class HttpResponseFilter extends Filter {
 
 			if(l33tTransform) {
 				transformed = TransformationUtilities.transforml33t(content);
+				Application.getInstance().getMonitoringService().registerLeetTransformation();
 			} else if(rotateImages) {
 				transformed = TransformationUtilities.transform180Image(content);
 				if(transformed == null) {
 					transformed = content;
 				} else {
 					response.getHeader().setField("content-type", "image/png");
+					Application.getInstance().getMonitoringService().registerImage180Transformation();
 				}
 			} else {
 				transformed = content;
