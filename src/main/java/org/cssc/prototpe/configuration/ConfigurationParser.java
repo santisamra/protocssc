@@ -28,6 +28,9 @@ public class ConfigurationParser {
 	private int clientKeepAliveTimeout;
 	private int serverConnectionPersistentTimeout;
 	private Map<String, String> adminUsers;
+	private int proxyPort;
+	private int remoteConfigurationPort;
+	private int monitoringPort;
 	
 	public ConfigurationParser(String xmlPath) {
 		filters = new LinkedList<ApplicationFilter>();
@@ -214,6 +217,24 @@ public class ConfigurationParser {
 			    			}catch(NumberFormatException e){
 			    				throw new ConfigurationParserException("Invalid server connection persistent timeout.");
 			    			}
+			    		}else if(configs.item(l).getNodeName().equals("monitoringPort")){
+			    			try{
+			    				monitoringPort=Integer.parseInt(configs.item(l).getChildNodes().item(0).getTextContent());
+			    			}catch(NumberFormatException e){
+			    				throw new ConfigurationParserException("Invalid monitoring port.");
+			    			}
+			    		}else if(configs.item(l).getNodeName().equals("proxyPort")){
+			    			try{
+			    				proxyPort=Integer.parseInt(configs.item(l).getChildNodes().item(0).getTextContent());
+			    			}catch(NumberFormatException e){
+			    				throw new ConfigurationParserException("Invalid proxy port.");
+			    			}
+			    		}else if(configs.item(l).getNodeName().equals("remoteConfigurationPort")){
+			    			try{
+			    				remoteConfigurationPort=Integer.parseInt(configs.item(l).getChildNodes().item(0).getTextContent());
+			    			}catch(NumberFormatException e){
+			    				throw new ConfigurationParserException("Invalid remote configuration port.");
+			    			}
 			    		}else if(configs.item(l).getNodeName().equals("admin-users")){
 			    			NodeList users = configs.item(l).getChildNodes();
 			    			for(int h=0; h<users.getLength(); h++){
@@ -298,5 +319,17 @@ public class ConfigurationParser {
 				+ ", serverConnectionPersistentTimeout="
 				+ serverConnectionPersistentTimeout + ", adminUsers="
 				+ adminUsers + "]";
+	}
+
+	public int getProxyPort() {
+		return proxyPort;
+	}
+
+	public int getRemoteConfigurationPort() {
+		return remoteConfigurationPort;
+	}
+
+	public int getMonitoringPort() {
+		return monitoringPort;
 	}
 }
