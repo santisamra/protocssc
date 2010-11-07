@@ -12,6 +12,7 @@
 					<IP>85.62.96.168</IP>
 				</blocked-IPs>
 				<blocked-URIs>
+					<!-- <URI>http://www.gaiaonline.com/*</URI> -->
 				</blocked-URIs>
 				<block-all-accesses>FALSE</block-all-accesses>
 				<transform>
