@@ -7,7 +7,8 @@
 \contentsline {subsection}{\numberline {3.3}Compatibilidad con HTTP 1.0}{5}
 \contentsline {subsection}{\numberline {3.4}Conexiones persistentes}{6}
 \contentsline {subsection}{\numberline {3.5}Configuraci\'on remota}{7}
-\contentsline {subsection}{\numberline {3.6}Proxy transparente}{7}
+\contentsline {subsection}{\numberline {3.6}Servidores y clientes que hablan mal el protocolo}{7}
+\contentsline {subsection}{\numberline {3.7}Proxy transparente}{7}
 \contentsline {section}{\numberline {4}Limitaciones}{8}
 \contentsline {section}{\numberline {5}Posibles extensiones}{8}
 \contentsline {section}{\numberline {6}Conclusi\'on}{8}

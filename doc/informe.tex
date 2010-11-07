@@ -313,6 +313,26 @@ cantidad máxima de conexiones persistentes.\\
 
 \textbf{\color{red}{\large{Agregar info.}}}
 
+\subsection{Servidores y clientes que hablan mal el protocolo}
+
+Se presentaron dificultades al dialogar con servidores o clientes que no hablan
+correctamente el protocolo. Por ejemplo, al intentar ver una imagen determinada,
+se presentó el problema de que no se podía leer la imagen para cargarla en
+memoria y luego rotarla; esto ocurría porque a pesar de que el
+\emph{content-type} declarado en la respuesta era \emph{image/jpeg}, el servidor
+en realidad estaba devolviendo un XML.\\
+
+Otro problema consistió en que algunos navegadores como \emph{Mozilla Firefox}
+envían \emph{headers} no descriptos por el RFC 2616, como
+\emph{Proxy-Connection} en vez de \emph{Connection}. Se debió lidiar con estas 
+inconsistencias en el proxy.\\
+
+\textbf{\color{red}{\large{Poner cualquier otra vergüenza o burrada que se
+manden los que programen clientes o servidores HTTP. Aunque la verdad los
+entiendo, porque honestamente los programas estos hacen cualquier cosa y por
+ahi con esa verdura los programas funcionan mejor. Bueno, en realidad lo de
+image/jpeg que devuelve un xml no lo entiendo.}}}
+
 \subsection{Proxy transparente}
 
 \textbf{\color{red}{\large{Describir una vez que lo testeemos.}}}
@@ -362,7 +382,7 @@ El proxy desarrollado tiene las siguientes limitaciones:
 \section{Conclusión}
 
 \textbf{\color{red}{\large{Nunca en tu vida tenés que hacer un proxy HTTP.
-Usa uno ya hecho.}}}
+Usá uno ya hecho.}}}
 
 \section{Ejemplos de testeo}
 
