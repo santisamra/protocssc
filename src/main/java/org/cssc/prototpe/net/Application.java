@@ -1,8 +1,6 @@
 package org.cssc.prototpe.net;
 
-import java.net.InetAddress;
 import java.net.UnknownHostException;
-
 import org.cssc.prototpe.httpserver.ApplicationConfigurationServer;
 import org.cssc.prototpe.net.interfaces.ServerManager;
 
@@ -26,17 +24,15 @@ public class Application {
 		instance = this;
 
 		// This MUST be second as other parts of the application require this configuration.
-		applicationConfiguration = new ApplicationConfiguration();
-		applicationConfiguration.loadInitialValues(CONFIG_FILE);
-		//TODO: this is a parche
+		applicationConfiguration = new ApplicationConfiguration(CONFIG_FILE);
 
 		// TODO: Place here any parts of the application that are needed by other parts.
 		logger = new Logger(applicationConfiguration.getLoggingFileName());
-//		serverManager = new SimpleServerManager();
-		serverManager = new PersistentSemaphorizedServerManager(applicationConfiguration.getMaxPersistantServerConnections(),
+		serverManager = new PersistentSemaphorizedServerManager(
+				applicationConfiguration.getMaxPersistantServerConnections(),
 				applicationConfiguration.getMaxPersistantServerConnectionsPerServer());
 
-		//TODO: Nada validado obviamente.. TESTING PURO
+		//TODO: Cargar del XML cuando el parser este listo. 
 		int port = 8080; 
 
 //		try{
@@ -69,6 +65,11 @@ public class Application {
 
 		// This must be last, as it requires a configuration.
 		httpListener = new HttpProxyClientListener(port);
+	}
+	
+	public void setApplicationConfiguration(
+			ApplicationConfiguration applicationConfiguration) {
+		this.applicationConfiguration = applicationConfiguration;
 	}
 
 	public ApplicationConfiguration getApplicationConfiguration() {

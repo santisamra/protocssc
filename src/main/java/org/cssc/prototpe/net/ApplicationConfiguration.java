@@ -24,7 +24,7 @@ public class ApplicationConfiguration {
 	private List<ApplicationFilter> filters;
 	private Map<String, String> adminUsers;
 	
-	public void loadInitialValues(String xmlPath) {
+	public ApplicationConfiguration(String xmlPath) {
 		ConfigurationParser parser = new ConfigurationParser(xmlPath);
 		threadPoolSize = parser.getThreadPoolSize();
 		maxPersistantServerConnections = parser.getMaxPersistantServerConnections();
