@@ -1,6 +1,7 @@
 package org.cssc.prototpe.httpserver.servlets;
 
 import java.io.IOException;
+import java.net.InetAddress;
 
 import org.cssc.prototpe.httpserver.model.Authorization;
 import org.cssc.prototpe.httpserver.model.HttpServletRequest;
@@ -24,7 +25,15 @@ public class IndexServlet extends MyHttpServlet {
 		}
 		
 		StringBuffer buf = response.getBuffer();
-		buf.append("<html><body>");
+		buf.append("<html>");
+		buf.append("<head>");
+		buf.append("<style>");
+		buf.append("td { padding: 5px; }");
+		buf.append("td.value { text-align: center }");
+		buf.append("</style>");
+		buf.append("</head>");
+		
+		buf.append("<body>");
 
 		buf.append("<h1>CSSC Proxy Server Configuration</h1>");
 		
@@ -41,42 +50,45 @@ public class IndexServlet extends MyHttpServlet {
 		
 		buf.append("<tr>");
 		buf.append("<td>Thread pool size</td>");
-		buf.append("<td>" + configuration.getThreadPoolSize() + "</td>");
+		buf.append("<td class=\"value\">" + configuration.getThreadPoolSize() + "</td>");
 		buf.append("</tr>");
 
+		InetAddress chainingProxyAddress = configuration.getChainingProxyAddress();
+		int chainingProxyPort = configuration.getChainingProxyPort();
+		
 		buf.append("<tr>");
 		buf.append("<td>Chaining proxy address</td>");
-		buf.append("<td>" + configuration.getChainingProxyAddress() + "</td>");
+		buf.append("<td class=\"value\">" + ((chainingProxyAddress == null) ? "No chaining proxy" : chainingProxyAddress) + "</td>");
 		buf.append("</tr>");
 		
 		buf.append("<tr>");
 		buf.append("<td>Chaining proxy port</td>");
-		buf.append("<td>" + configuration.getChainingProxyPort() + "</td>");
+		buf.append("<td class=\"value\">" + ((chainingProxyAddress == null) ? "No chaining proxy" : chainingProxyPort) + "</td>");
 		buf.append("</tr>");
 		
 		buf.append("<tr>");
 		buf.append("<td>Maximum server persistent connections</td>");
-		buf.append("<td>" + configuration.getMaxPersistantServerConnections() + "</td>");
+		buf.append("<td class=\"value\">" + configuration.getMaxPersistantServerConnections() + "</td>");
 		buf.append("</tr>");
 		
 		buf.append("<tr>");
 		buf.append("<td>Maximum server persistent connections per server</td>");
-		buf.append("<td>" + configuration.getMaxPersistantServerConnectionsPerServer() + "</td>");
+		buf.append("<td class=\"value\">" + configuration.getMaxPersistantServerConnectionsPerServer() + "</td>");
 		buf.append("</tr>");
 		
 		buf.append("<tr>");
 		buf.append("<td>Client persistent connection timeout</td>");
-		buf.append("<td>" + configuration.getClientKeepAliveTimeout() + "</td>");
+		buf.append("<td class=\"value\">" + configuration.getClientKeepAliveTimeout() + "</td>");
 		buf.append("</tr>");
 		
 		buf.append("<tr>");
 		buf.append("<td>Server persistent connection timeout</td>");
-		buf.append("<td>" + configuration.getServerConnectionPersistentTimeout() + "</td>");
+		buf.append("<td class=\"value\">" + configuration.getServerConnectionPersistentTimeout() + "</td>");
 		buf.append("</tr>");
 		
 		buf.append("<tr>");
 		buf.append("<td>Logging file name</td>");
-		buf.append("<td>" + configuration.getLoggingFileName() + "</td>");
+		buf.append("<td class=\"value\">" + configuration.getLoggingFileName() + "</td>");
 		buf.append("</tr>");
 		
 		
