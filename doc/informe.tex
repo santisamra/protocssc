@@ -303,6 +303,24 @@ causa de problemas en el desarrollo del trabajo práctico, y su solución nunca
 fue simple, debido a que por la naturaleza del servidor y la existencia de
 threads concurrentes, resultaba complicado reproducir los bugs.
 
+\subsection{Monitoreo}
+
+El diseño implementado no contempló, desde un principio, encapsular a los
+\emph{sockets} en clases específicas del proxy. Las conexiones, así como la
+entrada/salida, se manejan directamente utilizando la clase \verb+Socket+.
+Debido a esto, se presentaron importantes problemas al intentar contabilizar la
+cantidad de bytes transferidos. La solución fue hacer subclases de
+\verb+InputStream+ y \verb+OutputStream+ que permitan contabilizar la cantidad de bytes
+escritos o leídos.\\
+
+Se presentó además un pequeño problema, relacionado con el monitoreo. Cuando se
+intentaban contabilizar la cantidad de bloqueos, a veces se contabilizaba más de
+uno cuando mediante un navegador se accedía a una página bloqueada. Esto era
+debido a que el navegador intentaba, al mismo tiempo que accedía a la página,
+buscar el \emph{favicon} de la misma. Inclusive, el navegador reintentaba varias
+veces ir a buscar el \emph{favicon}. Debido a esto, se concluyó que en
+realidad la implementación era correcta.
+
 \subsection{Configuración remota}
 
 Debido a las características de la implementación, hay ciertos parámetros que no
