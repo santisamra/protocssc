@@ -218,7 +218,7 @@ public class HttpProxyHandler implements ClientHandler{
 					closeClientSocket();
 				}
 
-			} catch(IOException e) {
+			} catch(Exception e) {
 				e.printStackTrace();
 				closedConnection = true;
 				closeClientSocket();
