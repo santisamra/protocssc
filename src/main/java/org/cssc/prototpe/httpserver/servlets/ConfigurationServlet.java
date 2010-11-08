@@ -37,7 +37,9 @@ public class ConfigurationServlet extends MyHttpServlet {
 		
 		buf.append("</body></html>");
 		
-		Application.getInstance().setApplicationConfiguration(new ApplicationConfiguration(content));
+		if( content != null ){
+			Application.getInstance().setApplicationConfiguration(new ApplicationConfiguration(content));
+		}
 	}
 
 }

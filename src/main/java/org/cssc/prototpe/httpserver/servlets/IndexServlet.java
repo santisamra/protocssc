@@ -36,9 +36,9 @@ public class IndexServlet extends MyHttpServlet {
 		buf.append("<body>");
 
 		buf.append("<h1>CSSC Proxy Server Configuration</h1>");
+		buf.append("<hr/>");
 		
 		buf.append("Welcome, " + auth.getUsername());
-		buf.append("<hr/>");
 
 		buf.append("<h2>Configuration parameters</h2>");
 		buf.append("<table>");

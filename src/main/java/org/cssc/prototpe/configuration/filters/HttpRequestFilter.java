@@ -33,7 +33,7 @@ public class HttpRequestFilter extends Filter {
 				writeResponse("src/main/resources/html/errors/accessDenied.html");
 				Application.getInstance().getMonitoringService().registerWholeBlock();
 				return true;
-			} else if(blockedIPs != null && blockedIPs.contains(InetAddress.getByName(request.getEffectiveHost()))) {
+			} else if(blockedIPs != null && matchBlockedIP(blockedIPs, InetAddress.getByName(request.getEffectiveHost()))) {
 				writeResponse("src/main/resources/html/errors/ipAccessDenied.html");
 				Application.getInstance().getMonitoringService().registerIpBlock();
 				return true;
@@ -87,5 +87,14 @@ public class HttpRequestFilter extends Filter {
 		return uri.matches(regExp);
 	}
 
+	private boolean matchBlockedIP(List<InetAddress> blockedIPs, InetAddress currentIP){
+		for(InetAddress i: blockedIPs){
+			System.out.println(i.toString() + " curr: " + currentIP.toString());
+			if( i.toString().matches(currentIP.toString())){
+				return true;
+			}
+		}
+		return false;
+	}
 
 }
