@@ -2,7 +2,10 @@ package org.cssc.prototpe.httpserver.servlets;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.List;
 
+import org.cssc.prototpe.configuration.filters.application.ApplicationFilter;
+import org.cssc.prototpe.configuration.filters.application.FilterCondition;
 import org.cssc.prototpe.httpserver.model.Authorization;
 import org.cssc.prototpe.httpserver.model.HttpServletRequest;
 import org.cssc.prototpe.httpserver.model.HttpServletResponse;
@@ -111,9 +114,72 @@ public class IndexServlet extends MyHttpServlet {
 		buf.append("</table>");
 		
 		buf.append("<br/>");
+		
+		buf.append("<h2>Current filters:</h2>");
+		
+		buf.append("<table>");
+		
+		int filternum = 0;
+		for(ApplicationFilter f: configuration.getFilters()){
+			buf.append("<tr><th>Filter " + ++filternum + ": </th><th></th></tr>");
+			
+			FilterCondition cndn = f.getCondition();
+			
+			buf.append("<tr>");
+			buf.append("<td>Filter condition:</td>");
+			buf.append("<td class=\"value\"><ul>");
+			if( cndn.getBrowser() != null){
+				buf.append("<li>Browser: " + cndn.getBrowser() + "</li>");
+			}
+			if( cndn.getOperatingSystem() != null ){
+				buf.append("<li>OS: " + cndn.getOperatingSystem() + "</li>");
+			}
+			
+			if( cndn.getIps() != null && !cndn.getIps().isEmpty()){
+				for(InetAddress i: cndn.getIps()){
+					buf.append("<li>IP: " + i.toString() + "</li>");
+				}
+			}
+			buf.append("</ul></td>");
+			buf.append("</tr>");
+			
+			addListToTable(buf, "Blocked IPs", f.getBlockedIPs());
+			addListToTable(buf, "Blocked Media Types", f.getBlockedMediaTypes());
+			addListToTable(buf, "Blocked URIs", f.getBlockedURIs());
+			
+			String maxContent;
+			if( f.getMaxContentLength() == -1){
+				maxContent = "No Limit";
+			} else {
+				maxContent = Integer.toString(f.getMaxContentLength());
+			}
+			
+			buf.append("<tr>");
+			buf.append("<td>Max Content Length:</td>");
+			buf.append("<td class=\"value\">" + maxContent + "</td>");
+			buf.append("</tr>");
+		}
+		
+		buf.append("</table>");
 
 		buf.append("</body></html>");
 
+	}
+	
+	private void addListToTable(StringBuffer buf, String desc, List<?> elements){
+		buf.append("<tr>");
+		buf.append("<td>" + desc + ": </td>");
+		
+		buf.append("<td class=\"value\"><ul>");
+		
+		if( elements != null && !elements.isEmpty()){
+			for(Object i: elements){
+				buf.append("<li> " + i.toString() + "</li>");
+			}
+		}
+		
+		buf.append("</ul></td>");
+		buf.append("</tr>");
 	}
 
 	@Override

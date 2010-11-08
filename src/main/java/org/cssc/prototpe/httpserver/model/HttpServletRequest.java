@@ -79,7 +79,6 @@ public class HttpServletRequest {
 			content = fullContent.substring(fullContent.indexOf("\n", offset) + 1);
 			System.out.println(":delimitfile:" + content + ":delimitfile:");
 		} catch (Exception e){
-			//TODO: Parche
 			//The file parsing failed.
 			return null;
 		}

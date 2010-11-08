@@ -33,7 +33,17 @@
 				<!-- <blocked-MediaTypes>
 					<MediaType>text/html</MediaType>
 				</blocked-MediaTypes> 
-				<max-content-length>0</max-content-length> -->
+				<max-content-length>1000000</max-content-length> -->
+			</actions>
+		</filter>
+		<filter>
+			<conditions>
+				<OS>Mac OS</OS>
+			</conditions>
+			<actions>
+				<blocked-IPs>
+					<IP>200.200.200.200</IP>
+				</blocked-IPs>
 			</actions>
 		</filter>
 	</filters>
