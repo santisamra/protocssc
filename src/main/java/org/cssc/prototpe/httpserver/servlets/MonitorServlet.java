@@ -2,7 +2,6 @@ package org.cssc.prototpe.httpserver.servlets;
 
 import java.io.IOException;
 
-import org.cssc.prototpe.httpserver.model.Authorization;
 import org.cssc.prototpe.httpserver.model.HttpServletRequest;
 import org.cssc.prototpe.httpserver.model.HttpServletResponse;
 import org.cssc.prototpe.httpserver.model.MyHttpServlet;
@@ -16,12 +15,9 @@ public class MonitorServlet extends MyHttpServlet{
 	throws IOException {
 		MonitoringService monitoringService = Application.getInstance().getMonitoringService();
 
-		Authorization auth = null;
 		if( !validateAuth()){
 			return;
-		} else {
-			auth = getAuthorization();
-		}
+		} 
 		
 		StringBuffer buf = response.getBuffer();
 		buf.append("<html>");
@@ -35,9 +31,9 @@ public class MonitorServlet extends MyHttpServlet{
 		buf.append("<body>");
 
 		buf.append("<h1>CSSC Proxy Server Monitoring</h1>");
-		
-		buf.append("Welcome, " + auth.getUsername());
 		buf.append("<hr/>");
+		
+		buf.append("<a href=\"/\">Back</a>");
 
 		buf.append("<h2>Monitoring parameters</h2>");
 		

@@ -2,7 +2,9 @@ package org.cssc.prototpe.net;
 
 import java.io.File;
 import java.net.UnknownHostException;
+import java.util.List;
 
+import org.cssc.prototpe.configuration.filters.application.ApplicationFilter;
 import org.cssc.prototpe.httpserver.ApplicationConfigurationServer;
 import org.cssc.prototpe.net.interfaces.ServerManager;
 
@@ -43,6 +45,14 @@ public class Application {
 	public void setApplicationConfiguration(
 			ApplicationConfiguration applicationConfiguration) {
 		this.applicationConfiguration = applicationConfiguration;
+	}
+	
+	public void setApplicationConfigurationRuntime(
+			ApplicationConfiguration applicationConfiguration) {
+		List<ApplicationFilter> newFilters = applicationConfiguration.getFilters();
+		if( newFilters != null && !newFilters.isEmpty()){
+			this.applicationConfiguration.replaceAllFilters(newFilters);
+		}
 	}
 
 	public ApplicationConfiguration getApplicationConfiguration() {

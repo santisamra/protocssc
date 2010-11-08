@@ -31,7 +31,7 @@ public class HttpServletRequest {
 		
 		String boundary;
 		try{
-			//TODO: check if every browser does this parche
+			// RFC 1867 specifies the need of the "--" as a prefix to the boundary. 
 			boundary = "--" + contentType.substring(contentType.indexOf("boundary=")+"boundary=".length());
 		} catch(IndexOutOfBoundsException e){
 			return null;

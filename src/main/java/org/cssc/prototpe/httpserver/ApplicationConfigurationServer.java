@@ -16,7 +16,6 @@ import org.cssc.prototpe.httpserver.model.HttpServletResponse;
 import org.cssc.prototpe.httpserver.model.MyHttpServlet;
 import org.cssc.prototpe.httpserver.servlets.ConfigurationServlet;
 import org.cssc.prototpe.httpserver.servlets.IndexServlet;
-import org.cssc.prototpe.httpserver.servlets.LoginServlet;
 import org.cssc.prototpe.httpserver.servlets.MonitorServlet;
 import org.cssc.prototpe.net.exceptions.FatalException;
 import org.cssc.prototpe.parsers.HttpRequestParser;
@@ -25,7 +24,6 @@ public class ApplicationConfigurationServer implements Runnable{
 
 	private void mapURLs(){
 		urlMapping.put("/", IndexServlet.class);
-		urlMapping.put("/login", LoginServlet.class);
 		urlMapping.put("/configure", ConfigurationServlet.class);
 		urlMapping.put("/monitor", MonitorServlet.class);
 	}

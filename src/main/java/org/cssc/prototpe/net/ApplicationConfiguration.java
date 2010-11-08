@@ -130,6 +130,10 @@ public class ApplicationConfiguration {
 		return filters;
 	}
 	
+	public void replaceAllFilters(List<ApplicationFilter> filters){
+		this.filters = filters;
+	}
+	
 	public ApplicationFilter getFilterForCondition(InetAddress ip, String userAgent) {
 		if(ip == null) {
 			throw new IllegalArgumentException("IP cannot be null.");

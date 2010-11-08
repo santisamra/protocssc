@@ -29,16 +29,18 @@ public class ConfigurationServlet extends MyHttpServlet {
 		StringBuffer buf = response.getBuffer();
 		buf.append("<html><body>");
 		
-		buf.append("<h2>File uploaded successfuly</h2>");
+		buf.append("<h2>Configuration File uploaded successfuly</h2>");
 		
 		buf.append("<h4>This is the file content:</h4>");
 		
 		buf.append("<textarea rows=\"20\" cols=\"60\">" + content + "</textarea>");
 		
+		buf.append("<br/><a href=\"/\">Back</a>");
+		
 		buf.append("</body></html>");
 		
 		if( content != null ){
-			Application.getInstance().setApplicationConfiguration(new ApplicationConfiguration(content));
+			Application.getInstance().setApplicationConfigurationRuntime(new ApplicationConfiguration(content));
 		}
 	}
 
