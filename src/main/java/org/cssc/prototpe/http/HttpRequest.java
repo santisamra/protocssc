@@ -4,9 +4,11 @@ import java.util.Map.Entry;
 
 import org.cssc.prototpe.http.exceptions.MissingHostException;
 import org.cssc.prototpe.net.Application;
-import org.cssc.prototpe.net.exceptions.FatalException;
+import org.cssc.prototpe.parsers.exceptions.HttpParserException;
 
 public class HttpRequest extends HttpPacket {
+	
+	private static final int HTTP_DEFAULT_PORT = 80;
 	
 	private String path;
 	private HttpMethod method;
@@ -21,7 +23,6 @@ public class HttpRequest extends HttpPacket {
 		return path;
 	}
 	
-	//TODO: is this OK?
 	public void setPath(String path){
 		this.path = path;
 	}
@@ -30,7 +31,6 @@ public class HttpRequest extends HttpPacket {
 		return method;
 	}
 	
-	//TODO: Determine if this is correct.. I don't like it AT ALL
 	public boolean hasAbsolutePath(){
 		
 		if( getPath().startsWith("/") ){
@@ -49,15 +49,47 @@ public class HttpRequest extends HttpPacket {
 	public String getEffectiveHost() throws MissingHostException {
 		if(hasAbsolutePath()) {
 			String temp = getPath().substring(7);
-			return temp.substring(0, temp.indexOf("/"));
+			temp = temp.substring(0, temp.indexOf("/"));
+			if( hasPort(temp) ){
+				return temp.substring(0, temp.indexOf(":"));
+			}
+			return temp;
 		} else {
 			String headerHost = getHeader().getField("host");
 			if( headerHost == null ){
 				throw new MissingHostException();
 			}
+			if( hasPort(headerHost)){
+				return headerHost.substring(0, headerHost.indexOf(":"));
+			}
 			return headerHost;
 		}
 		
+	}
+	
+	public Integer getPort(){
+		String path = getPath();
+		if( hasAbsolutePath()){
+			path = path.substring(7);
+			path = path.substring(0, path.indexOf("/"));
+			if( hasPort(path) ){
+				try{
+					return Integer.valueOf(path.substring(path.indexOf(":") + 1));
+				} catch (NumberFormatException e) {
+					throw new HttpParserException(e);
+				}
+			}
+		}
+		return HTTP_DEFAULT_PORT;
+	}
+	
+	/**
+	 * Must recieve the URL without the http://
+	 * @param path
+	 * @return
+	 */
+	public boolean hasPort(String path){
+		return path.contains(":");
 	}
 	
 	/**
@@ -65,13 +97,9 @@ public class HttpRequest extends HttpPacket {
 	 */
 	public String getEffectivePath() {
 		if(hasAbsolutePath()) {
-			try {
-				String path = getPath();
-				String effHost = getEffectiveHost();
-				return path.substring(path.indexOf(effHost) + effHost.length());
-			} catch (MissingHostException e) {
-				throw new FatalException(e);
-			}
+			String path = getPath();
+			path = path.substring(7);
+			return path.substring(path.indexOf("/"));
 		} else {
 			return getPath();
 		}

@@ -53,7 +53,7 @@ import java.io.InputStream;
 
 VERSION =		HTTP\/
 STATUS_CODE =	[1-5][0-9]{2}
-REASON_PHRASE =	[A-Za-z ]+
+REASON_PHRASE =	[A-Za-z _-]+
 NEWLINE =		\r\n
 
 %state PARSING_VERSION

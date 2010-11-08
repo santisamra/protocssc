@@ -23,11 +23,11 @@ public class HttpRequestFilter extends Filter {
 		String currentIPStr = currentIP.toString();
 		String currentIPStrClean = currentIPStr.substring(currentIPStr.indexOf("/"));
 		for(String ip: blockedIPs){
-//			System.out.println(currentIPStrClean);
-//			System.out.println("/" + ip);
+			System.out.println(currentIPStrClean);
+			System.out.println("/" + ip);
 			
 			if( currentIPStrClean.matches("/" + ip)){
-//				System.out.println("Match!");
+				System.out.println("Match!");
 				return true;
 			}
 		}

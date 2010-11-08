@@ -201,6 +201,14 @@ public class ConfigurationParser {
 									);
 
 									filters.add(filter);
+									
+									oS = null;
+									originIPs = null;
+									browser = null;
+									blockAllAccesses = false;
+									blockedIPs = null;
+									blockedURIs = null;
+									blockedMediaTypes = null;
 								}
 							}
 						}else if(configs.item(l).getNodeName().equals("threadPoolSize")){

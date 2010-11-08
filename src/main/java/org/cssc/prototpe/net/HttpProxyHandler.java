@@ -29,8 +29,6 @@ import org.cssc.prototpe.parsers.exceptions.HttpParserException;
 
 public class HttpProxyHandler implements ClientHandler{
 
-	private static final int HTTP_PORT = 80;
-
 	private Socket clientSocket;
 	private Socket serverSocket;
 	private HttpRequestParser requestParser;
@@ -274,9 +272,9 @@ public class HttpProxyHandler implements ClientHandler{
 			System.out.println(request.getEffectivePath());
 			String host = request.getEffectiveHost();
 			if(!emergency) {
-				serverSocket = serverManager.getSocket(InetAddress.getByName(host), HTTP_PORT);
+				serverSocket = serverManager.getSocket(InetAddress.getByName(host), request.getPort());
 			} else {
-				serverSocket = serverManager.getEmergencySocket(InetAddress.getByName(host), HTTP_PORT);
+				serverSocket = serverManager.getEmergencySocket(InetAddress.getByName(host), request.getPort());
 			}
 		}
 	}

@@ -58,18 +58,20 @@ public class PersistentSemaphorizedServerManager implements ServerManager {
 			this.oldestUsedQueues.remove(freeSocketQueue);
 			this.oldestUsedQueues.add(freeSocketQueue);
 			s = freeSocketQueue.poll();
-			if(s == null) {
+		}
+		if(s == null) {
+			synchronized(freeSockets){
 				if(usedSockets >= maxSockets) {
 					// I know there is at least 1 free Socket because
 					// of the large Semaphore, and because one Socket may only
 					// be used by 1 thread at the same time.
 					closeOldestSocket();
 				}
-				s = new Socket(addr, port);
 				usedSockets++;
-				// Security measures, in case a naughty server doesn't answer
-				s.setSoTimeout(Application.getInstance().getApplicationConfiguration().getServerConnectionPersistentTimeout());
 			}
+			s = new Socket(addr, port);
+			// Security measures, in case a naughty server doesn't answer
+			s.setSoTimeout(Application.getInstance().getApplicationConfiguration().getServerConnectionPersistentTimeout());
 		}
 		return s;
 	}

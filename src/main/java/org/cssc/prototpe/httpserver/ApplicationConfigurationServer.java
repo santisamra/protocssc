@@ -104,8 +104,9 @@ public class ApplicationConfigurationServer implements Runnable{
 	private void unAuthorized(Socket socket) throws IOException{
 		HttpHeader header = new HttpHeader();
 		header.setField("connection", "close");
+		header.setField("content-length", "0");
 		header.setField("WWW-Authenticate", "Basic realm=\"Please input your username and password\"");
-		HttpResponse response = new HttpResponse("1.1", header, HttpResponseCode.UNAUTHORIZED, "Authorization Required", new byte[0]);
+		HttpResponse response = new HttpResponse("1.1", header, HttpResponseCode.UNAUTHORIZED, "AUTHORIZATION REQUIRED", new byte[0]);
 		socket.getOutputStream().write(response.toString().getBytes(Charset.forName("US-ASCII")));
 		socket.getOutputStream().flush();
 		socket.close();
@@ -115,6 +116,7 @@ public class ApplicationConfigurationServer implements Runnable{
 		HttpHeader header = new HttpHeader();
 		header.setField("connection", "close");
 		HttpResponse response = HttpResponse.emptyResponse(HttpResponseCode.NOT_FOUND);
+		System.out.println(response.toString());
 		socket.getOutputStream().write(response.toString().getBytes(Charset.forName("US-ASCII")));
 		socket.getOutputStream().flush();
 		socket.close();
