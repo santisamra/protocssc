@@ -52,6 +52,7 @@ public class ConfigurationParser {
 	}
 	
 	public ConfigurationParser(String xmlString) {
+		xmlString = xmlString.trim();
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		
 		DocumentBuilder builder = null;

@@ -36,6 +36,8 @@ public class ConfigurationServlet extends MyHttpServlet {
 		buf.append("<textarea rows=\"20\" cols=\"60\">" + content + "</textarea>");
 		
 		buf.append("</body></html>");
+		
+		Application.getInstance().setApplicationConfiguration(new ApplicationConfiguration(content));
 	}
 
 }

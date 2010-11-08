@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.io.StringReader;
 
 import org.cssc.prototpe.http.HttpRequest;
-import org.cssc.prototpe.net.Application;
 import org.cssc.prototpe.parsers.lex.HttpRequestLexParser;
 
 public class HttpRequestParser extends HttpParser {

@@ -38,7 +38,6 @@ public class HttpProxyHandler implements ClientHandler{
 	private HttpRequest request;
 	private HttpResponse response;
 	private ApplicationConfiguration configuration;
-	private MonitoringService monitor;
 
 	private Logger logger;
 	private ServerManager serverManager;
@@ -47,7 +46,6 @@ public class HttpProxyHandler implements ClientHandler{
 		this.logger = Application.getInstance().getLogger();
 		this.serverManager = Application.getInstance().getServerManager();
 		this.configuration = Application.getInstance().getApplicationConfiguration();
-		this.monitor = Application.getInstance().getMonitoringService();
 	}
 
 
@@ -94,8 +92,6 @@ public class HttpProxyHandler implements ClientHandler{
 				// GENERATING CONNECTION
 				try {
 					System.out.println("Parsee request para " + request.getEffectiveHost());
-
-					//TODO: Should I resolve this host and filter banned IPs?
 
 					if(requestFilter.filter()) {
 						closeClientSocket();
