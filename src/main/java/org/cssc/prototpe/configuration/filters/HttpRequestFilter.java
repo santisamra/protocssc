@@ -97,6 +97,7 @@ public class HttpRequestFilter extends Filter {
 			}
 		}
 		
+		regExp = regExp.replace(".", "\\.");
 		regExp = regExp.replace("*", ".*");
 		
 		return uri.matches(regExp);
