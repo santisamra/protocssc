@@ -169,18 +169,6 @@ public class HttpResponseFilter extends Filter {
 		} else {
 			/* There are not filters to apply. */
 			
-			System.out.println("-----");
-			System.out.println("-----");
-			System.out.println("-----");
-			System.out.println("-----");
-			System.out.println("-----");
-			System.out.println("NO ESTOY APLICANDO FILTROS");
-			System.out.println("-----");
-			System.out.println("-----");
-			System.out.println("-----");
-			System.out.println("-----");
-			System.out.println("-----");
-
 			byte[] bytes = response.toString().getBytes(Charset.forName("US-ASCII"));
 			outputStream.write(bytes);
 
