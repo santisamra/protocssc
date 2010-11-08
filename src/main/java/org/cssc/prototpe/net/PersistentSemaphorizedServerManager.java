@@ -2,6 +2,7 @@ package org.cssc.prototpe.net;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -14,8 +15,8 @@ import org.cssc.prototpe.net.interfaces.ServerManager;
 
 public class PersistentSemaphorizedServerManager implements ServerManager {
 	
-	private Map<InetAddress, Semaphore> semaphoreMap;
-	private Map<InetAddress, Queue<Socket>> freeSockets;
+	private Map<InetSocketAddress, Semaphore> semaphoreMap;
+	private Map<InetSocketAddress, Queue<Socket>> freeSockets;
 	private List<Queue<Socket>> oldestUsedQueues;
 	private Semaphore totalSockets;
 	private int usedSockets;
@@ -23,8 +24,8 @@ public class PersistentSemaphorizedServerManager implements ServerManager {
 	private int maxSocketsPerServer;
 
 	public PersistentSemaphorizedServerManager(int maxSockets, int maxSocketsPerServer) {
-		this.semaphoreMap = new HashMap<InetAddress, Semaphore>();
-		this.freeSockets = new HashMap<InetAddress, Queue<Socket>>();
+		this.semaphoreMap = new HashMap<InetSocketAddress, Semaphore>();
+		this.freeSockets = new HashMap<InetSocketAddress, Queue<Socket>>();
 		this.maxSockets = maxSockets;
 		this.usedSockets = 0;
 		this.maxSocketsPerServer = maxSocketsPerServer;
@@ -34,8 +35,9 @@ public class PersistentSemaphorizedServerManager implements ServerManager {
 	
 	@Override
 	public Socket getSocket(InetAddress addr, int port) throws IOException {
+		InetSocketAddress address = new InetSocketAddress(addr, port);
 		Semaphore semaphore;
-		semaphore = getSemaphore(addr);
+		semaphore = getSemaphore(address);
 		try {
 			semaphore.acquire();
 		} catch(InterruptedException e) {
@@ -51,7 +53,7 @@ public class PersistentSemaphorizedServerManager implements ServerManager {
 			Queue<Socket> freeSocketQueue = freeSockets.get(addr);
 			if(freeSocketQueue == null) {
 				freeSocketQueue = new LinkedList<Socket>();
-				freeSockets.put(addr, freeSocketQueue);
+				freeSockets.put(address, freeSocketQueue);
 			}
 			this.oldestUsedQueues.remove(freeSocketQueue);
 			this.oldestUsedQueues.add(freeSocketQueue);
@@ -87,7 +89,7 @@ public class PersistentSemaphorizedServerManager implements ServerManager {
 		}
 	}
 
-	private Semaphore getSemaphore(InetAddress addr) {
+	private Semaphore getSemaphore(InetSocketAddress addr) {
 		Semaphore semaphore;
 		synchronized(semaphoreMap) {
 			semaphore = semaphoreMap.get(addr);
@@ -102,7 +104,8 @@ public class PersistentSemaphorizedServerManager implements ServerManager {
 	@Override
 	public void finishedRequest(Socket socket) {
 		InetAddress addr = socket.getInetAddress();
-		Semaphore semaphore = getSemaphore(addr);
+		InetSocketAddress address = new InetSocketAddress(addr, socket.getPort());
+		Semaphore semaphore = getSemaphore(address);
 		synchronized(freeSockets) {
 			if(!socket.isClosed()) {
 				Queue<Socket> freeSocketQueue = freeSockets.get(addr);
