@@ -133,7 +133,10 @@ public class ConfigurationParser {
 													for(int j=0; j<ips.getLength(); j++){
 														if(ips.item(j).getNodeName().equals("IP")){
 															try {
-																blockedIPs.add(ips.item(j).getChildNodes().item(0).getTextContent());
+																String regExp = ips.item(j).getChildNodes().item(0).getTextContent();
+																regExp = regExp.replace(".", "\\.");
+																regExp = regExp.replace("*", ".*");
+																blockedIPs.add(regExp);
 															} catch (Exception e) {
 																break; //lo salteo si el ip es invalido
 															}
