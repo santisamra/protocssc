@@ -67,6 +67,10 @@ public class HttpResponseFilter extends Filter {
 		boolean isContentEncoded = response.getHeader().containsField("content-encoding");
 		boolean contentIsWritable = !request.getMethod().equals(HttpMethod.HEAD) && response.getStatusCode().isPossibleContent();
 
+		if( !response.getStatusCode().isPossibleContent()){
+			response.getHeader().setField("content-length", "0");
+		}
+		
 		int maxContentLength = -1;
 		boolean checkContentLength = false;
 		boolean l33tTransform = false;

@@ -172,6 +172,12 @@ public class HttpProxyHandler implements ClientHandler{
 
 				boolean mustCloseServerConnection = response.mustCloseConnection();
 				response.getHeader().removeField("connection");
+				if( response.getVersion().equals("1.0") && response.getHeader().getField("content-length") == null){
+					response.getHeader().setField("connection", "close");
+					//Little patch
+					request.getHeader().setField("connection", "close");
+					mustCloseServerConnection = true;
+				}
 				if(request.mustCloseConnection()) {
 					response.getHeader().setField("connection", "close");
 				}
