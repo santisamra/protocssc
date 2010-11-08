@@ -79,7 +79,7 @@ public class ConfigurationParser {
 		String browser = null;
 		String oS = null;
 		boolean blockAllAccesses=false;
-		List<InetAddress> blockedIPs = null;
+		List<String> blockedIPs = null;
 		List<String> blockedURIs = null;
 		List<String> blockedMediaTypes = null;
 		int maxContentLength = -1;
@@ -128,13 +128,12 @@ public class ConfigurationParser {
 												if(currNode.getNodeName().equals("block-all-accesses")){
 													blockAllAccesses=currNode.getChildNodes().item(0).getTextContent().equalsIgnoreCase("true")?true:false;
 												}else if(currNode.getNodeName().equals("blocked-IPs")){
-													blockedIPs = new LinkedList<InetAddress>();
+													blockedIPs = new LinkedList<String>();
 													NodeList ips = currNode.getChildNodes();
 													for(int j=0; j<ips.getLength(); j++){
 														if(ips.item(j).getNodeName().equals("IP")){
 															try {
-																IP ip = new IP(ips.item(j).getChildNodes().item(0).getTextContent());
-																blockedIPs.add(ip.getInetAddress());
+																blockedIPs.add(ips.item(j).getChildNodes().item(0).getTextContent());
 															} catch (Exception e) {
 																break; //lo salteo si el ip es invalido
 															}

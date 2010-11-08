@@ -19,13 +19,28 @@ public class HttpRequestFilter extends Filter {
 		this.request = request;
 	}
 
+	private boolean matchesBlockedIP(List<String> blockedIPs, InetAddress currentIP){
+		String currentIPStr = currentIP.toString();
+		String currentIPStrClean = currentIPStr.substring(currentIPStr.indexOf("/"));
+		for(String ip: blockedIPs){
+//			System.out.println(currentIPStrClean);
+//			System.out.println("/" + ip);
+			
+			if( currentIPStrClean.matches("/" + ip)){
+//				System.out.println("Match!");
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public boolean filter() throws IOException {
 		if(filter == null) {
 			return false;
 		}
 		
 		boolean allAccessesBlocked = filter.isAllAccessesBlocked();
-		List<InetAddress> blockedIPs = filter.getBlockedIPs();
+		List<String> blockedIPs = filter.getBlockedIPs();
 		List<String> blockedURIs = filter.getBlockedURIs();
 		
 		try {
@@ -33,7 +48,7 @@ public class HttpRequestFilter extends Filter {
 				writeResponse("src/main/resources/html/errors/accessDenied.html");
 				Application.getInstance().getMonitoringService().registerWholeBlock();
 				return true;
-			} else if(blockedIPs != null && blockedIPs.contains(InetAddress.getByName(request.getEffectiveHost()))) {
+			} else if(blockedIPs != null && matchesBlockedIP(blockedIPs, InetAddress.getByName(request.getEffectiveHost()))) {
 				writeResponse("src/main/resources/html/errors/ipAccessDenied.html");
 				Application.getInstance().getMonitoringService().registerIpBlock();
 				return true;

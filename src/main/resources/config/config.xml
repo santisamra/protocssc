@@ -18,7 +18,9 @@
 			<actions>
 				<blocked-IPs>
 					<IP>192.168.1.1</IP>
+					<IP>192.168.2.*</IP>
 					<IP>85.62.96.168</IP>
+					<IP>193.145.222.100</IP>
 				</blocked-IPs>
 				<blocked-URIs>
 					<URI>http://www.gaiaonline.com/*</URI>

@@ -1,6 +1,5 @@
 package org.cssc.prototpe.configuration.filters.application;
 
-import java.net.InetAddress;
 import java.util.List;
 
 public class ApplicationFilter {
@@ -9,7 +8,7 @@ public class ApplicationFilter {
 
 	/* Actions to apply. */
 	private boolean allAccessesBlocked;
-	private List<InetAddress> blockedIPs;
+	private List<String> blockedIPs;
 	private List<String> blockedURIs;
 	private List<String> blockedMediaTypes;
 	private int maxContentLength;
@@ -17,7 +16,7 @@ public class ApplicationFilter {
 	private boolean rotateImages;
 	
 	public ApplicationFilter(FilterCondition condition, boolean allAccessesAreBlocked,
-			List<InetAddress> blockedIPs, List<String> blockedURIs,
+			List<String> blockedIPs, List<String> blockedURIs,
 			List<String> blockedMediaTypes, int maxContentLength,
 			boolean l33tTransform, boolean rotateImages) {
 		super();
@@ -47,11 +46,11 @@ public class ApplicationFilter {
 		this.allAccessesBlocked = allAccessesBlocked;
 	}
 	
-	public List<InetAddress> getBlockedIPs() {
+	public List<String> getBlockedIPs() {
 		return blockedIPs;
 	}
 	
-	public void setBlockedIPs(List<InetAddress> blockedIPs) {
+	public void setBlockedIPs(List<String> blockedIPs) {
 		this.blockedIPs = blockedIPs;
 	}
 	
