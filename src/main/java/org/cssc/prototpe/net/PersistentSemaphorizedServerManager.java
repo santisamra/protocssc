@@ -50,7 +50,7 @@ public class PersistentSemaphorizedServerManager implements ServerManager {
 			//TODO: what to do here?
 		}
 		synchronized(freeSockets) {
-			Queue<Socket> freeSocketQueue = freeSockets.get(addr);
+			Queue<Socket> freeSocketQueue = freeSockets.get(address);
 			if(freeSocketQueue == null) {
 				freeSocketQueue = new LinkedList<Socket>();
 				freeSockets.put(address, freeSocketQueue);
@@ -108,7 +108,7 @@ public class PersistentSemaphorizedServerManager implements ServerManager {
 		Semaphore semaphore = getSemaphore(address);
 		synchronized(freeSockets) {
 			if(!socket.isClosed()) {
-				Queue<Socket> freeSocketQueue = freeSockets.get(addr);
+				Queue<Socket> freeSocketQueue = freeSockets.get(address);
 				freeSocketQueue.offer(socket);
 			} else {
 				usedSockets--;
