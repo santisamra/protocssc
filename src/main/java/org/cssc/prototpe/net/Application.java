@@ -1,6 +1,8 @@
 package org.cssc.prototpe.net;
 
+import java.io.File;
 import java.net.UnknownHostException;
+
 import org.cssc.prototpe.httpserver.ApplicationConfigurationServer;
 import org.cssc.prototpe.net.interfaces.ServerManager;
 
@@ -25,7 +27,7 @@ public class Application {
 		instance = this;
 
 		// This MUST be second as other parts of the application require this configuration.
-		applicationConfiguration = new ApplicationConfiguration(CONFIG_FILE);
+		applicationConfiguration = new ApplicationConfiguration(new File(CONFIG_FILE));
 
 		// TODO: Place here any parts of the application that are needed by other parts.
 		logger = new Logger(applicationConfiguration.getLoggingFileName());

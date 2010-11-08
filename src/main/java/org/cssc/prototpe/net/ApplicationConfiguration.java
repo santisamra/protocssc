@@ -1,5 +1,6 @@
 package org.cssc.prototpe.net;
 
+import java.io.File;
 import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,8 +24,17 @@ public class ApplicationConfiguration {
 	private List<ApplicationFilter> filters;
 	private Map<String, String> adminUsers;
 	
-	public ApplicationConfiguration(String xmlPath) {
-		ConfigurationParser parser = new ConfigurationParser(xmlPath);
+	public ApplicationConfiguration(String xmlString) {
+		ConfigurationParser parser = new ConfigurationParser(xmlString);
+		loadValues(parser);
+	}
+	
+	public ApplicationConfiguration(File xmlFile) {
+		ConfigurationParser parser = new ConfigurationParser(xmlFile);
+		loadValues(parser);
+	}
+	
+	private void loadValues(ConfigurationParser parser) {
 		proxyPort = parser.getProxyPort();
 		remoteServicesPort = parser.getRemoteServicesPort();
 		threadPoolSize = parser.getThreadPoolSize();
