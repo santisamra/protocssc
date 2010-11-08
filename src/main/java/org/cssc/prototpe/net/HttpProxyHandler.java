@@ -107,7 +107,7 @@ public class HttpProxyHandler implements ClientHandler{
 					return;
 				} catch (UnknownHostException e) {
 					e.printStackTrace();
-					response = HttpResponse.emptyResponse(HttpResponseCode.BAD_REQUEST);
+					response = HttpResponse.emptyResponse(HttpResponseCode.GATEWAY_TIMEOUT);
 					sendErrorResponse();
 					return;
 				}
