@@ -123,17 +123,25 @@ las dos alternativas analizadas en la materia:
 
 Analizando el funcionamiento de cada una de las dos alternativas, se observó que
 la primera tenía un funcionamiento más acorde a lo que se esperaba del servidor
-ya que, básicamente, la segunda opción tenía un modo de trabajar iterativo, lo
-que impedía la concurrencia del proxy.\\
+ya que, básicamente, la segunda opción tenía un modo de trabajar basado en un
+solo thread; entonces, más allá de soportar que varios pedidos de clientes
+se hagan simultáneamente, no era posible que esos pedidos se atendieran al mismo
+tiempo.\\
 
 Sin embargo, se pensó en una tercera alternativa que consistía en una
 combinación de las dos anteriormente mencionadas. Consistía en que el servidor
-conste de dos \textit{threads}. El primero aceptaba pedidos de clientes y los
-colocaba en una cola, y el segundo utilizaba el mecanismo de entrada/salida
-asincrónica para atender las conexiones que estaban en dicha cola. Con esto, se
-lograba un funcionamiento no iterativo del mecanismo \textit{select}, porque no
-era necesario que el servidor esté desocupado para atender una conexión
-entrante; asimismo, se evitaba el lanzamiento de un nuevo \textit{thread} por
+conste de tres \textit{threads}:
+\begin{itemize}
+  \item Uno que espere conexiones entrantes, y las coloque en una lista de
+  conexiones a monitorear por el mecanismo \textit{select}.
+  \item Uno que se encargue de realizar las operaciones de lectura en las
+  conexiones que se sacaban de dicha lista.
+  \item Otro que realice las operaciones de escritura.
+\end{itemize}
+Con esto, se lograba un funcionamiento más eficiente del mecanismo
+\textit{select}, porque no era necesario que el servidor esté desocupado para atender una conexión
+entrante; era posible que un thread acepte conexiones mientras otro las
+atendía. Asimismo, se evitaba el lanzamiento de un nuevo \textit{thread} por
 cada conexión, algo que implicaba un gran consumo de memoria y procesamiento.\\
 
 No obstante, la tercera opción no fue llevada a la práctica, debido a que se
@@ -218,15 +226,20 @@ estándar \textit{HTTP 1.1}).\\
 Otro problema que surgió fue el hecho de que el servidor no manejaba respuestas
 \emph{chunked}. Se presentó la problemática de que el proxy implementado no
 funcionaba del todo bien con sitios que devolvían respuestas \emph{chunked},
-pero dichas páginas funcionaban sin problema al testear desde el ITBA.\\
+pero dichas páginas funcionaban sin problema al testear desde el ITBA. En
+relación a esto, luego de testear y leer el RFC, se descubrió que, ante la
+ausencia de respuestas \textit{chunked}, se debe leer del socket del
+servidor \textit{origin} hasta que se cierre la conexión. Como este caso fue
+contemplado, no hubo problemas para que la recepción de estas respuestas sea
+correcta.\\
 
 Si bien podrían pensarse como problemas menores, el hecho de que el
 comportamiento del proxy en el ITBA difiera del comportamiento del mismo proxy
 en otro lugar generó confusión y dificultó la solución de otros problemas, que
 por estos motivos no se podían encontrar.\\
 
-\textbf{\color{red}{\large{Agregar acá una descripción del problema que se
-tenía al usar el proxy del ITBA, y mencionar cuál fue la solución.}}}
+\textbf{\color{red}{\large{Ver si queremos agregar algo más sobre el proxy
+del ITBA.}}}
 
 \subsection{Conexiones persistentes}
 
@@ -353,7 +366,25 @@ image/jpeg que devuelve un xml no lo entiendo.}}}
 
 \subsection{Proxy transparente}
 
-\textbf{\color{red}{\large{Describir una vez que lo testeemos.}}}
+El proxy transparente fue probado en un ambiente Linux, usando
+\textit{firewalls}; más precisamente, el comando \verb+iptables+.\\
+
+En un principio, se observó que el proxy, utilizado en forma transparente, no
+tenía el mismo comportamiento que siendo configurado en forma manual en los
+navgeadores. Sin embargo, luego se aumentó el número de \textit{threads}
+disponibles en el \textit{pool} y se pudo ver que el funcionamiento era mucho
+mejor.\\
+
+Finalmente, se concluyó que, al no ser configurado manualmente, el navegador
+lanza la misma cantidad de conexiones que cuando no tiene un proxy como
+intermediario; esto no sucede cuando se le especifica un proxy, ya que realiza
+un número limitado de conexiones. Al iniciar muchas conexiones, esta cantidad
+eventualmente puede superar a la que hay disponible en el \textit{pool} de
+\textit{threads}, provocando que algunos \textit{requests} deban esperar para
+hacerse y recibir finalmente un \textit{response}.\\
+
+Luego de esto, se observó que el proxy en modo transparente funcionaba
+correctamente.
 
 \clearpage
 
