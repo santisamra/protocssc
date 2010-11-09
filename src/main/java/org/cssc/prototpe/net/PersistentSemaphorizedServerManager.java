@@ -124,6 +124,8 @@ public class PersistentSemaphorizedServerManager implements ServerManager {
 	@Override
 	public Socket getEmergencySocket(InetAddress addr, int port)
 			throws IOException {
+		Socket s = new Socket(addr, port);
+		s.setSoTimeout(Application.getInstance().getApplicationConfiguration().getServerConnectionPersistentTimeout());
 		return new Socket(addr, port);
 	}
 
