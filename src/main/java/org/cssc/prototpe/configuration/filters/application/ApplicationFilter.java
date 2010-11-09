@@ -1,5 +1,7 @@
 package org.cssc.prototpe.configuration.filters.application;
 
+import java.net.InetAddress;
+import java.util.LinkedList;
 import java.util.List;
 
 public class ApplicationFilter {
@@ -35,6 +37,9 @@ public class ApplicationFilter {
 	}
 	
 	public FilterCondition getCondition() {
+		if( this.condition == null ){
+			return new FilterCondition(new LinkedList<InetAddress>(), "", "");
+		}
 		return condition;
 	}
 	

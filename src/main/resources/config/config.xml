@@ -3,9 +3,9 @@
 <config>
 	<proxyPort>8080</proxyPort>
 	<remoteServicesPort>8082</remoteServicesPort>
-	<threadPoolSize>10</threadPoolSize>
-	<maxPersistantServerConnections>10</maxPersistantServerConnections>
-	<maxPersistantServerConnectionsPerServer>2</maxPersistantServerConnectionsPerServer>
+	<threadPoolSize>50</threadPoolSize>
+	<maxPersistantServerConnections>30</maxPersistantServerConnections>
+	<maxPersistantServerConnectionsPerServer>20</maxPersistantServerConnectionsPerServer>
 	<loggingFileName>log.txt</loggingFileName>
 	<clientKeepAliveTimeout>30000</clientKeepAliveTimeout>
 	<serverConnectionPersistentTimeout>30000</serverConnectionPersistentTimeout>
