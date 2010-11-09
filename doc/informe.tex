@@ -426,12 +426,60 @@ El proxy desarrollado tiene las siguientes limitaciones:
   la información, con lo cual se pierde en eficiencia.
 \end{itemize}
 
+\clearpage
+
+
 \section{Posibles extensiones}
+
+En esta sección se mencionan algunas posibles extensiones que podrían
+realizársele a esta implementación del proxy \textit{HTTP}.
+
+\begin{itemize}
+  \item Podría agregarse la funcionalidad de ser usado como servidor caché,
+  opción muy utilizada en varios servidores proxy.
+  \item Sería útil almacenar estadísticas sobre qué sitios son visitados por
+  ciertas direcciones IP destino, y en base a ello modificar las respuestas de
+  dichos sitios con información destinada a algún fin en partícular (por
+  ejemplo, publicidad). Si se implementara la funcionalidad de servidor caché,
+  también sería posible, en base a la estadística, determinar que páginas
+  podrían tener más prioridad de almacenamiento en el servidor que otras. Las
+  conexiones persistentes también podrían mantenerse por un tiempo determinado
+  por dichas probabilidades.
+  \item Podrían agregarse prioridades a las IPs destino, con el fin de
+  posibilitarle el uso de un mayor ancho de banda a unas u otras, basándose en
+  dicha posibilidad. También podrían utilizarse esas medidas para permitir mayor
+  o menor cantidad de conexiones simultáneas a servidores \textit{origin} para
+  ciertos clientes.
+  \item Además de los bloqueos ya existentes, sería posible bloquear el acceso a
+  una URI o IP luego de transferida cierta cantidad de bytes entre un cliente y
+  un servidor origin.
+\end{itemize}
+
+\clearpage
 
 \section{Conclusión}
 
-\textbf{\color{red}{\large{Nunca en tu vida tenés que hacer un proxy HTTP.
-Usá uno ya hecho.}}}
+El desarrollo de un proxy \textit{HTTP} fue aportador desde el punto de vista
+de la comprensión del funcionamiento del protocolo.\\
+
+Fue interesante el hecho de tener la posibilidad de interceptar la información
+enviada por un cliente o un servidor, y poder modificarla a gusto. Se observó
+que esto puede tener muchas utilidades, ya sea las implementadas o las
+mencionadas en las posibles extensiones.\\
+
+Las principales dificultades encontradas tuvieron que ver con que no todas las
+aplicaciones que lo aplican cumplen el estándar existente. Como en el caso del
+proxy se tuvo contacto con navegadores, servidores \textit{origin} y otros
+servidores proxy, se observaron varias prácticas que iban en contra de lo dicho
+en el RFC. Esto es entendible teniendo en cuenta que el protocolo es muy extenso
+y respetar la documentación puede traer algunas deficiencias en cuanto a
+\textit{performance}; no obstante, se concluye que la implementación de
+aplicaciones que utilicen el protocolo \textit{HTTP} sería más sencilla si los
+estándares fueran respetados.\\
+
+\textbf{\color{red}{\large{Agregar algo más si hace falta.}}}
+
+\clearpage
 
 \section{Ejemplos de testeo}
 
