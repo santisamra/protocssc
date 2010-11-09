@@ -181,7 +181,7 @@ public class HttpProxyHandler implements ClientHandler{
 				if(request.mustCloseConnection()) {
 					response.getHeader().setField("connection", "close");
 				}
-				//TODO: somebody help me if the request was 1.0
+
 				response.setVersion("1.1");
 
 				// FILTERING RESPONSE

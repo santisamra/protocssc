@@ -234,7 +234,6 @@ public abstract class HttpParser {
 
 		} else {
 
-			//TODO: There might be a trailer here in the middle.
 			//See RFC 2616 section 3.6.1.
 
 			int cr = inputStream.read();
