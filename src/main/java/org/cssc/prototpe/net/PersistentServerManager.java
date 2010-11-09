@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.cssc.prototpe.net.exceptions.FatalException;
 import org.cssc.prototpe.net.interfaces.ServerManager;
 
 /**
@@ -72,7 +73,7 @@ public class PersistentServerManager implements ServerManager {
 					socketMap.wait();
 					System.out.println("a");
 				} catch (InterruptedException e) {
-					//TODO: what to do here?
+					throw new FatalException(e);
 				}
 			} else {
 				done = true;
@@ -85,12 +86,10 @@ public class PersistentServerManager implements ServerManager {
 		ensureUnused(oldestSocket.getInetAddress());
 		try {
 			oldestSocket.close();
-			socketList.remove(socketList.size() - 1);
 		} catch (IOException e) {
-			//TODO: what to do here?
-			System.err.println(oldestSocket);
-			e.printStackTrace();
+			// Do nothing
 		}
+		socketList.remove(socketList.size() - 1);
 	}
 
 	public void finishedRequest(Socket socket) {

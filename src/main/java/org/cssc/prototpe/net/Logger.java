@@ -32,11 +32,9 @@ public class Logger {
 			try {
 				try {
 					output.write(addr.toString() + " - " + request.getMethod() + " to " + request.getEffectiveHost() + ", path: " + request.getPath() + "\n");
-					//TODO: Try to avoid flushing here...?
 					output.flush();
 				} catch (MissingHostException e) {
 					output.write(addr.toString() + " attempted an invalid " + request.getMethod() + ": cannot resolve hostname.\n");
-					//TODO: Try to avoid flushing here...?
 					output.flush();
 				}
 			} catch (IOException e) {
@@ -60,10 +58,8 @@ public class Logger {
 				try {
 					output.write(associatedRequest.getEffectiveHost() + " - " + "Replied " + response.getStatusCode().getCode() + " " + response.getReasonPhrase() + " to " + addr.toString() + ", requested path: " + associatedRequest.getPath() + "\n");
 				} catch (MissingHostException e) {
-					//					throw new FatalException("Should never be here", e);
 					output.write("CSSC Proxy - Replied " + response.getStatusCode().getCode() + " " + response.getReasonPhrase() + " to " + addr.toString() + ", couldn't resolve host.\n");
 				}
-				//TODO: Try to avoid flushing here...?
 				output.flush();
 			} catch (IOException e) {
 				throw new FatalException("Unable to log.", e);
@@ -78,13 +74,11 @@ public class Logger {
 					try {
 						output.write("CSSC Proxy" + " - " + "Replied " + response.getStatusCode().getCode() + " " + response.getReasonPhrase() + " to " + addr.toString() + ", requested path: " + associatedRequest.getEffectiveHost() + associatedRequest.getEffectivePath() + "\n");
 					} catch (MissingHostException e) {
-						//					throw new FatalException("Should never be here", e);
 						output.write("CSSC Proxy - Replied " + response.getStatusCode().getCode() + " " + response.getReasonPhrase() + " to " + addr.toString() + ", couldn't resolve host/path.\n");
 					}
 				} else {
 					output.write("CSSC Proxy - Replied " + response.getStatusCode().getCode() + " " + response.getReasonPhrase() + " to " + addr.toString() + "\n");
 				}
-				//TODO: Try to avoid flushing here...?
 				output.flush();
 			} catch (IOException e) {
 				throw new FatalException("Unable to log.", e);

@@ -31,7 +31,6 @@ public class Application {
 		// This MUST be second as other parts of the application require this configuration.
 		applicationConfiguration = new ApplicationConfiguration(new File(CONFIG_FILE));
 
-		// TODO: Place here any parts of the application that are needed by other parts.
 		logger = new Logger(applicationConfiguration.getLoggingFileName());
 		serverManager = new PersistentSemaphorizedServerManager(
 				applicationConfiguration.getMaxPersistantServerConnections(),

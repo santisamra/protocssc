@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.Semaphore;
 
+import org.cssc.prototpe.net.exceptions.FatalException;
 import org.cssc.prototpe.net.interfaces.ServerManager;
 
 public class PersistentSemaphorizedServerManager implements ServerManager {
@@ -41,13 +42,13 @@ public class PersistentSemaphorizedServerManager implements ServerManager {
 		try {
 			semaphore.acquire();
 		} catch(InterruptedException e) {
-			//TODO: what to do here?
+			throw new FatalException(e);
 		}
 		Socket s;
 		try {
 			totalSockets.acquire();
 		} catch(InterruptedException e) {
-			//TODO: what to do here?
+			throw new FatalException(e);
 		}
 		synchronized(freeSockets) {
 			Queue<Socket> freeSocketQueue = freeSockets.get(address);
@@ -83,7 +84,7 @@ public class PersistentSemaphorizedServerManager implements ServerManager {
 				try {
 					s.close();
 				} catch(IOException e) {
-					//TODO: what to do here?
+					// Do nothing
 				}
 				usedSockets--;
 				return;

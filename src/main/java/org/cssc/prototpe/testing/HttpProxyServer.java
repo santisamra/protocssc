@@ -47,7 +47,6 @@ public class HttpProxyServer {
 //			byte[] buffer = new byte[INPUT_BUFFER_SIZE];
 			ByteBuffer buffer = ByteBuffer.allocateDirect(INPUT_BUFFER_SIZE);
 			while(!finished) {
-				// FIXME: Major performance defect
 				SocketChannel s;
 				synchronized(clientConnections) {
 					s = clientConnections.poll();

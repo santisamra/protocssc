@@ -327,8 +327,7 @@ public class HttpProxyHandler implements ClientHandler{
 			try {
 				clientSocket.close();
 			} catch (IOException e) {
-				//TODO: what to do here?
-				e.printStackTrace(); 
+				// Do nothing
 			}
 		}
 	}
