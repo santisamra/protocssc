@@ -3,7 +3,7 @@ package org.cssc.prototpe.parsers;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-public class ResponseTest {
+public class ResponseTester {
 
 	public static void main(String[] args) {
 		HttpResponseParser parser = null;
