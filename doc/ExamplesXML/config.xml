@@ -5,7 +5,9 @@
 	<remoteServicesPort>8082</remoteServicesPort>
 	<threadPoolSize>50</threadPoolSize>
 	<maxPersistantServerConnections>30</maxPersistantServerConnections>
-	<maxPersistantServerConnectionsPerServer>20</maxPersistantServerConnectionsPerServer>
+	<maxPersistantServerConnectionsPerServer>
+		20
+	</maxPersistantServerConnectionsPerServer>
 	<loggingFileName>log.txt</loggingFileName>
 	<clientKeepAliveTimeout>30000</clientKeepAliveTimeout>
 	<serverConnectionPersistentTimeout>30000</serverConnectionPersistentTimeout>
