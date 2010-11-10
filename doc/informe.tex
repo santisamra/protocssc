@@ -354,8 +354,8 @@ que no se puedan modificar los usuarios remotamente, a fines de no perder la
 autenticación. Se utilizó \textit{HTTP Basic Authentication} para autenticar usuarios, 
 siguiendo los lineamientos que expone la RFC 2617. \\
 
-El Web Server implementado es iterativo, es decir, sólo atiende de a un HTTP Request.
- Se decidió hacerlo de esta manera ya que no se supone que sea un servicio 
+El Web Server implementado es iterativo, es decir, sólo atiende de a un HTTP
+Request. Se decidió hacerlo de esta manera ya que no se supone que sea un servicio 
 con alta concurrencia, sino que simplemente es accedido por el administrador del 
 proxy para modificar las configuraciones del mismo cuando sea necesario. \\
 
@@ -390,12 +390,6 @@ Otro problema consistió en que algunos navegadores como \textit{Mozilla Firefox}
 envían \textit{headers} no descriptos por el RFC 2616, como
 \textit{Proxy-Connection} en vez de \textit{Connection}. Se debió lidiar con estas 
 inconsistencias en el proxy.\\
-
-\textbf{\color{red}{\large{Poner cualquier otra vergüenza o burrada que se
-manden los que programen clientes o servidores HTTP. Aunque la verdad los
-entiendo, porque honestamente los programas estos hacen cualquier cosa y por
-ahi con esa verdura los programas funcionan mejor. Bueno, en realidad lo de
-image/jpeg que devuelve un xml no lo entiendo.}}}
 
 \subsection{Proxy transparente}
 
@@ -446,10 +440,6 @@ El proxy desarrollado tiene las siguientes limitaciones:
   \item No soporta \emph{pipelining} de requests al servidor. Por ello, si bien
   se reusan las conexiones a los servidores cuando llegan distintos requests, la
   eficiencia de ello deja que desear.
-  \item El número de conexiones simultáneas a un servidor \textit{origin} está
-  limitado, debido a la implementación de conexiones persistentes. {\Huge{Sin
-  embargo, al ser completamente configurable, puede incrementarse tanto como se
-  desee!}}
   \item No soporta todos los métodos \textit{HTTP}, solo \verb+GET+, \verb+HEAD+
   y \verb+POST+; con lo cual hay ciertas páginas que no funcionan del todo
   bien porque usan otros métodos.
@@ -639,8 +629,6 @@ interpretan que superar ese número no brindaría mejoras en performance; en
 cambio, si no conocen de la existencia del proxy, generan una nueva conexión por
 cada servidor distinto al que accedan, con lo cual la cantidad de conexiones es
 mucho mayor.\\
-
-{\Huge{No se si esto deberia ir aca o en otra seccion}}\\
 
 Se sugiere, entonces, por ejemplo, que si el servidor proxy funcionara en un
 laboratorio de 20 computadoras y el mismo estuviera configurado en los
