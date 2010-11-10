@@ -512,7 +512,7 @@ cambio, si no conocen de la existencia del proxy, generan una nueva conexión por
 cada servidor distinto al que accedan, con lo cual la cantidad de conexiones es
 mucho mayor.\\
 
-\Huge{No se si esto deberia ir aca o en otra seccion}\\
+{\Huge{No se si esto deberia ir aca o en otra seccion}}\\
 
 Se sugiere, entonces, por ejemplo, que si el servidor proxy funcionara en un
 laboratorio de 20 computadoras y el mismo estuviera configurado en los
@@ -550,9 +550,9 @@ El proxy desarrollado tiene las siguientes limitaciones:
   se reusan las conexiones a los servidores cuando llegan distintos requests, la
   eficiencia de ello deja que desear.
   \item El número de conexiones simultáneas a un servidor \textit{origin} está
-  limitado, debido a la implementación de conexiones persistentes. \Huge{Sin
+  limitado, debido a la implementación de conexiones persistentes. {\Huge{Sin
   embargo, al ser completamente configurable, puede incrementarse tanto como se
-  desee!}
+  desee!}}
   \item No soporta todos los métodos \textit{HTTP}, solo \verb+GET+, \verb+HEAD+
   y \verb+POST+; con lo cual hay ciertas páginas que no funcionan del todo
   bien porque usan otros métodos.
@@ -625,7 +625,30 @@ estándares fueran respetados.\\
 
 \section{Ejemplos de testeo}
 
+\clearpage
+
 \section{Guía de instalación}
+
+A continuación se detalla una guía de instalación para sistemas
+\textit{Linux}.
+
+\begin{enumerate}
+  \item En el directorio raíz, se encuentra un archivo \verb+JAR+ con el
+  proyecto en su última revisión. En caso en que quiera utilizar este
+  \verb+JAR+, diríjase directamente al paso 3. Si desea recompilarlo, diríjase
+  al siguiente paso.
+  \item Ubicado en el directorio raíz, ejecute\\
+  \verb+$> compile.sh+\\
+  Esto generará un nuevo \verb+JAR+, sobreescribiendo al ya existente. Si se
+  ejecutó con éxito, podrá observar la leyenda\\
+  \verb+Done. Please execute run.sh+
+  \item Ejecute\\
+  \verb+$> run.sh+\\
+  Observará la leyenda\\
+  \verb+Starting CSSC HTTP Proxy...+\\
+  que indica que el proxy está siendo iniciado. Luego de esto, el proxy estará
+  funcionando en los puertos indicados luego de dicha leyenda.
+\end{enumerate}
 
 \section{Guía de configuración}
 
