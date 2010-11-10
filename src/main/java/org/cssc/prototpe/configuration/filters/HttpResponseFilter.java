@@ -15,6 +15,8 @@ import org.cssc.prototpe.parsers.HttpResponseParser;
 import org.cssc.prototpe.transformations.TransformationUtilities;
 
 public class HttpResponseFilter extends Filter {
+	
+	private static final boolean SQUID_PATCH = false;
 
 	private Socket serverSocket;
 	private HttpRequest request;
@@ -67,8 +69,11 @@ public class HttpResponseFilter extends Filter {
 		boolean isContentEncoded = response.getHeader().containsField("content-encoding");
 		boolean contentIsWritable = !request.getMethod().equals(HttpMethod.HEAD) && response.getStatusCode().isPossibleContent();
 
-		if( !response.getStatusCode().isPossibleContent()){
+		if( !response.getStatusCode().isPossibleContent() && (!SQUID_PATCH || (!hasContentLength && !isContentEncoded))){
 			response.getHeader().setField("content-length", "0");
+			if(SQUID_PATCH) {
+				hasContentLength = true;
+			}
 		}
 		
 		int maxContentLength = -1;
