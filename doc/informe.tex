@@ -336,26 +336,52 @@ realidad la implementación era correcta.
 
 \subsection{Configuración remota}
 
+La configuración remota de este proxy HTTP se montó sobre el mismo protocolo HTTP 
+ya que ofrecía ciertas facilidades. Por lo tanto es un servicio Web al que se 
+accede mediante otro puerto, también configurable en el XML. \\
+
 Debido a las características de la implementación, hay ciertos parámetros que no
 son configurables remotamente y sólo pueden ser cambiados
 directamente desde el XML de configuración y reiniciando el proxy. Entre ellos,
 por ejemplo, se encuentra la cantidad de threads que hay en el \textit{pool}, y la
 cantidad máxima de conexiones persistentes.\\
 
-Como se necesita autenticarse para poder cambiar la configuración, se decidió
-que no se pueda cambiar los usuarios remotamente, a fines de no perder la
-autenticación.\\
+Como un usuario se necesita autenticar para poder cambiar la configuración, se decidió
+que no se puedan modificar los usuarios remotamente, a fines de no perder la
+autenticación. Se utilizó \textit{HTTP Basic Authentication} para autenticar usuarios, 
+siguiendo los lineamientos que expone la RFC 2617. \\
 
-\textbf{\color{red}{\large{Agregar info.}}}
+El Web Server implementado es iterativo, es decir, sólo atiende de a un HTTP Request.
+ Se decidió hacerlo de esta manera ya que no se supone que sea un servicio 
+con alta concurrencia, sino que simplemente es accedido por el administrador del 
+proxy para modificar las configuraciones del mismo cuando sea necesario. \\
 
-\subsection{Servidores y clientes que no hablan correctamente el protocolo}
+Para que el Web Server tenga cierta extensibilidad, se implementó una versión muy
+reducida de la API de Servlets de Java, haciendo que el comportamiento sea familiar
+para quien haya usado esa API y quiera implementar algún nuevo servicio en este Web Server.
+El mapeo de URLs también es realmente muy simple, sólo basta agregar a un mapa 
+el \textit{path} requerido como clave y la clase del Servlet como valor.\\
+
+El Web Server soporta subir archivos al servidor, en este caso se implementó esto
+para poder subir nuevos archivos de configuración que reemplacen la configuración 
+actual. Sólo se modificará la configuración de los filtros, el resto del archivo 
+es ignorado. \\
+
+Este Web Server resultó práctico para exponer también el monitoreo del Proxy HTTP, 
+por lo tanto se creó un servlet para el monitoreo también protegido mediante 
+autenticación, que expone dicha información.
+
+\subsection{Servidores y clientes que no ``hablan'' correctamente el protocolo}
 
 Se presentaron dificultades al dialogar con servidores o clientes que no hablan
 correctamente el protocolo. Por ejemplo, al intentar ver una imagen determinada,
 se presentó el problema de que no se podía leer la imagen para cargarla en
 memoria y luego rotarla; esto ocurría porque a pesar de que el
 \textit{content-type} declarado en la respuesta era \textit{image/jpeg}, el servidor
-en realidad estaba devolviendo un XML.\\
+en realidad estaba devolviendo un XML. Esto sucedía en el caso de un request AJAX 
+de una imagen, que al no estar autenticado en twitter.com fallaba y la forma de 
+informar el error era mediante un XML, pero no enviaba el content type correcto 
+(informaba siempre \textit{image/jpeg}). \\
 
 Otro problema consistió en que algunos navegadores como \textit{Mozilla Firefox}
 envían \textit{headers} no descriptos por el RFC 2616, como
@@ -652,8 +678,23 @@ A continuación se detalla una guía de instalación para sistemas
 
 \section{Guía de configuración}
 
+\textbf{\color{red}{\large{Explicar cómo explicitar filtros y qué hace cada parámetro del XML.}}}
+
 \section{Ejemplos de configuración}
 
+Aquí se puede ver un archivo de ejemplo que es válido para correr el Proxy:
+
+\VerbatimInput{ExamplesXML/config.xml}
+
+Aquí se puede ver un archivo de ejemplo que es válido para ser subido como 
+nuevo archivo de configuración (se removió lo ignorado, pero podría estar 
+sin problemas):
+
+\VerbatimInput{ExamplesXML/config2.xml}
+
 \section{Documento de diseño}
+
+Los diagramas \textbf{UML} de las clases que componen al proxy se encuentran 
+en la carpeta llamada ``UML''.
 
 \end{document}

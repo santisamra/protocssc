@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<config>
+	<filters>
+			<filter>
+				<conditions>
+					<OS>Mac OS</OS>
+				</conditions>
+				<actions>
+					<blocked-IPs>
+						<IP>200.200.*.200</IP>
+					</blocked-IPs>
+					<transform>
+						<l33t>TRUE</l33t>
+						<images180>TRUE</images180>
+					</transform>
+				</actions>
+			</filter>
+			<filter>
+				<conditions>
+					<browser>Firefox/3</browser>
+				</conditions>
+				<actions>
+					<blocked-IPs>
+						<IP>192.168.1.1</IP>
+						<IP>192.168.2.*</IP>
+						<IP>85.62.96.168</IP>
+						<IP>193.145.222.100</IP>
+					</blocked-IPs>
+					<blocked-URIs>
+						<URI>http://www.gaiaonline.com/*</URI>
+					</blocked-URIs>
+					<block-all-accesses>FALSE</block-all-accesses>
+					<transform>
+						<l33t>FALSE</l33t>
+						<images180>TRUE</images180>
+					</transform>
+				</actions>
+			</filter>
+		</filters>
+		
+	</config>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<config>
+	<proxyPort>8080</proxyPort>
+	<remoteServicesPort>8082</remoteServicesPort>
+	<threadPoolSize>50</threadPoolSize>
+	<maxPersistantServerConnections>30</maxPersistantServerConnections>
+	<maxPersistantServerConnectionsPerServer>20</maxPersistantServerConnectionsPerServer>
+	<loggingFileName>log.txt</loggingFileName>
+	<clientKeepAliveTimeout>30000</clientKeepAliveTimeout>
+	<serverConnectionPersistentTimeout>30000</serverConnectionPersistentTimeout>
+
+	<filters>
+		<filter>
+			<conditions>
+				<OS>Linux</OS>
+			</conditions>
+			<actions>
+				<block-all-accesses>TRUE</block-all-accesses>
+			</actions>
+		</filter>
+		<filter>
+			<conditions>
+				<browser>Chrome</browser>
+			</conditions>
+			<actions>
+				<blocked-IPs>
+					<IP>193.145.222.100</IP>
+				</blocked-IPs>
+				<blocked-URIs>
+					<URI>http://www.lanacion.com.ar/*</URI>
+				</blocked-URIs>
+				<block-all-accesses>FALSE</block-all-accesses>
+				<transform>
+					<l33t>FALSE</l33t>
+					<images180>TRUE</images180>
+				</transform>
+				<blocked-MediaTypes>
+					<MediaType>text/xml</MediaType>
+				</blocked-MediaTypes> 
+				<max-content-length>1000000</max-content-length>
+			</actions>
+		</filter>
+	</filters>
+	<admin-users>
+		<user>
+			<name>ssamra</name>
+			<pass>1234</pass>
+		</user>
+		<user>
+			<name>jscaruli</name>
+			<pass>passfour</pass>
+		</user>
+	</admin-users>
+</config>
