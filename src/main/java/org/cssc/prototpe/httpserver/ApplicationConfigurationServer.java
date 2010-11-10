@@ -106,7 +106,7 @@ public class ApplicationConfigurationServer implements Runnable{
 		header.setField("connection", "close");
 		header.setField("content-length", "0");
 		header.setField("WWW-Authenticate", "Basic realm=\"Please input your username and password\"");
-		HttpResponse response = new HttpResponse("1.1", header, HttpResponseCode.UNAUTHORIZED, "AUTHORIZATION REQUIRED", new byte[0]);
+		HttpResponse response = new HttpResponse("1.1", header, HttpResponseCode.UNAUTHORIZED, "AUTHORIZATION REQUIRED");
 		socket.getOutputStream().write(response.toString().getBytes(Charset.forName("US-ASCII")));
 		socket.getOutputStream().flush();
 		socket.close();

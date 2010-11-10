@@ -26,7 +26,7 @@ import java.io.StringReader;
 		HttpHeader header = new HttpHeader();
 		
 		if(remainingText != null && !"".equals(remainingText)) {
-			HttpHeaderParser headerParser = new HttpHeaderParser(new StringReader(remainingText));
+			HttpHeaderLexParser headerParser = new HttpHeaderLexParser(new StringReader(remainingText));
 			headerParser.parse();
 			header = headerParser.getParsedHeader();
 		} else {

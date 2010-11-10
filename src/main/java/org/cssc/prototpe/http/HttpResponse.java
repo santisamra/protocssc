@@ -4,13 +4,11 @@ public class HttpResponse extends HttpPacket {
 
 	private HttpResponseCode statusCode;
 	private String reasonPhrase;
-	private byte[] content;
 	
-	public HttpResponse(String version, HttpHeader header, HttpResponseCode statusCode, String reasonPhrase, byte[] content) {
+	public HttpResponse(String version, HttpHeader header, HttpResponseCode statusCode, String reasonPhrase) {
 		super(version, header);
 		this.statusCode = statusCode;
 		this.reasonPhrase = reasonPhrase;
-		this.content = content;
 	}
 	
 	public HttpResponseCode getStatusCode() {
@@ -19,14 +17,6 @@ public class HttpResponse extends HttpPacket {
 	
 	public String getReasonPhrase() {
 		return reasonPhrase;
-	}
-	
-	public byte[] getContent() {
-		return content;
-	}
-	
-	public void setContent(byte[] content) {
-		this.content = content;
 	}
 	
 	public String toString() {
@@ -44,7 +34,7 @@ public class HttpResponse extends HttpPacket {
 	}
 	
 	public static HttpResponse emptyResponse(HttpResponseCode responseCode) {
-		HttpResponse r = new HttpResponse("1.1", new HttpHeader(), responseCode, responseCode.toString(), new byte[0]);
+		HttpResponse r = new HttpResponse("1.1", new HttpHeader(), responseCode, responseCode.toString());
 		r.getHeader().setField("content-length", "0");
 		return r;
 	}

@@ -28,14 +28,14 @@ import java.io.InputStream;
 		HttpHeader header;
 		
 		if(remainingText != null && remainingText.length() > 0) {
-			HttpHeaderParser headerParser = new HttpHeaderParser(new StringReader(remainingText));
+			HttpHeaderLexParser headerParser = new HttpHeaderLexParser(new StringReader(remainingText));
 			headerParser.parse();
 			header = headerParser.getParsedHeader();
 		} else {
 			header = new HttpHeader();
 		}
 		
-		return new HttpResponse(version, header, statusCode, reasonPhrase, null);
+		return new HttpResponse(version, header, statusCode, reasonPhrase);
 	}
 	
 %}

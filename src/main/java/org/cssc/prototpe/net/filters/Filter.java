@@ -45,7 +45,7 @@ public abstract class Filter {
 			
 			HttpHeader header = new HttpHeader();
 			header.setField("content-length", Integer.toString(contentLength));
-			HttpResponse response = new HttpResponse("1.1", header, HttpResponseCode.FORBIDDEN, "FORBIDDEN", new byte[0]);
+			HttpResponse response = new HttpResponse("1.1", header, HttpResponseCode.FORBIDDEN, "FORBIDDEN");
 			byte[] bytes = response.toString().getBytes(Charset.forName("US-ASCII"));
 			OutputStream os = new MonitoredOutputStream(clientSocket.getOutputStream(), true);
 			os.write(bytes);

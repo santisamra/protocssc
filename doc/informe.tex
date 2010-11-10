@@ -169,6 +169,8 @@ funcionamiento óptimo.
 
 \subsection{Interpretación y parseo de mensajes \textit{HTTP}}
 
+\label{httpParsing}
+
 Luego de la decisión tomada acerca de cómo atender clientes, se llevó a cabo el
 parseo de mensajes \textit{HTTP}.\\
 
@@ -335,6 +337,7 @@ veces ir a buscar el \textit{favicon}. Debido a esto, se concluyó que en
 realidad la implementación era correcta.
 
 \subsection{Configuración remota}
+\label{remoteConfiguration}
 
 La configuración remota de este proxy HTTP se montó sobre el mismo protocolo HTTP 
 ya que ofrecía ciertas facilidades. Por lo tanto es un servicio Web al que se 
@@ -775,7 +778,74 @@ sin problemas):
 
 \VerbatimInput{ExamplesXML/config2.xml}
 
-\section{Documento de diseño}
+\clearpage
+
+\section{Diseño de la aplicación}
+
+En esta sección se hace una descripción del diseño de clases de la aplicación.\\
+
+\subsection{Modelado de paquetes \textit{HTTP}}
+
+La primer decisión en cuanto a diseño consistió en definir cómo se
+representarían los paquetes \textit{HTTP}.\\
+
+Las clases que modelan estos paquetes pueden encontrarse en el paquete
+\verb+http+ y, como se mencionó brevemente en la sección en que se explica el
+parseo, consisten en una superclase \verb+HttpPacket+. Ésta encapsula el estado
+común de \textit{requests} y \textit{responses}, que son la versión y el
+\textit{header} (modelado por la clase \verb+HttpHeader+).\\
+
+\verb+HttpRequest+, que hereda de \verb+HttpPacket+, representa un
+\textit{request}. Además del estado obtenido de su clase padre, también contiene
+el método del request (en este caso, \verb+GET+, \verb+HEAD+ o \verb+POST+)
+representado por la clase \verb+HttpMethod+, y el \textit{path}.\\
+
+\verb+HttpResponse+, también clase hija de \verb+HttpPacket+, es la encargada de
+representar un \textit{response}. El estado de esta clase está compuesto por el
+\textit{status code} (clase \verb+HttpResponseCode+) y la \textit{reason
+phrase}.\\
+
+Como se dijo anteriormente, el \textit{body} de un paquete no se encuentra en
+las clases que modelan los paquetes, pues esto implicaba almacenarla en un
+arreglo de bytes, con lo que se perdía la funcionalidad provista por el
+encabezado \textit{chunked}.
+
+\subsection{Parseo de paquetes \textit{HTTP}}
+
+En el paquete \verb+parsers+ puede verse las clases utilizadas para construir
+\verb+parsers+ para los paquetes \verb+HTTP+.\\
+
+La función de estas clases fue descripta en la sección \ref{httpParsing}. En la
+raíz del paquete se encuentra la clase \verb+HttpParser+, superclase abstracta,
+y sus hijas \verb+HttpRequestParser+ y \verb+HttpResponseParser+. Dentro del
+paquete \verb+parsers.lex+ pueden verse las clases generadas por \textit{Lex} a
+partir del código fuente presente en el directorio
+\verb+src/main/resources/lex+.
+
+\subsection{Núcleo de la aplicación}
+
+
+\subsection{Configuración del proxy}
+
+En el paquete \verb+configuration+ se encuentra la clase
+\verb+ConfigurationParser+, encargada de parsear el archivo \textit{XML} de
+configuración y poder servirle los parámetros a la clase
+\verb+ApplicationConfiguration+.
+
+\subsection{Servidor \textit{HTTP}}
+
+El servidor \textit{HTTP}, utilizado para configuración y monitoreo remotos,
+está modelado por las clase del paquete \verb+httpserver+. Dentro de éste, se
+encuentra la clase \verb+ApplicationConfigurationServer+, que tiene la lógica
+del servidor (aceptación de clientes y atención de sus pedidos).\\
+
+En el paquete \verb+httpserver.servlets+ están las clases que modelan los
+\textit{servlets} descriptos en la sección \ref{remoteConfiguration}, y en el
+paquete \verb+httpserserver.model+ hay clases que corresponden a autenticación
+\textit{HTTP} y a paquetes adaptados al funcionamiento de los \textit{servlets}
+(\verb+HttpServletRequest+ y \verb+HttpServletResponse+).
+
+\subsection{Diagramas de clases UML}
 
 Los diagramas \textbf{UML} de las clases que componen al proxy se encuentran 
 en la carpeta llamada ``UML''.

@@ -66,14 +66,14 @@ public abstract class MyHttpServlet {
 		if( response.isRedirected() ){
 			HttpHeader header = new HttpHeader();
 			header.setField("Location", response.getRedirect());
-			response.setHttpResponse(new HttpResponse("1.1", header, HttpResponseCode.FOUND, "OK", new byte[0]));
+			response.setHttpResponse(new HttpResponse("1.1", header, HttpResponseCode.FOUND, "OK"));
 		} else if( response.isForwarded() ){
 			StringBuffer buffer = getResource(response.getForward());
 			response.setBuffer(buffer);
 			HttpHeader header = new HttpHeader();
 			header.setField("content-length", String.valueOf(response.getContentLength()));
 			header.setField("connection", "close");
-			HttpResponse resp = new HttpResponse("1.1", header, HttpResponseCode.OK, "OK", new byte[0]);
+			HttpResponse resp = new HttpResponse("1.1", header, HttpResponseCode.OK, "OK");
 			response.setHttpResponse(resp);
 		} else {
 			StringBuffer buffer = response.getBuffer();
@@ -86,7 +86,7 @@ public abstract class MyHttpServlet {
 			HttpHeader header = new HttpHeader();
 			header.setField("content-length", String.valueOf(response.getContentLength()));
 			header.setField("connection", "close");
-			HttpResponse resp = new HttpResponse("1.1", header, HttpResponseCode.OK, "OK", new byte[0]);
+			HttpResponse resp = new HttpResponse("1.1", header, HttpResponseCode.OK, "OK");
 			response.setHttpResponse(resp);
 		}
 		return true;

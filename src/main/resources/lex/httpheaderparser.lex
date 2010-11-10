@@ -6,7 +6,7 @@ import org.cssc.prototpe.parsers.exceptions.HttpParserException;
 @SuppressWarnings("all")
 
 %%
-%class HttpHeaderParser
+%class HttpHeaderLexParser
 %public
 %function parse
 %standalone
