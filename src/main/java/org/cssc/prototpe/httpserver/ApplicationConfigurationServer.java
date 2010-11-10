@@ -116,7 +116,6 @@ public class ApplicationConfigurationServer implements Runnable{
 		HttpHeader header = new HttpHeader();
 		header.setField("connection", "close");
 		HttpResponse response = HttpResponse.emptyResponse(HttpResponseCode.NOT_FOUND);
-		System.out.println(response.toString());
 		socket.getOutputStream().write(response.toString().getBytes(Charset.forName("US-ASCII")));
 		socket.getOutputStream().flush();
 		socket.close();

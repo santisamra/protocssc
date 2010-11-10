@@ -31,8 +31,6 @@ import org.cssc.prototpe.parsers.HttpRequestParser;
 import org.cssc.prototpe.parsers.HttpResponseParser;
 import org.cssc.prototpe.parsers.exceptions.HttpParserException;
 
-//TODO GENERAL: el control de errores ES MALISIMO
-
 public class HttpProxyHandler implements ClientHandler{
 
 	private Socket clientSocket;
@@ -70,8 +68,7 @@ public class HttpProxyHandler implements ClientHandler{
 			response = null;
 			try {
 
-				// READING REQUEST
-				System.out.println("Por parsear.");
+				// Reading request.
 				try {
 					listenAndParseRequest();
 				} catch(HttpParserException e) {
@@ -89,14 +86,10 @@ public class HttpProxyHandler implements ClientHandler{
 					return;
 				}
 
-				// FILTERING REQUEST
 				HttpRequestFilter requestFilter = new HttpRequestFilter(clientSocket, request, logger);
 
-
-				// GENERATING CONNECTION
+				// Generating connection and filtering request.
 				try {
-					System.out.println("Parsee request para " + request.getEffectiveHost());
-
 					if(requestFilter.filter()) {
 						closeClientSocket();
 						return;
@@ -117,15 +110,15 @@ public class HttpProxyHandler implements ClientHandler{
 				}
 
 				try {
-					// WRITING REQUEST
+					// Writing request to origin server.
+					System.out.println("About to write request:");
+					System.out.println("To host: " + request.getEffectiveHost());
+					System.out.println("Path: " + request.getEffectivePath());
+					System.out.println("");
 					writeHttpPacket(request, requestParser, new MonitoredOutputStream(serverSocket.getOutputStream(), false), false, false);
-					System.out.println("Escribi request:");
-					System.out.println(request);
 					try {
-						// READING RESPONSE
-						System.out.println("Written request, awaiting response");
+						// Reading response from origin server.
 						listenAndParseResponse();
-						System.out.println("Got response");
 					} catch(InvalidStatusCodeException e) {
 						// Invalid status code for the HTTP response.
 						e.printStackTrace();
@@ -154,13 +147,16 @@ public class HttpProxyHandler implements ClientHandler{
 					try {
 						serverSocket.close();
 						generateServerSocket(true); // EMERGENCY SOCKET: always unused before
-						// REWRITING REQUEST
+						// Rewriting request to the origin server.
+						System.out.println("About to retry writing request:");
+						System.out.println("To host: " + request.getEffectiveHost());
+						System.out.println("Path: " + request.getEffectivePath());
+						System.out.println("");
+						
 						writeHttpPacket(request, requestParser, new MonitoredOutputStream(serverSocket.getOutputStream(), false), false, false);
 						try {
-							// READING RESPONSE
-							System.out.println("Written request, awaiting response");
+							// Reading response from origin server.
 							listenAndParseResponse();
-							System.out.println("Got response");
 						} catch(InvalidStatusCodeException e) {
 							// Invalid status code for the HTTP response.
 							e.printStackTrace();
@@ -189,7 +185,6 @@ public class HttpProxyHandler implements ClientHandler{
 				response.getHeader().removeField("connection");
 				if( response.getVersion().equals("1.0") && response.getHeader().getField("content-length") == null){
 					response.getHeader().setField("connection", "close");
-					//Little patch
 					request.getHeader().setField("connection", "close");
 					mustCloseServerConnection = true;
 				}
@@ -199,7 +194,7 @@ public class HttpProxyHandler implements ClientHandler{
 
 				response.setVersion("1.1");
 
-				// FILTERING RESPONSE
+				// Filtering response.
 				HttpResponseFilter responseFilter = new HttpResponseFilter(clientSocket, serverSocket, request, response, logger);
 
 				if(responseFilter.filter()) {
@@ -207,26 +202,25 @@ public class HttpProxyHandler implements ClientHandler{
 					return;
 				}
 
-				// WRITING RESPONSE
-
+				// Writing filtered response to the client.
 				try {
-					System.out.println("Calling filter and write content");
 					responseFilter.filterAndWriteContent(responseParser, new MonitoredOutputStream(clientSocket.getOutputStream(), true));
 				} catch(IOException e) {
 					closeClientSocket();
 					closedConnection = true;
 					mustCloseServerConnection = true;
 				}
+				
+				System.out.println("Received response:");
+				System.out.println("From host: " + request.getEffectiveHost());
+				System.out.println("Path: " + request.getEffectivePath());
+				System.out.println("Status code: " + response.getStatusCode());
+				System.out.println("");
 
-				// FINISHED!
-				System.out.println("Response:");
-				System.out.println(response.toString());
-				System.out.println("Done!");
+				// Finished.
 				if(mustCloseServerConnection) {
 					serverSocket.close();
 				}
-
-
 
 				if(request.mustCloseConnection()) {
 					closedConnection = true;
@@ -286,11 +280,8 @@ public class HttpProxyHandler implements ClientHandler{
 			} else {
 				serverSocket = serverManager.getEmergencySocket(configuration.getChainingProxyAddress(), configuration.getChainingProxyPort());
 			}
-			System.out.println(request.getEffectivePath());
-			System.out.println(request.getEffectiveHost());
 			request.setPath("http://" + request.getEffectiveHost() + request.getEffectivePath());
 		} else {
-			System.out.println(request.getEffectivePath());
 			String host = request.getEffectiveHost();
 			if(!emergency) {
 				serverSocket = serverManager.getSocket(InetAddress.getByName(host), request.getPort());
@@ -299,15 +290,6 @@ public class HttpProxyHandler implements ClientHandler{
 			}
 		}
 	}
-
-
-//	private void print(byte[] buffer){
-//		System.out.print("\"");
-//		for( int i = 0; i < buffer.length && buffer[i] != 0; i++){
-//			System.out.print((char)buffer[i]);
-//		}
-//		System.out.print("\"");
-//	}
 
 
 	private void writeHttpPacket(HttpPacket packet, HttpParser parser, OutputStream outputStream, boolean writeContent, boolean isClient) throws IOException {

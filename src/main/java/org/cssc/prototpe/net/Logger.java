@@ -18,7 +18,6 @@ public class Logger {
 	public Logger(String filename) {
 		try {
 			FileWriter f = new FileWriter(filename);
-			//			BufferedWriter buf = new BufferedWriter(f);
 			output = f;
 		} catch (IOException e) {
 			System.err.println("Unable to initialize logger: cause is " + e.getMessage());

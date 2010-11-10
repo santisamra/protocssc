@@ -65,7 +65,6 @@ public enum HttpResponseCode {
 			}
 		}
 		
-		System.out.println("Invalid code: " + code);
 		throw new InvalidStatusCodeException();
 	}
 	

@@ -36,7 +36,7 @@
 				<blocked-URIs>
 					<URI>http://www.gaiaonline.com/*</URI>
 				</blocked-URIs>
-				<block-all-accesses>TRUE</block-all-accesses>
+				<block-all-accesses>FALSE</block-all-accesses>
 				<transform>
 					<l33t>FALSE</l33t>
 					<images180>TRUE</images180>

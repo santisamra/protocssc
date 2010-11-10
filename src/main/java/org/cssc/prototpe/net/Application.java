@@ -42,8 +42,6 @@ public class Application {
 			return;
 		}
 		logger = new Logger(applicationConfiguration.getLoggingFileName());
-//		serverManager = new SimpleServerManager();
-//		serverManager = new PersistentServerManager(30);
 		serverManager = new PersistentSemaphorizedServerManager(
 				applicationConfiguration.getMaxPersistantServerConnections(),
 				applicationConfiguration.getMaxPersistantServerConnectionsPerServer());
