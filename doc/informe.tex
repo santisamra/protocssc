@@ -466,7 +466,56 @@ implementaciones.}
 
 Se concluye, entonces, que la implementación de conexiones persistentes en un
 cliente \emph{HTTP 1.1} es especialmente importante cuando se habla con
-servidores con los cuales el tiempo de latencia es alto.
+servidores con los cuales el tiempo de latencia es alto.\\
+
+Por otra parte, se probó el funcionamiendo del servidor proxy cuando la cantidad
+de conexiones de clientes superaba la cantidad de threads. Los resultados no
+fueron alentadores: en la \textbf{Tabla 3} se pueden ver las performances que
+lograron los distintos \verb+ServerManager+ con la misma prueba de pedidos GET
+a http://www.google.com.ar/ al bajar la cantidad de threads en el pool a 5
+(manteniendo la cantidad de threads utilizado para la prueba en 10).
+Básicamente, la performance bajó a la mitad. Por lo tanto, es crucial que el
+numero de threads en el pool sea lo suficientemente grande como para poder
+contener a todos los clientes que fueran a utilizar el proxy.\\
+
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+Implementación & Throughput (requests por seg.)\\
+\hline
+\hline
+PersistentSemaphorizedServerManager & 20,5\\
+SimpleServerManager & 18,5\\
+PersistentServerManager & 4,4\\
+\hline
+\end{tabular}\\
+\vspace{0.5cm}
+\small{\textbf{Tabla 3.} \emph{Throughput} de requests a
+http://www.google.com.ar/ por segundo, con 10 threads, para las distintas
+implementaciones, usando un pool de 5 threads para atender a los clientes.}
+\vspace{0.5cm}
+\end{center}
+
+Basados en pruebas en los navegadores más populares, se determinó que la
+cantidad de threads sugerida para que funcione como proxy (en particular
+en el caso de que se desempeñe como proxy transparente) debía ser de al menos 70
+threads por cada cliente en potencia. En general, si funciona como proxy
+configurado, es suficiente una cantidad mucho menor de threads por cliente en
+potencia, como ser 10. Esto se debe a que los navegadores, al saber que existe
+un proxy, limitan la cantidad de conexiones a un número razonable, debido a que
+interpretan que superar ese número no brindaría mejoras en performance; en
+cambio, si no conocen de la existencia del proxy, generan una nueva conexión por
+cada servidor distinto al que accedan, con lo cual la cantidad de conexiones es
+mucho mayor.\\
+
+\Huge{No se si esto deberia ir aca o en otra seccion}\\
+
+Se sugiere, entonces, por ejemplo, que si el servidor proxy funcionara en un
+laboratorio de 20 computadoras y el mismo estuviera configurado en los
+navegadores, que se utilicen 200 threads para el pool; o bien 1400, si se desea
+que actúe como proxy transparente. Es comprensible que esto demande muchos
+recursos: en ese caso, se sugiere bajar el timeout de las conexiones
+persistentes a los clientes y la cantidad de threads.
 
 \clearpage
 
