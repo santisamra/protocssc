@@ -44,7 +44,6 @@ public class ConfigurationParser {
 			builder = factory.newDocumentBuilder();
 			document = builder.parse(xmlFile);
 		} catch (Exception e) {
-			e.printStackTrace();
 			throw new ConfigurationParserException("Could not parse the configuration file.");
 		}
 

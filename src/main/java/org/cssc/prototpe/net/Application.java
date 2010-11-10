@@ -4,6 +4,7 @@ import java.io.File;
 import java.net.UnknownHostException;
 import java.util.List;
 
+import org.cssc.prototpe.configuration.exceptions.ConfigurationParserException;
 import org.cssc.prototpe.httpserver.ApplicationConfigurationServer;
 import org.cssc.prototpe.net.clients.ClientListener;
 import org.cssc.prototpe.net.clients.HttpProxyClientListener;
@@ -33,8 +34,13 @@ public class Application {
 		instance = this;
 
 		// This MUST be second as other parts of the application require this configuration.
-		applicationConfiguration = new ApplicationConfiguration(new File(CONFIG_FILE));
-
+		try{
+			applicationConfiguration = new ApplicationConfiguration(new File(CONFIG_FILE));
+		} catch (ConfigurationParserException e){
+			System.out.println("The specified config.xml file is not valid or does not exist. " +
+					"Please specify a valid one and retry running the proxy.");
+			return;
+		}
 		logger = new Logger(applicationConfiguration.getLoggingFileName());
 //		serverManager = new SimpleServerManager();
 //		serverManager = new PersistentServerManager(30);
@@ -86,6 +92,10 @@ public class Application {
 
 	public static void main(String[] args) throws UnknownHostException {
 		Application application = new Application();
+		if( Application.getInstance().getApplicationConfiguration() == null ){
+			System.out.println("The Application Configuration could not be loaded. Aborting.");
+			return;
+		}
 		new ApplicationConfigurationServer(Application.getInstance().getApplicationConfiguration().getRemoteServicesPort());
 		System.out.println("HTTP Proxy Server started at port " + Application.getInstance().getApplicationConfiguration().getProxyPort() + ".");
 		System.out.println("Remote services started at port " + Application.getInstance().getApplicationConfiguration().getRemoteServicesPort() + ".");
