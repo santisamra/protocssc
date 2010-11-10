@@ -388,6 +388,88 @@ correctamente.
 
 \clearpage
 
+\section{Pruebas de carga}
+
+Se realizaron pruebas de carga para testear el funcionamiento del proxy
+utilizando la herramienta \emph{Apache
+JMeter}\footnote{http://jakarta.apache.org/jmeter/}. Todos los testeos se
+realizaron utilizando 10 threads, y con el proxy ejecutándose en la misma
+computadora que los testeos.\\
+
+En primera medida, se compararon las tres implementaciones que se realizaron de
+conexiones persistentes de proxy a \emph{origin server} probando pedidos GET a
+www.google.com.ar. Configurando al proxy correctamente para que permita
+suficientes conexiones persistentes al servidor, se obtuvo que la implementación
+basada en semáforos (\verb+SemaphorizedPersistentServerManager+), que poseía
+múltiples conexiones persistentes por servidor, obtenía un rendimiento de requests 
+respondidos por segundo de alrededor del 15\% por sobre la implementación que no persistía conexiones
+(\verb+SimpleServerManager+);
+mientras que ambas fueron claramente superiores a la implementación que solo
+poseía una conexión persistente por servidor (\verb+PersistentServerManager+),
+como puede verse en la \textbf{Tabla 1}.\\
+
+% Para una imagen
+%\begin{center}
+% \includegraphics[scale=1]{diagrama.png}\\
+% \vspace{0.5cm}
+% \small{\textbf{Figura 2.} Diagrama de estados para los subgrupos establecidos
+% anteriormente.}
+% \vspace{0.5cm}
+%\end{center}
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+Implementación & Throughput (requests por seg.)\\
+\hline
+\hline
+PersistentSemaphorizedServerManager & 39,6\\
+SimpleServerManager & 34,2\\
+PersistentServerManager & 4,2\\
+\hline
+\end{tabular}\\
+\vspace{0.5cm}
+\small{\textbf{Tabla 1.} \emph{Throughput} de requests a
+http://www.google.com.ar/ por segundo, con 10 threads, para las distintas implementaciones.}
+\vspace{0.5cm}
+\end{center}
+
+Se sospechó que el overhead de las conexiones persistentes jugaría un papel más
+significativo si el costo de la conexión fuera más pesado: para ello, se
+realizó un segundo testeo utilizando el método HEAD a http://www.konami.jp/. El
+tiempo de latencia promedio para este servidor fue de 352 ms, mientras que para
+http://www.google.com.ar/ era de apenas 13 ms. En la \textbf{Tabla 2} se pueden
+ver los resultados de esta prueba, que corroboraron las sospechas planteadas.
+En particular, cabe resaltar que, aunque la relación entre la implementación
+que permite múltiples conexiones persistentes a un mismo servidor y la
+implementación que permite una única conexión persistente permaneció constante
+entre ambas pruebas, la relación entre el primero y el que crea una nueva
+conexión cada vez no se mantuvo; lo que muestra claramente que la performance
+del SimpleServerManager se degradó al incrementarse el tiempo de latencia.\\
+
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+Implementación & Throughput (requests por seg.)\\
+\hline
+\hline
+PersistentSemaphorizedServerManager & 21,5\\
+SimpleServerManager & 12,6\\
+PersistentServerManager & 2,3\\
+\hline
+\end{tabular}\\
+\vspace{0.5cm}
+\small{\textbf{Tabla 2.} \emph{Throughput} de requests a
+http://www.konami.jp/ por segundo, con 10 threads, para las distintas
+implementaciones.}
+\vspace{0.5cm}
+\end{center}
+
+Se concluye, entonces, que la implementación de conexiones persistentes en un
+cliente \emph{HTTP 1.1} es especialmente importante cuando se habla con
+servidores con los cuales el tiempo de latencia es alto.
+
+\clearpage
+
 
 % \section{Más funcionalidades}
 % 
