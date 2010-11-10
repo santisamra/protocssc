@@ -824,6 +824,49 @@ partir del código fuente presente en el directorio
 
 \subsection{Núcleo de la aplicación}
 
+En el paquete \verb+net+ se encuentra el núcleo de la aplicación. La misma está
+básicamente compuesta por:
+\begin{itemize}
+  \item Una clase \emph{singleton} \verb+Application+, cuyo método \verb+main+
+crea la única instancia de la misma clase y la corre.
+  \item Una clase \verb+Logger+, que se encarga de registrar los requests y
+  responses que pasan por el proxy. Sólo existe un objeto de este tipo en la
+aplicación, y es instanciado por la clase \verb+Application+.
+  \item Una clase \verb+ApplicationConfiguration+, que posee principalmente
+  métodos para obtener parámetros de configuración. Al igual que el
+  \verb+Logger+, sólo existe una instancia de \verb+ApplicationConfiguration+,
+  y la misma es instanciada por \verb+Application+.
+  \item Una clase \verb+MonitoringService+, también instanciada una única vez
+  por \verb+Application+, que contiene las cuentas de la cantidad de bytes
+  transferidos y de los bloqueos realizados, y permite acceder a los mismos en
+  forma sincronizada.
+  \item Una clase \verb+ClientListener+, abstracta, y una clase
+  \verb+HttpProxyClientListener+, concreta, que contienen la lógica de un
+  servidor \emph{TCP}.
+  \item Una serie de interfaces:
+  \begin{itemize}
+    \item La interfaz \verb+ConnectionManager+, que representa un manejador de
+    conexiones entrantes de clientes.
+    \item La interfaz \verb+ClientHandler+, que describe clases que puedan
+    manejar un \verb+Socket+ resultante de la aceptación de un cliente. La
+    diferencia con \verb+ConnectionManager+ es que un \verb+ClientHandler+ es
+    aquel que especifica las acciones a efectuar relacionadas con la lógica de
+    la aplicación, mientras que un \verb+ConnectionManager+ se limita a
+    administrar los \verb+Socket+s para proveer concurrencia.
+    \item La interfaz \verb+ServerManager+, que especifica métodos relacionados
+    con la adquisición de \verb+Socket+s para un determinado servidor.
+  \end{itemize}
+  \item Una serie de implementaciones de las interfaces arriba mencionadas:
+  \verb+ThreadPoolConnectionManager+,
+  para la interfaz \verb+ConnectionManager+;  \verb+HttpProxyHandler+, para la
+  interfaz \verb+ClientHandler+; y finalmente
+  \verb+PersistentSemaphorizedServerManager+, para la interfaz
+  \verb+ServerManager+.
+  \item Un paquete \verb+filters+ que contiene diversas clases relacionadas con
+  la aplicación de filtros y transformaciones tanto sobre los requests como
+  sobre los responses.
+\end{itemize}
+ 
 
 \subsection{Configuración del proxy}
 
