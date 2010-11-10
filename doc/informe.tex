@@ -342,6 +342,10 @@ directamente desde el XML de configuración y reiniciando el proxy. Entre ellos,
 por ejemplo, se encuentra la cantidad de threads que hay en el \textit{pool}, y la
 cantidad máxima de conexiones persistentes.\\
 
+Como se necesita autenticarse para poder cambiar la configuración, se decidió
+que no se pueda cambiar los usuarios remotamente, a fines de no perder la
+autenticación.\\
+
 \textbf{\color{red}{\large{Agregar info.}}}
 
 \subsection{Servidores y clientes que no hablan correctamente el protocolo}
@@ -546,7 +550,9 @@ El proxy desarrollado tiene las siguientes limitaciones:
   se reusan las conexiones a los servidores cuando llegan distintos requests, la
   eficiencia de ello deja que desear.
   \item El número de conexiones simultáneas a un servidor \textit{origin} está
-  limitado, debido a la implementación de conexiones persistentes.
+  limitado, debido a la implementación de conexiones persistentes. \Huge{Sin
+  embargo, al ser completamente configurable, puede incrementarse tanto como se
+  desee!}
   \item No soporta todos los métodos \textit{HTTP}, solo \verb+GET+, \verb+HEAD+
   y \verb+POST+; con lo cual hay ciertas páginas que no funcionan del todo
   bien porque usan otros métodos.
