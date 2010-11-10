@@ -154,16 +154,22 @@ public class IndexServlet extends MyHttpServlet {
 				maxContent = Integer.toString(f.getMaxContentLength());
 			}
 			
-			buf.append("<tr>");
-			buf.append("<td>Max Content Length:</td>");
-			buf.append("<td class=\"value\">" + maxContent + "</td>");
-			buf.append("</tr>");
+			addElementToTable(buf, "Max Content Length", maxContent);
+			addElementToTable(buf, "Is All Access Blocked", f.isAllAccessesBlocked());
+			addElementToTable(buf, "L33t Transform", f.isL33tTransform());
 		}
 		
 		buf.append("</table>");
 
 		buf.append("</body></html>");
 
+	}
+	
+	private void addElementToTable(StringBuffer buf, String desc, Object element){
+		buf.append("<tr>");
+		buf.append("<td>" + desc + ":</td>");
+		buf.append("<td class=\"value\">" + element.toString() + "</td>");
+		buf.append("</tr>");
 	}
 	
 	private void addListToTable(StringBuffer buf, String desc, List<?> elements){
