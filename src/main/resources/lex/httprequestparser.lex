@@ -39,13 +39,6 @@ import java.io.StringReader;
 
 
 %eof{
-/*
-	System.out.println("Method: " + method);
-	System.out.println("Path: " + path);
-	System.out.println("Version: " + version);
-	System.out.println("Remaining text:");
-	System.out.println(remainingText);
-*/
 %eof}
 
 METHOD =	[A-Za-z]+
@@ -89,17 +82,10 @@ NEWLINE =	\r\n
 	
 	([^\r\n]+{NEWLINE})*{NEWLINE}	{
 		remainingText = yytext().trim();
-		//System.out.println("Remaining text: \"" + yytext() + "\"");
 		return YYEOF; //PARCHEEE
 	}
 }
 
 .|\n {
-	System.out.println("----- ERROR PARSING REQUEST ------");
-	System.out.println("Method: " + method);
-	System.out.println("Path: " + path);
-	System.out.println("Version: " + version);
-	System.out.println("Remaining text:");
-	System.out.println(remainingText);
 	throw new HttpParserException("Invalid packet.");
 }

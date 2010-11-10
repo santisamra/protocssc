@@ -33,19 +33,14 @@ public class PersistentServerManager implements ServerManager {
 	
 	public Socket getSocket(InetAddress addr, int port) throws IOException {
 		Socket s;
-		System.out.println("Getting socket for address " + addr);
 		synchronized(socketMap) {
-			System.out.println("Entered synchronized block");
 			ensureUnused(addr);
-			System.out.println("Ensured unused, obtaining tentative socket");
 			s = socketMap.get(addr);
-			System.out.println("Obtained tentative socket, ensuring it's not closed");
 			if(s != null) {
 				socketList.remove(s);
 			}
 			if(s == null || s.isClosed() || !s.isConnected()) {
 				// Must create a new connection
-				System.out.println("Creating a new connection for " + addr);
 				if(s == null) {
 					usedSocks++;
 				}
@@ -59,7 +54,6 @@ public class PersistentServerManager implements ServerManager {
 				usedSocks--;
 			}
 		}
-		System.out.println("Exiting block");
 		return s;
 	}
 
@@ -71,7 +65,6 @@ public class PersistentServerManager implements ServerManager {
 			if(usages != null && usages > 0) {
 				try {
 					socketMap.wait();
-					System.out.println("a");
 				} catch (InterruptedException e) {
 					throw new FatalException(e);
 				}
@@ -94,7 +87,6 @@ public class PersistentServerManager implements ServerManager {
 
 	public void finishedRequest(Socket socket) {
 		if(socket != null) {
-			System.out.println("Closing " + socket.getInetAddress());
 			synchronized(socketMap) {
 				usageAmount.put(socket.getInetAddress(), 0);
 				socketMap.notifyAll();

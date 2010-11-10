@@ -67,7 +67,6 @@ public class HttpServletRequest {
 			int fileNameStart = rawContent.indexOf("filename=") + "filename=".length();
 			if( rawContent.charAt(fileNameStart) == '"' 
 				&& rawContent.charAt(fileNameStart + 1) == '"'){
-				System.out.println("No file was selected");
 				return null;
 			}
 			
@@ -77,7 +76,6 @@ public class HttpServletRequest {
 			
 			int offset = fullContent.indexOf("Content-Type");
 			content = fullContent.substring(fullContent.indexOf("\n", offset) + 1);
-			System.out.println(":delimitfile:" + content + ":delimitfile:");
 		} catch (Exception e){
 			//The file parsing failed.
 			return null;

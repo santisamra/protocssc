@@ -42,12 +42,6 @@ import java.io.InputStream;
 
 %eof{
 
-	//System.out.println("Version: " + version);
-	//System.out.println("Status code: " + statusCode);
-	//System.out.println("Reason phrase: " + reasonPhrase);
-	//System.out.println("Remaining text: \"");
-	//System.out.println(remainingText + "\"");
-
 %eof}
 
 
@@ -66,8 +60,6 @@ NEWLINE =		\r\n
 
 <YYINITIAL> {
 	[ ]?{VERSION} {
-		//System.out.println("Encontre version.");
-		//System.out.println(yytext());
 		yybegin(PARSING_VERSION);
 		
 	}
@@ -75,18 +67,14 @@ NEWLINE =		\r\n
 
 <PARSING_VERSION> {
 	1\.[01][ ] {
-		//System.out.println("Encontre numero de version.");
 		version = yytext().trim();
-		//System.out.println(yytext());
 		yybegin(PARSING_STATUS_CODE);
 	}
 }
 
 <PARSING_STATUS_CODE> {
 	{STATUS_CODE}[ ] {
-		//System.out.println("Encontre status code.");
 		statusCode = HttpResponseCode.fromInt(Integer.valueOf(yytext().trim()));
-		//System.out.println(yytext());
 		yybegin(PARSING_REASON_PHRASE);
 	}
 }
@@ -94,33 +82,21 @@ NEWLINE =		\r\n
 
 <PARSING_REASON_PHRASE> {
 	{NEWLINE} {
-	//System.out.println(yytext());
 		yybegin(ADDING_REMAINING_TEXT);
 	}
 
 	{REASON_PHRASE}[ ]?{NEWLINE} {
-		//System.out.println("Encontre reason phrase.");
 		reasonPhrase = yytext().trim();
-		//System.out.println(yytext());
 		yybegin(ADDING_REMAINING_TEXT);
 	}
 }
 
 <ADDING_REMAINING_TEXT> {
 	([^\r\n]+{NEWLINE})*{NEWLINE} {
-		//System.out.println("Encontre remaining text.");
 		remainingText = yytext().trim();
-		//System.out.println(yytext());
 	}
 }
 
 (.|\n) {
-	System.out.println("----- ERROR PARSING RESPONSE -----");
-	System.out.println("yytext: " + yytext());
-	System.out.println("Version: " + version);
-	System.out.println("Status code: " + statusCode);
-	System.out.println("Reason phrase: " + reasonPhrase);
-	System.out.println("Remaining text:");
-	System.out.println(remainingText);
 	throw new HttpParserException("Invalid packet.");
 }
