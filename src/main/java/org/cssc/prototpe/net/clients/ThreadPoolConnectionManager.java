@@ -1,10 +1,11 @@
-package org.cssc.prototpe.net;
+package org.cssc.prototpe.net.clients;
 
 import java.net.Socket;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.Semaphore;
 
+import org.cssc.prototpe.net.Application;
 import org.cssc.prototpe.net.interfaces.ClientHandler;
 import org.cssc.prototpe.net.interfaces.ConnectionManager;
 

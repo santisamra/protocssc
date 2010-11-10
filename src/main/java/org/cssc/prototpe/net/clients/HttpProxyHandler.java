@@ -1,4 +1,4 @@
-package org.cssc.prototpe.net;
+package org.cssc.prototpe.net.clients;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -17,10 +17,15 @@ import org.cssc.prototpe.http.HttpResponseCode;
 import org.cssc.prototpe.http.exceptions.InvalidMethodStringException;
 import org.cssc.prototpe.http.exceptions.InvalidStatusCodeException;
 import org.cssc.prototpe.http.exceptions.MissingHostException;
+import org.cssc.prototpe.net.Application;
+import org.cssc.prototpe.net.ApplicationConfiguration;
+import org.cssc.prototpe.net.Logger;
 import org.cssc.prototpe.net.filters.HttpRequestFilter;
 import org.cssc.prototpe.net.filters.HttpResponseFilter;
 import org.cssc.prototpe.net.interfaces.ClientHandler;
 import org.cssc.prototpe.net.interfaces.ServerManager;
+import org.cssc.prototpe.net.monitoring.MonitoredInputStream;
+import org.cssc.prototpe.net.monitoring.MonitoredOutputStream;
 import org.cssc.prototpe.parsers.HttpParser;
 import org.cssc.prototpe.parsers.HttpRequestParser;
 import org.cssc.prototpe.parsers.HttpResponseParser;

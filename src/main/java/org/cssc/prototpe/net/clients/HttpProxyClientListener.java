@@ -1,4 +1,4 @@
-package org.cssc.prototpe.net;
+package org.cssc.prototpe.net.clients;
 
 import org.cssc.prototpe.net.interfaces.ClientHandler;
 

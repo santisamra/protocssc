@@ -1,7 +1,9 @@
-package org.cssc.prototpe.net;
+package org.cssc.prototpe.net.monitoring;
 
 import java.io.IOException;
 import java.io.OutputStream;
+
+import org.cssc.prototpe.net.Application;
 
 public class MonitoredOutputStream extends OutputStream {
 	

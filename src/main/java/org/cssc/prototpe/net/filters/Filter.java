@@ -10,8 +10,8 @@ import org.cssc.prototpe.http.HttpHeader;
 import org.cssc.prototpe.http.HttpResponse;
 import org.cssc.prototpe.http.HttpResponseCode;
 import org.cssc.prototpe.net.Logger;
-import org.cssc.prototpe.net.MonitoredOutputStream;
 import org.cssc.prototpe.net.filters.exceptions.FilterException;
+import org.cssc.prototpe.net.monitoring.MonitoredOutputStream;
 
 public abstract class Filter {
 

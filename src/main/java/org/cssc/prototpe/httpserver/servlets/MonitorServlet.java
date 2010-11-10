@@ -6,7 +6,7 @@ import org.cssc.prototpe.httpserver.model.HttpServletRequest;
 import org.cssc.prototpe.httpserver.model.HttpServletResponse;
 import org.cssc.prototpe.httpserver.model.MyHttpServlet;
 import org.cssc.prototpe.net.Application;
-import org.cssc.prototpe.net.MonitoringService;
+import org.cssc.prototpe.net.monitoring.MonitoringService;
 
 public class MonitorServlet extends MyHttpServlet{
 

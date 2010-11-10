@@ -1,4 +1,4 @@
-package org.cssc.prototpe.net;
+package org.cssc.prototpe.net.servers;
 
 import java.io.IOException;
 import java.net.InetAddress;

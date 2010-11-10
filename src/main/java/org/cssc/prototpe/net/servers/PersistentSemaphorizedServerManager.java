@@ -1,4 +1,4 @@
-package org.cssc.prototpe.net;
+package org.cssc.prototpe.net.servers;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.Semaphore;
 
+import org.cssc.prototpe.net.Application;
 import org.cssc.prototpe.net.exceptions.FatalException;
 import org.cssc.prototpe.net.interfaces.ServerManager;
 

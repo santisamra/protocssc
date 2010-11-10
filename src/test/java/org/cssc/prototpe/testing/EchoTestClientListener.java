@@ -1,6 +1,6 @@
 package org.cssc.prototpe.testing;
 
-import org.cssc.prototpe.net.ClientListener;
+import org.cssc.prototpe.net.clients.ClientListener;
 import org.cssc.prototpe.net.interfaces.ClientHandler;
 
 public class EchoTestClientListener extends ClientListener {
