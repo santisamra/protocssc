@@ -11,6 +11,7 @@ import java.nio.charset.Charset;
 
 import org.cssc.prototpe.configuration.filters.HttpRequestFilter;
 import org.cssc.prototpe.configuration.filters.HttpResponseFilter;
+import org.cssc.prototpe.http.HttpMethod;
 import org.cssc.prototpe.http.HttpPacket;
 import org.cssc.prototpe.http.HttpRequest;
 import org.cssc.prototpe.http.HttpResponse;
@@ -132,6 +133,15 @@ public class HttpProxyHandler implements ClientHandler{
 						response = HttpResponse.emptyResponse(HttpResponseCode.BAD_GATEWAY);
 						sendErrorResponse();
 						return;
+					} catch(IOException e) {
+						// If post, do not retry; we sent the message successfully
+						if(request.getMethod().equals(HttpMethod.POST)) {
+							e.printStackTrace();
+							response = HttpResponse.emptyResponse(HttpResponseCode.INTERNAL_SERVER_ERROR);
+							sendErrorResponse();
+							return;
+						}
+						throw e;
 					}
 				} catch(IOException e2) {
 					// Unidentified error when writing request/reading response
