@@ -1,3 +1,3 @@
 @echo off
-mvn clean package
+CALL mvn clean package
 copy target\prototpe.jar prototpe.jar /y
