@@ -9,8 +9,6 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 
-import org.cssc.prototpe.configuration.filters.HttpRequestFilter;
-import org.cssc.prototpe.configuration.filters.HttpResponseFilter;
 import org.cssc.prototpe.http.HttpMethod;
 import org.cssc.prototpe.http.HttpPacket;
 import org.cssc.prototpe.http.HttpRequest;
@@ -19,6 +17,8 @@ import org.cssc.prototpe.http.HttpResponseCode;
 import org.cssc.prototpe.http.exceptions.InvalidMethodStringException;
 import org.cssc.prototpe.http.exceptions.InvalidStatusCodeException;
 import org.cssc.prototpe.http.exceptions.MissingHostException;
+import org.cssc.prototpe.net.filters.HttpRequestFilter;
+import org.cssc.prototpe.net.filters.HttpResponseFilter;
 import org.cssc.prototpe.net.interfaces.ClientHandler;
 import org.cssc.prototpe.net.interfaces.ServerManager;
 import org.cssc.prototpe.parsers.HttpParser;

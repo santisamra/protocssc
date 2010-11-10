@@ -13,8 +13,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.cssc.prototpe.configuration.exceptions.ConfigurationParserException;
-import org.cssc.prototpe.configuration.filters.application.ApplicationFilter;
-import org.cssc.prototpe.configuration.filters.application.FilterCondition;
+import org.cssc.prototpe.net.filters.ApplicationFilter;
+import org.cssc.prototpe.net.filters.FilterCondition;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;

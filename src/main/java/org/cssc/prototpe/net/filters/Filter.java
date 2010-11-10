@@ -1,4 +1,4 @@
-package org.cssc.prototpe.configuration.filters;
+package org.cssc.prototpe.net.filters;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -6,13 +6,12 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.charset.Charset;
 
-import org.cssc.prototpe.configuration.filters.application.ApplicationFilter;
-import org.cssc.prototpe.configuration.filters.exceptions.FilterException;
 import org.cssc.prototpe.http.HttpHeader;
 import org.cssc.prototpe.http.HttpResponse;
 import org.cssc.prototpe.http.HttpResponseCode;
 import org.cssc.prototpe.net.Logger;
 import org.cssc.prototpe.net.MonitoredOutputStream;
+import org.cssc.prototpe.net.filters.exceptions.FilterException;
 
 public abstract class Filter {
 

@@ -1,8 +1,9 @@
-package org.cssc.prototpe.configuration.filters.application;
+package org.cssc.prototpe.net.filters;
 
 import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.List;
+
 
 public class ApplicationFilter {
 	

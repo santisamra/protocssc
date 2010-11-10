@@ -4,8 +4,8 @@ import java.io.File;
 import java.net.UnknownHostException;
 import java.util.List;
 
-import org.cssc.prototpe.configuration.filters.application.ApplicationFilter;
 import org.cssc.prototpe.httpserver.ApplicationConfigurationServer;
+import org.cssc.prototpe.net.filters.ApplicationFilter;
 import org.cssc.prototpe.net.interfaces.ServerManager;
 
 

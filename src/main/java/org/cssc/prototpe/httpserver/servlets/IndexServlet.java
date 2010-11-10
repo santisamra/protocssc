@@ -4,14 +4,14 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.List;
 
-import org.cssc.prototpe.configuration.filters.application.ApplicationFilter;
-import org.cssc.prototpe.configuration.filters.application.FilterCondition;
 import org.cssc.prototpe.httpserver.model.Authorization;
 import org.cssc.prototpe.httpserver.model.HttpServletRequest;
 import org.cssc.prototpe.httpserver.model.HttpServletResponse;
 import org.cssc.prototpe.httpserver.model.MyHttpServlet;
 import org.cssc.prototpe.net.Application;
 import org.cssc.prototpe.net.ApplicationConfiguration;
+import org.cssc.prototpe.net.filters.ApplicationFilter;
+import org.cssc.prototpe.net.filters.FilterCondition;
 
 public class IndexServlet extends MyHttpServlet {
 

@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.cssc.prototpe.configuration.ConfigurationParser;
-import org.cssc.prototpe.configuration.filters.application.ApplicationFilter;
+import org.cssc.prototpe.net.filters.ApplicationFilter;
 
 public class ApplicationConfiguration {
 	
