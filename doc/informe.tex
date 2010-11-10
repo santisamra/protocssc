@@ -234,8 +234,8 @@ contemplado, no hubo problemas para que la recepción de estas respuestas sea
 correcta.\\
 
 Si bien podrían pensarse como problemas menores, el hecho de que el
-comportamiento del proxy en el ITBA difiera del comportamiento del mismo proxy
-en otro lugar generó confusión y dificultó la solución de otros problemas, que
+comportamiento del proxy desarrollado en el ITBA difiera del comportamiento del
+mismo proxy en otro lugar generó confusión y dificultó la solución de otros problemas, que
 por estos motivos no se podían encontrar.\\
 
 \textbf{\color{red}{\large{Ver si queremos agregar algo más sobre el proxy
@@ -418,7 +418,106 @@ correctamente.
 
 \clearpage
 
-\section{Pruebas de carga}
+% \section{Más funcionalidades}
+% 
+% A continuación se describen más funcionalidades del proxy, en cuyas
+% implementaciones no se tuvieron problemas mayores.
+% 
+% \textbf{\color{red}{\large{Si alguna de las cosas que está acá trajo
+% problemas, tiene que moverse a la sección anterior.}}}
+% 
+% \subsection{Encadenamiento de proxies}
+% 
+% El proxy admite funcionar redirigiendo sus requests hacia otro proxy.
+% 
+% \textbf{\color{red}{\large{Seguir con la descripción de esta funcionalidad.}}}
+% 
+% \clearpage
+
+
+\section{Limitaciones}
+
+El proxy desarrollado tiene las siguientes limitaciones:
+
+\begin{itemize}
+  \item No soporta \emph{pipelining} de requests al servidor. Por ello, si bien
+  se reusan las conexiones a los servidores cuando llegan distintos requests, la
+  eficiencia de ello deja que desear.
+  \item El número de conexiones simultáneas a un servidor \textit{origin} está
+  limitado, debido a la implementación de conexiones persistentes. {\Huge{Sin
+  embargo, al ser completamente configurable, puede incrementarse tanto como se
+  desee!}}
+  \item No soporta todos los métodos \textit{HTTP}, solo \verb+GET+, \verb+HEAD+
+  y \verb+POST+; con lo cual hay ciertas páginas que no funcionan del todo
+  bien porque usan otros métodos.
+  \item Para realizar filtrado de páginas por \textit{Content-length}, es
+  necesario parsear el contenido completo de un paquete. Por lo tanto, no se le
+  puede enviar la información de a pedazos al cliente en el caso de que no haya
+  un header \emph{content-length}: se debe leer todo el contenido y luego enviar
+  la información, con lo cual se pierde en eficiencia.
+\end{itemize}
+
+\clearpage
+
+
+\section{Posibles extensiones}
+
+En esta sección se mencionan algunas posibles extensiones que podrían
+realizársele a esta implementación del proxy \textit{HTTP}.
+
+\begin{itemize}
+  \item Podría agregarse la funcionalidad de ser usado como servidor caché,
+  opción muy utilizada en varios servidores proxy.
+  \item Sería útil almacenar estadísticas sobre qué sitios son visitados por
+  ciertas direcciones IP destino, y en base a ello modificar las respuestas de
+  dichos sitios con información destinada a algún fin en partícular (por
+  ejemplo, publicidad). Si se implementara la funcionalidad de servidor caché,
+  también sería posible, en base a la estadística, determinar que páginas
+  podrían tener más prioridad de almacenamiento en el servidor que otras. Las
+  conexiones persistentes también podrían mantenerse por un tiempo determinado
+  por dichas probabilidades.
+  \item Podrían agregarse prioridades a las IPs destino, con el fin de
+  posibilitarle el uso de un mayor ancho de banda a unas u otras, basándose en
+  dicha posibilidad. También podrían utilizarse esas medidas para permitir mayor
+  o menor cantidad de conexiones simultáneas a servidores \textit{origin} para
+  ciertos clientes.
+  \item Además de los bloqueos ya existentes, sería posible bloquear el acceso a
+  una URI o IP luego de transferida cierta cantidad de bytes entre un cliente y
+  un servidor \textit{origin}.
+\end{itemize}
+
+\clearpage
+
+\section{Conclusión}
+
+El desarrollo de un proxy \textit{HTTP} fue aportador desde el punto de vista
+de la comprensión del funcionamiento del protocolo.\\
+
+Fue muy interesante el hecho de tener la posibilidad de interceptar la información
+enviada por un cliente o un servidor, y poder modificarla a gusto. Se observó
+que esto puede tener muchas utilidades, ya sea las implementadas o las
+mencionadas en las posibles extensiones. Es impactante ver como, configurando un proxy, 
+se puede interceptar la información a, o desde, por ejemplo, un determinado rango de IPs,
+para de esta forma ``robar'' datos privados que no estuvieran encriptados, 
+o utilizarlos con fines publicitarios. Todo esto (mediante un proxy transparente) 
+se estaría haciendo de forma que el cliente ni siquiera se entere de que sus datos
+estan a disponibilidad absoluta del que ha configurado el proxy.\\
+
+Las principales dificultades encontradas tuvieron que ver con que no todas las
+aplicaciones que lo aplican cumplen el estándar existente. Como en el caso del
+proxy se tuvo contacto con navegadores, servidores \textit{origin} y otros
+servidores proxy, se observaron varias prácticas que iban en contra de lo dicho
+en el RFC. Esto es entendible teniendo en cuenta que el protocolo es muy extenso,
+y respetar la documentación puede traer algunas deficiencias en cuanto a
+\textit{performance}; no obstante, se concluye que la implementación de
+aplicaciones que utilicen el protocolo \textit{HTTP} sería más sencilla si los
+estándares fueran respetados.\\
+
+\textbf{\color{red}{\large{Agregar algo más si hace falta.}}}
+
+\clearpage
+
+\section{Ejemplos de testeo}
 
 Se realizaron pruebas de carga para testear el funcionamiento del proxy
 utilizando la herramienta \emph{Apache
@@ -546,112 +645,6 @@ navegadores, que se utilicen 200 threads para el pool; o bien 1400, si se desea
 que actúe como proxy transparente. Es comprensible que esto demande muchos
 recursos: en ese caso, se sugiere bajar el timeout de las conexiones
 persistentes a los clientes y la cantidad de threads.
-
-\clearpage
-
-
-% \section{Más funcionalidades}
-% 
-% A continuación se describen más funcionalidades del proxy, en cuyas
-% implementaciones no se tuvieron problemas mayores.
-% 
-% \textbf{\color{red}{\large{Si alguna de las cosas que está acá trajo
-% problemas, tiene que moverse a la sección anterior.}}}
-% 
-% \subsection{Encadenamiento de proxies}
-% 
-% El proxy admite funcionar redirigiendo sus requests hacia otro proxy.
-% 
-% \textbf{\color{red}{\large{Seguir con la descripción de esta funcionalidad.}}}
-% 
-% \clearpage
-
-
-\section{Limitaciones}
-
-El proxy desarrollado tiene las siguientes limitaciones:
-
-\begin{itemize}
-  \item No soporta \emph{pipelining} de requests al servidor. Por ello, si bien
-  se reusan las conexiones a los servidores cuando llegan distintos requests, la
-  eficiencia de ello deja que desear.
-  \item El número de conexiones simultáneas a un servidor \textit{origin} está
-  limitado, debido a la implementación de conexiones persistentes. {\Huge{Sin
-  embargo, al ser completamente configurable, puede incrementarse tanto como se
-  desee!}}
-  \item No soporta todos los métodos \textit{HTTP}, solo \verb+GET+, \verb+HEAD+
-  y \verb+POST+; con lo cual hay ciertas páginas que no funcionan del todo
-  bien porque usan otros métodos.
-  \item Para realizar filtrado de páginas por \textit{Content-length}, es
-  necesario parsear el contenido completo de un paquete. Por lo tanto, no se le
-  puede enviar la información de a pedazos al cliente en el caso de que no haya
-  un header \emph{content-length}: se debe leer todo el contenido y luego enviar
-  la información, con lo cual se pierde en eficiencia.
-\end{itemize}
-
-\clearpage
-
-
-\section{Posibles extensiones}
-
-En esta sección se mencionan algunas posibles extensiones que podrían
-realizársele a esta implementación del proxy \textit{HTTP}.
-
-\begin{itemize}
-  \item Podría agregarse la funcionalidad de ser usado como servidor caché,
-  opción muy utilizada en varios servidores proxy.
-  \item Sería útil almacenar estadísticas sobre qué sitios son visitados por
-  ciertas direcciones IP destino, y en base a ello modificar las respuestas de
-  dichos sitios con información destinada a algún fin en partícular (por
-  ejemplo, publicidad). Si se implementara la funcionalidad de servidor caché,
-  también sería posible, en base a la estadística, determinar que páginas
-  podrían tener más prioridad de almacenamiento en el servidor que otras. Las
-  conexiones persistentes también podrían mantenerse por un tiempo determinado
-  por dichas probabilidades.
-  \item Podrían agregarse prioridades a las IPs destino, con el fin de
-  posibilitarle el uso de un mayor ancho de banda a unas u otras, basándose en
-  dicha posibilidad. También podrían utilizarse esas medidas para permitir mayor
-  o menor cantidad de conexiones simultáneas a servidores \textit{origin} para
-  ciertos clientes.
-  \item Además de los bloqueos ya existentes, sería posible bloquear el acceso a
-  una URI o IP luego de transferida cierta cantidad de bytes entre un cliente y
-  un servidor \textit{origin}.
-\end{itemize}
-
-\clearpage
-
-\section{Conclusión}
-
-El desarrollo de un proxy \textit{HTTP} fue aportador desde el punto de vista
-de la comprensión del funcionamiento del protocolo.\\
-
-Fue muy interesante el hecho de tener la posibilidad de interceptar la información
-enviada por un cliente o un servidor, y poder modificarla a gusto. Se observó
-que esto puede tener muchas utilidades, ya sea las implementadas o las
-mencionadas en las posibles extensiones. Es impactante ver como, configurando un proxy, 
-se puede interceptar la información a, o desde, por ejemplo, un determinado rango de IPs,
-para de esta forma ``robar'' datos privados que no estuvieran encriptados, 
-o utilizarlos con fines publicitarios. Todo esto (mediante un proxy transparente) 
-se estaría haciendo de forma que el cliente ni siquiera se entere de que sus datos
-estan a disponibilidad absoluta del que ha configurado el proxy.\\
-
-Las principales dificultades encontradas tuvieron que ver con que no todas las
-aplicaciones que lo aplican cumplen el estándar existente. Como en el caso del
-proxy se tuvo contacto con navegadores, servidores \textit{origin} y otros
-servidores proxy, se observaron varias prácticas que iban en contra de lo dicho
-en el RFC. Esto es entendible teniendo en cuenta que el protocolo es muy extenso,
-y respetar la documentación puede traer algunas deficiencias en cuanto a
-\textit{performance}; no obstante, se concluye que la implementación de
-aplicaciones que utilicen el protocolo \textit{HTTP} sería más sencilla si los
-estándares fueran respetados.\\
-
-\textbf{\color{red}{\large{Agregar algo más si hace falta.}}}
-
-\clearpage
-
-\section{Ejemplos de testeo}
-
-\textbf{\color{red}{\large{¿Qué va acá?}}}
 
 \clearpage
 
