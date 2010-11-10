@@ -2,11 +2,11 @@ package org.cssc.prototpe.httpserver.servlets;
 
 import java.io.IOException;
 
+import org.cssc.prototpe.configuration.ApplicationConfiguration;
 import org.cssc.prototpe.httpserver.model.HttpServletRequest;
 import org.cssc.prototpe.httpserver.model.HttpServletResponse;
 import org.cssc.prototpe.httpserver.model.MyHttpServlet;
 import org.cssc.prototpe.net.Application;
-import org.cssc.prototpe.net.ApplicationConfiguration;
 
 public class ConfigurationServlet extends MyHttpServlet {
 

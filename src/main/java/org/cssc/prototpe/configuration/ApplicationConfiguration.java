@@ -1,4 +1,4 @@
-package org.cssc.prototpe.net;
+package org.cssc.prototpe.configuration;
 
 import java.io.File;
 import java.net.InetAddress;
@@ -6,7 +6,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.cssc.prototpe.configuration.ConfigurationParser;
 import org.cssc.prototpe.net.filters.ApplicationFilter;
 
 public class ApplicationConfiguration {
