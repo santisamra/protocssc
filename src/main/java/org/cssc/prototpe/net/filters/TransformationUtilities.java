@@ -1,4 +1,4 @@
-package org.cssc.prototpe.transformations;
+package org.cssc.prototpe.net.filters;
 
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;

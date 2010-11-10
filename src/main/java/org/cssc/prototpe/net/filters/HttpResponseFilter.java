@@ -12,7 +12,6 @@ import org.cssc.prototpe.http.HttpResponse;
 import org.cssc.prototpe.net.Application;
 import org.cssc.prototpe.net.Logger;
 import org.cssc.prototpe.parsers.HttpResponseParser;
-import org.cssc.prototpe.transformations.TransformationUtilities;
 
 public class HttpResponseFilter extends Filter {
 	
