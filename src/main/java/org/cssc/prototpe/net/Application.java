@@ -21,7 +21,7 @@ public class Application {
 	private ServerManager serverManager;
 	private MonitoringService monitoringService;
 
-	private static final String CONFIG_FILE = "src/main/resources/config/config.xml";
+	private static final String CONFIG_FILE = "config.xml";
 
 	private Application() {
 		// This must be first, before anything else, as other parts of the

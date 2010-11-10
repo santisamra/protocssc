@@ -18,6 +18,9 @@ public class HttpResponseFilter extends Filter {
 	
 	private static final boolean SQUID_PATCH = false;
 
+	private static String MEDIA_TYPE_BLOCKED_HTML = "/html/errors/mediaTypeBlocked.html";
+	private static String BIG_CONTENT_LENGTH_HTML = "/html/errors/bigContentLength.html";
+	
 	private Socket serverSocket;
 	private HttpRequest request;
 	private HttpResponse response;
@@ -38,7 +41,7 @@ public class HttpResponseFilter extends Filter {
 		String contentTypeString = response.getHeader().getField("content-type");
 
 		if(blockedMediaTypes != null && blockedMediaTypes.contains(contentTypeString)) {
-			writeResponse("src/main/resources/html/errors/mediaTypeBlocked.html");
+			writeResponse(Application.class.getResource(MEDIA_TYPE_BLOCKED_HTML).getFile());
 			serverSocket.close();
 			Application.getInstance().getMonitoringService().registerMediaTypeBlock();
 			return true;
@@ -52,7 +55,7 @@ public class HttpResponseFilter extends Filter {
 				int maxContentLength = filter.getMaxContentLength();
 
 				if(contentLength > maxContentLength && maxContentLength != 0) {
-					writeResponse("src/main/resources/html/errors/bigContentLength.html");
+					writeResponse(Application.class.getResource(BIG_CONTENT_LENGTH_HTML).getFile());
 					serverSocket.close();
 					Application.getInstance().getMonitoringService().registerSizeBlock();
 					return true;
@@ -98,7 +101,7 @@ public class HttpResponseFilter extends Filter {
 
 			/* Content length is filtered. */
 			if(checkContentLength && contentLength > maxContentLength) {
-				writeResponse("src/main/resources/html/errors/bigContentLength.html");
+				writeResponse(Application.class.getResource(BIG_CONTENT_LENGTH_HTML).getFile());
 				serverSocket.close();
 				Application.getInstance().getMonitoringService().registerSizeBlock();
 				return;
@@ -113,7 +116,7 @@ public class HttpResponseFilter extends Filter {
 
 						/* Content length is filtered. */
 						if(checkContentLength && contentLength > maxContentLength) {
-							writeResponse("src/main/resources/html/errors/bigContentLength.html");
+							writeResponse(Application.class.getResource(BIG_CONTENT_LENGTH_HTML).getFile());
 							serverSocket.close();
 							Application.getInstance().getMonitoringService().registerSizeBlock();
 							return;
@@ -137,7 +140,7 @@ public class HttpResponseFilter extends Filter {
 
 					/* Content length is filtered. */
 					if(checkContentLength && contentLength > maxContentLength) {
-						writeResponse("src/main/resources/html/errors/bigContentLength.html");
+						writeResponse(Application.class.getResource(BIG_CONTENT_LENGTH_HTML).getFile());
 						serverSocket.close();
 						Application.getInstance().getMonitoringService().registerSizeBlock();
 						return;

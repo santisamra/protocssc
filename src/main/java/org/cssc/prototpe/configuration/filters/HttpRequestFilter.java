@@ -12,6 +12,10 @@ import org.cssc.prototpe.net.Logger;
 
 public class HttpRequestFilter extends Filter {
 
+	private static final String ACCESS_DENIED_HTML = "/html/errors/accessDenied.html";
+	private static final String IP_ACCESS_DENIED_HTML = "/html/errors/ipAccessDenied.html";
+	private static final String URI_ACCESS_DENIED_HTML = "/html/errors/uriAccessDenied.html";
+	
 	private HttpRequest request;
 
 	public HttpRequestFilter(Socket clientSocket, HttpRequest request, Logger logger) {
@@ -45,11 +49,12 @@ public class HttpRequestFilter extends Filter {
 		
 		try {
 			if(allAccessesBlocked) {
-				writeResponse("src/main/resources/html/errors/accessDenied.html");
+				System.out.println(Application.class.getResource(ACCESS_DENIED_HTML).getFile());
+				writeResponse(Application.class.getResource(ACCESS_DENIED_HTML).getFile());
 				Application.getInstance().getMonitoringService().registerWholeBlock();
 				return true;
 			} else if(blockedIPs != null && matchesBlockedIP(blockedIPs, InetAddress.getByName(request.getEffectiveHost()))) {
-				writeResponse("src/main/resources/html/errors/ipAccessDenied.html");
+				writeResponse(Application.class.getResource(IP_ACCESS_DENIED_HTML).getFile());
 				Application.getInstance().getMonitoringService().registerIpBlock();
 				return true;
 			} else if(blockedURIs != null) {
@@ -57,7 +62,7 @@ public class HttpRequestFilter extends Filter {
 				
 				for(String s: filter.getBlockedURIs()) {
 					if(uriMatchesExpression(requestUri, s)) {
-						writeResponse("src/main/resources/html/errors/uriAccessDenied.html");
+						writeResponse(Application.class.getResource(URI_ACCESS_DENIED_HTML).getFile());
 						Application.getInstance().getMonitoringService().registerUriBlock();
 						return true;
 					}
