@@ -656,7 +656,7 @@ estándares fueran respetados.\\
 \section{Guía de instalación}
 
 A continuación se detalla una guía de instalación para sistemas
-\textit{Linux}.
+\textit{Linux y Mac OS X}.
 
 \begin{enumerate}
   \item En el directorio raíz, se encuentra un archivo \verb+JAR+ con el
@@ -676,9 +676,97 @@ A continuación se detalla una guía de instalación para sistemas
   funcionando en los puertos indicados luego de dicha leyenda.
 \end{enumerate}
 
+A continuación se detalla una guía de instalación para sistemas
+\textit{Windows}.
+
+\begin{enumerate}
+  \item En el directorio raíz, se encuentra un archivo \verb+JAR+ con el
+  proyecto en su última revisión. En caso en que quiera utilizar este
+  \verb+JAR+, diríjase directamente al paso 3. Si desea recompilarlo, diríjase
+  al siguiente paso.
+  \item Ubicado en el directorio raíz, ejecute\\
+  \verb+$> compile.bat+\\
+  Esto generará un nuevo \verb+JAR+, sobreescribiendo al ya existente.\\ 
+  \item Ejecute\\
+  \verb+$> run.bat+\\
+  El proxy está siendo iniciado. Luego de esto, el proxy estará
+  funcionando en los puertos indicados luego de dicha leyenda.
+\end{enumerate}
+
+\clearpage
+
 \section{Guía de configuración}
 
-\textbf{\color{red}{\large{Explicar cómo explicitar filtros y qué hace cada parámetro del XML.}}}
+El proxy es muy flexible en cuanto a configuración. La misma se realiza mediante 
+un archivo \verb+config.xml+ ubicado en la raíz del proyecto. \\
+
+Aquí se explica qué permite configurar cada tag válido en el XML:
+
+\begin{itemize}
+	\item \verb+<proxyPort>+: Puerto en el cual el Proxy escucha conexiones.
+	\item \verb+<remoteServicesPort>+: Puerto en el cual el Proxy corre el 
+	servicio Web para configuraciones remotas.
+	\item \verb+<threadPoolSize>+: El tamaño del \textit{pool} de \textit{threads}.
+	\item \verb+<maxPersistantServerConnections>+: Cantidad máxima de conexiones
+	persistentes.
+	\item \verb+<maxPersistantServerConnectionsPerServer>+: Cantidad máxima de 
+	conexiones persistentes por origin server.
+	\item \verb+<loggingFileName>+: Nombre del archivo en donde el Proxy hará
+	\textit{logging} de los \textit{requests} y \textit{responses} que vaya 
+	procesando.
+	\item \verb+<clientKeepAliveTimeout>+: Timeout en las conexiones hacia clientes.
+	\item \verb+<serverConnectionPersistentTimeout>+: Timeout en las conexiones 
+	persistentes hacia servidores.
+	\item \verb+<filters>+: Especifica un conjunto de filtros. Se aplican en el 
+	orden explicitados.
+	\item \verb+<filter>+: Define un filtro. Un filtro debe tener \verb+<conditions>+
+	y \verb+<actions>+.
+	\item \verb+<conditions>+: Condiciones para aplicar un filtro. Pueden ser 
+	\verb+<OS>+, \verb+<browser>+ y/o \verb+<origin-IPs>+.
+	\item \verb+<OS>+: Especifica para qué Sistema Operativo es aplicado el filtro.
+	\item \verb+<browser>+: Especifica para qué navegador web es aplicado el filtro.
+	\item \verb+<origin-IPs>+: Define un conjunto de IPs para las cuales el filtro
+	es aplicado.
+	\item \verb+<IP>+: Especifica una dirección IP (En el caso de \verb+<origin-IPs>+ 
+	no soporta expresiones regulares).
+	\item \verb+<actions>+: Especifica un conjunto de acciones a realizar si se cumplen
+	las condiciones anteriormente especificadas.
+	\item \verb+<block-all-accesses>+: Se debe especificar un valor \verb+TRUE+ o 
+	\verb+FALSE+, que determinará si los usuarios que cumplen las condiciones de este
+	filtro pueden acceder a algún contenido o a ninguno (se les bloquea todo acceso).
+	\item \verb+<blocked-IPs>+: Especifica un conjunto de IPs a las cuales no se podrá
+	acceder si se cumplen las condiciones de este filtro. Es decir, si se coloca la 
+	IP de www.itba.edu.ar, no se podrá acceder a ese dominio mientras mantenga esa 
+	IP bloqueada.
+	\item \verb+<IP>+: Especifica una dirección IP (En el caso de \verb+<blocked-IPs>+
+	soporta expresiones regulares: ``24.232.32.*'' es válido como regla).
+	\item \verb+<blocked-URIs>+: Especifica un conjunto de URIs a las cuales no se 
+	podrá acceder si se cumplen las condiciones de este filtro. Soporta expresiones 
+	regulares de estilo ``http://www.google.com/*''.
+	\item \verb+<URI>+: Especifica una URI en particular perteneciente al tag 
+	\verb+<blocked-URIs>+.
+	\item \verb+<blocked-MediaTypes>+: Especifica un conjunto de \textit{Media Types} 
+	que son bloqueados a los usuarios que cumplen las condiciones de este filtro.
+	\item \verb+<MediaType>+: Especifica un MediaType para el tag \verb+<blocked-MediaTypes>+.
+	\item \verb+<max-content-length>+: Especifica el máximo \textit{content-length} 
+	que se les permitirá descargar a los usuarios que cumplan las condiciones de 
+	este filtro.
+	\item \verb+<transform>+: Especifica un conjunto de transformaciones aplicables 
+	a los responses de los requests hechos por los clientes.
+	\item \verb+<l33t>+: Transformará la response (si la misma es \textit{text/plain}) 
+	a formato l33t. 
+	\item \verb+<images180>+: Transformará las imágenes aplicándoles una rotación 
+	de 180 grados. 
+	\item \verb+<admin-users>+: Conjunto de usuarios administradores que tienen 
+	autorización para acceder a los servicios de configuración y monitoreo.
+	\item \verb+<user>+: Define un usuario dentro de \verb+<admin-users>+.
+	\item \verb+<name>+: Define el nombre de usuario de un \verb+<user>+.
+	\item \verb+<pass>+: Define la contraseña de un \verb+<user>+.
+	
+	
+\end{itemize}
+
+\clearpage
 
 \section{Ejemplos de configuración}
 

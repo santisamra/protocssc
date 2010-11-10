@@ -21,6 +21,20 @@
 		</filter>
 		<filter>
 			<conditions>
+				<origin-IPs>
+					<IP>192.168.1.104</IP>
+				</origin-IPs>
+			</conditions>
+			<actions>
+				<transform>
+					<l33t>FALSE</l33t>
+					<images180>TRUE</images180>
+				</transform>
+				<max-content-length>1000000</max-content-length>
+			</actions>
+		</filter>
+		<filter>
+			<conditions>
 				<browser>Chrome</browser>
 			</conditions>
 			<actions>
@@ -38,7 +52,6 @@
 				<blocked-MediaTypes>
 					<MediaType>text/xml</MediaType>
 				</blocked-MediaTypes> 
-				<max-content-length>1000000</max-content-length>
 			</actions>
 		</filter>
 	</filters>
