@@ -15,7 +15,7 @@ public enum HttpResponseCode {
 	PARTIAL_CONTENT(206, true),
 	MULTIPLE_CHOICES(300, false),
 	MOVED_PERMANENTLY(301, false),
-	FOUND(302, false),
+	FOUND(302, true),
 	SEE_OTHER(303, false),
 	NOT_MODIFIED(304, false),
 	USE_PROXY(305, false),
