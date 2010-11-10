@@ -19,7 +19,7 @@
 				<blocked-IPs>
 					<IP>200.200.*.200</IP>
 				</blocked-IPs>
-				<block-all-accesses>TRUE</block-all-accesses>
+				<!-- <block-all-accesses>TRUE</block-all-accesses> -->
 			</actions>
 		</filter>
 		<filter>
