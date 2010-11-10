@@ -65,6 +65,7 @@ public class HttpResponseFilter extends Filter {
 		return false;
 	}
 
+	@SuppressWarnings("all")
 	public void filterAndWriteContent(HttpResponseParser parser, OutputStream outputStream) throws IOException {
 		String contentTypeString = response.getHeader().getField("content-type");
 		boolean hasContentLength = response.getHeader().containsField("content-length");
