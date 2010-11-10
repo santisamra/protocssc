@@ -34,15 +34,7 @@ public abstract class Filter {
 	
 	public abstract boolean filter() throws IOException;
 	
-	protected void writeResponse(String htmlResponsePath) {
-		InputStream inputStream = null;
-
-		try {
-			inputStream = new FileInputStream(htmlResponsePath);
-		} catch (FileNotFoundException e) {
-			throw new FilterException(e);
-		}
-
+	protected void writeResponse(InputStream inputStream) {
 		int contentLength = 0;
 		StringBuffer buffer = new StringBuffer();
 

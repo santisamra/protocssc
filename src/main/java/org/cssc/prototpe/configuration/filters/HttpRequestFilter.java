@@ -50,11 +50,11 @@ public class HttpRequestFilter extends Filter {
 		try {
 			if(allAccessesBlocked) {
 				System.out.println(Application.class.getResource(ACCESS_DENIED_HTML).getFile());
-				writeResponse(Application.class.getResource(ACCESS_DENIED_HTML).getFile());
+				writeResponse(Application.class.getResourceAsStream(ACCESS_DENIED_HTML));
 				Application.getInstance().getMonitoringService().registerWholeBlock();
 				return true;
 			} else if(blockedIPs != null && matchesBlockedIP(blockedIPs, InetAddress.getByName(request.getEffectiveHost()))) {
-				writeResponse(Application.class.getResource(IP_ACCESS_DENIED_HTML).getFile());
+				writeResponse(Application.class.getResourceAsStream(IP_ACCESS_DENIED_HTML));
 				Application.getInstance().getMonitoringService().registerIpBlock();
 				return true;
 			} else if(blockedURIs != null) {
@@ -62,7 +62,7 @@ public class HttpRequestFilter extends Filter {
 				
 				for(String s: filter.getBlockedURIs()) {
 					if(uriMatchesExpression(requestUri, s)) {
-						writeResponse(Application.class.getResource(URI_ACCESS_DENIED_HTML).getFile());
+						writeResponse(Application.class.getResourceAsStream(URI_ACCESS_DENIED_HTML));
 						Application.getInstance().getMonitoringService().registerUriBlock();
 						return true;
 					}

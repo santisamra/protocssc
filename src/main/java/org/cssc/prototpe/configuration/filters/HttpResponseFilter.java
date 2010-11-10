@@ -41,7 +41,7 @@ public class HttpResponseFilter extends Filter {
 		String contentTypeString = response.getHeader().getField("content-type");
 
 		if(blockedMediaTypes != null && blockedMediaTypes.contains(contentTypeString)) {
-			writeResponse(Application.class.getResource(MEDIA_TYPE_BLOCKED_HTML).getFile());
+			writeResponse(Application.class.getResourceAsStream(MEDIA_TYPE_BLOCKED_HTML));
 			serverSocket.close();
 			Application.getInstance().getMonitoringService().registerMediaTypeBlock();
 			return true;
@@ -55,7 +55,7 @@ public class HttpResponseFilter extends Filter {
 				int maxContentLength = filter.getMaxContentLength();
 
 				if(contentLength > maxContentLength && maxContentLength != 0) {
-					writeResponse(Application.class.getResource(BIG_CONTENT_LENGTH_HTML).getFile());
+					writeResponse(Application.class.getResourceAsStream(BIG_CONTENT_LENGTH_HTML));
 					serverSocket.close();
 					Application.getInstance().getMonitoringService().registerSizeBlock();
 					return true;
@@ -101,7 +101,7 @@ public class HttpResponseFilter extends Filter {
 
 			/* Content length is filtered. */
 			if(checkContentLength && contentLength > maxContentLength) {
-				writeResponse(Application.class.getResource(BIG_CONTENT_LENGTH_HTML).getFile());
+				writeResponse(Application.class.getResourceAsStream(BIG_CONTENT_LENGTH_HTML));
 				serverSocket.close();
 				Application.getInstance().getMonitoringService().registerSizeBlock();
 				return;
@@ -116,7 +116,7 @@ public class HttpResponseFilter extends Filter {
 
 						/* Content length is filtered. */
 						if(checkContentLength && contentLength > maxContentLength) {
-							writeResponse(Application.class.getResource(BIG_CONTENT_LENGTH_HTML).getFile());
+							writeResponse(Application.class.getResourceAsStream(BIG_CONTENT_LENGTH_HTML));
 							serverSocket.close();
 							Application.getInstance().getMonitoringService().registerSizeBlock();
 							return;
@@ -140,7 +140,7 @@ public class HttpResponseFilter extends Filter {
 
 					/* Content length is filtered. */
 					if(checkContentLength && contentLength > maxContentLength) {
-						writeResponse(Application.class.getResource(BIG_CONTENT_LENGTH_HTML).getFile());
+						writeResponse(Application.class.getResourceAsStream(BIG_CONTENT_LENGTH_HTML));
 						serverSocket.close();
 						Application.getInstance().getMonitoringService().registerSizeBlock();
 						return;
