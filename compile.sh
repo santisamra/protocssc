@@ -2,10 +2,16 @@
 echo "Running Maven..."
 mvn clean package
 
-echo "Copying package..."
+if [ $? != 0 ]; then
+    echo "FAILURE -- Please check the code and try recompiling."
+else
+    echo "Copying package..."
 
-cp ./target/prototpe.jar .
+    cp ./target/prototpe.jar .
 
-echo "Done. Please execute run.sh"
+    echo "SUCCESS. Please execute run.sh"
+fi
+
+
 
 
