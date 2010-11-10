@@ -173,8 +173,8 @@ Luego de la decisión tomada acerca de cómo atender clientes, se llevó a cabo el
 parseo de mensajes \textit{HTTP}.\\
 
 Antes de diseñar los \textit{parsers}, se pensó una jerarquía de clases que
-modele los paquetes \textit{HTTP}.\footnote{Puede encontrarse en el paquete
-\textbf{org.cssc.prototpe.http}} A grandes rasgos, consistió en una clase
+modele los paquetes \textit{HTTP}\footnote{Puede encontrarse en el paquete
+\textbf{org.cssc.prototpe.http}}. A grandes rasgos, consistió en una clase
 padre \verb+HttpPacket+ de la cual heredan \verb+HttpRequest+ y
 \verb+HttpResponse+, y que contienen un método
 (\verb+GET+, \verb+POST+ o \verb+HEAD+, si se trata de un
@@ -247,7 +247,7 @@ Una de las funcionalidades requeridas para el proxy fue la de implementar
 conexiones persistentes; es decir, que no se cree una nueva conexión con el
 servidor \textit{origin} cada vez que se hace un \textit{request}, sino mantener
 abiertas las conexiones. De esta manera, ante un \textit{request} a un servidor
-con una conexión ya abierta, se evita tener que abrir uno nuevo.\\
+con una conexión ya abierta, se evita tener que abrir una nueva.\\
 
 En principio, se mantenía abierta una conexión para cada servidor
 \textit{origin}. Pero esto generaba un funcionamiento ineficiente, ya que no
@@ -256,8 +256,8 @@ persistentes reducían la capacidad del proxy. Por lo tanto, se optó por tener,
 para un mismo servidor \textit{origin}, $n$ conexiones (donde $n$
 es configurable), y tener un máximo de $m$ conexiones abiertas.\\
 
-La implementación realizada se basa en semáforos.\footnote{Ver la clase
-\textbf{org.cssc.prototpe.PersistentSemaphorizedServerManager}} Existe primero
+La implementación realizada se basa en semáforos\footnote{Ver la clase
+\textbf{org.cssc.prototpe.PersistentSemaphorizedServerManager}}. Existe primero
 un semáforo que se inicializa con $m$ permisos. Al solicitarle una conexión a 
 un servidor al \verb+ServerManager+, se pide un permiso de dicho semáforo; al
 liberarse una conexión, se libera un permiso del mismo semáforo. De manera
@@ -303,10 +303,10 @@ más serios, entre los cuales se pueden mencionar:
   simplemente se quedaba leyendo de las mismas. Se debió implementar un timeout
   en dicha lectura, y hacer que se cierren las conexiones cuando se supere ese
   timeout.
-  \item Se recibían \emph{responses} sucios cuando se reusaba una conexión a un
+  \item Se recibían \textit{responses} sucios cuando se reusaba una conexión a un
   servidor. Esto ocurría debido a que no se leía correctamente la respuesta
   anterior, con lo que quedaban bytes pertenecientes a la misma; al intentar
-  leer la nueva \emph{response} del siguiente \emph{request}, se leían dichos
+  leer la nueva \textit{response} del siguiente \textit{request}, se leían dichos
   bytes, generando un error.
 \end{itemize}
 
@@ -319,7 +319,7 @@ threads concurrentes, resultaba complicado reproducir los bugs.
 \subsection{Monitoreo}
 
 El diseño implementado no contempló, desde un principio, encapsular a los
-\emph{sockets} en clases específicas del proxy. Las conexiones, así como la
+\textit{sockets} en clases específicas del proxy. Las conexiones, así como la
 entrada/salida, se manejan directamente utilizando la clase \verb+Socket+.
 Debido a esto, se presentaron importantes problemas al intentar contabilizar la
 cantidad de bytes transferidos. La solución fue hacer subclases de
@@ -330,8 +330,8 @@ Se presentó además un pequeño problema, relacionado con el monitoreo. Cuando se
 intentaban contabilizar la cantidad de bloqueos, a veces se contabilizaba más de
 uno cuando mediante un navegador se accedía a una página bloqueada. Esto era
 debido a que el navegador intentaba, al mismo tiempo que accedía a la página,
-buscar el \emph{favicon} de la misma. Inclusive, el navegador reintentaba varias
-veces ir a buscar el \emph{favicon}. Debido a esto, se concluyó que en
+buscar el \textit{favicon} de la misma. Inclusive, el navegador reintentaba varias
+veces ir a buscar el \textit{favicon}. Debido a esto, se concluyó que en
 realidad la implementación era correcta.
 
 \subsection{Configuración remota}
@@ -339,23 +339,23 @@ realidad la implementación era correcta.
 Debido a las características de la implementación, hay ciertos parámetros que no
 son configurables remotamente y sólo pueden ser cambiados
 directamente desde el XML de configuración y reiniciando el proxy. Entre ellos,
-por ejemplo, se encuentra la cantidad de threads que hay en el \emph{pool}, o la
+por ejemplo, se encuentra la cantidad de threads que hay en el \textit{pool}, y la
 cantidad máxima de conexiones persistentes.\\
 
 \textbf{\color{red}{\large{Agregar info.}}}
 
-\subsection{Servidores y clientes que hablan mal el protocolo}
+\subsection{Servidores y clientes que no hablan correctamente el protocolo}
 
 Se presentaron dificultades al dialogar con servidores o clientes que no hablan
 correctamente el protocolo. Por ejemplo, al intentar ver una imagen determinada,
 se presentó el problema de que no se podía leer la imagen para cargarla en
 memoria y luego rotarla; esto ocurría porque a pesar de que el
-\emph{content-type} declarado en la respuesta era \emph{image/jpeg}, el servidor
+\textit{content-type} declarado en la respuesta era \textit{image/jpeg}, el servidor
 en realidad estaba devolviendo un XML.\\
 
-Otro problema consistió en que algunos navegadores como \emph{Mozilla Firefox}
-envían \emph{headers} no descriptos por el RFC 2616, como
-\emph{Proxy-Connection} en vez de \emph{Connection}. Se debió lidiar con estas 
+Otro problema consistió en que algunos navegadores como \textit{Mozilla Firefox}
+envían \textit{headers} no descriptos por el RFC 2616, como
+\textit{Proxy-Connection} en vez de \textit{Connection}. Se debió lidiar con estas 
 inconsistencias en el proxy.\\
 
 \textbf{\color{red}{\large{Poner cualquier otra vergüenza o burrada que se
@@ -452,7 +452,7 @@ realizársele a esta implementación del proxy \textit{HTTP}.
   ciertos clientes.
   \item Además de los bloqueos ya existentes, sería posible bloquear el acceso a
   una URI o IP luego de transferida cierta cantidad de bytes entre un cliente y
-  un servidor origin.
+  un servidor \textit{origin}.
 \end{itemize}
 
 \clearpage
@@ -462,16 +462,21 @@ realizársele a esta implementación del proxy \textit{HTTP}.
 El desarrollo de un proxy \textit{HTTP} fue aportador desde el punto de vista
 de la comprensión del funcionamiento del protocolo.\\
 
-Fue interesante el hecho de tener la posibilidad de interceptar la información
+Fue muy interesante el hecho de tener la posibilidad de interceptar la información
 enviada por un cliente o un servidor, y poder modificarla a gusto. Se observó
 que esto puede tener muchas utilidades, ya sea las implementadas o las
-mencionadas en las posibles extensiones.\\
+mencionadas en las posibles extensiones. Es impactante ver como, configurando un proxy, 
+se puede interceptar la información a, o desde, por ejemplo, un determinado rango de IPs,
+para de esta forma \"robar\" datos privados que no estuvieran encriptados, 
+o utilizarlos con fines publicitarios. Todo esto (mediante un proxy transparente) 
+se estaría haciendo de forma que el cliente ni siquiera se entere de que sus datos
+estan a disponibilidad absoluta del que ha configurado el proxy.\\
 
 Las principales dificultades encontradas tuvieron que ver con que no todas las
 aplicaciones que lo aplican cumplen el estándar existente. Como en el caso del
 proxy se tuvo contacto con navegadores, servidores \textit{origin} y otros
 servidores proxy, se observaron varias prácticas que iban en contra de lo dicho
-en el RFC. Esto es entendible teniendo en cuenta que el protocolo es muy extenso
+en el RFC. Esto es entendible teniendo en cuenta que el protocolo es muy extenso,
 y respetar la documentación puede traer algunas deficiencias en cuanto a
 \textit{performance}; no obstante, se concluye que la implementación de
 aplicaciones que utilicen el protocolo \textit{HTTP} sería más sencilla si los
