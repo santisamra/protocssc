@@ -49,7 +49,6 @@ public class HttpRequestFilter extends Filter {
 		
 		try {
 			if(allAccessesBlocked) {
-				System.out.println(Application.class.getResource(ACCESS_DENIED_HTML).getFile());
 				writeResponse(Application.class.getResourceAsStream(ACCESS_DENIED_HTML));
 				Application.getInstance().getMonitoringService().registerWholeBlock();
 				return true;
